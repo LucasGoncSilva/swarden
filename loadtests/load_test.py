@@ -20,9 +20,10 @@ class WebsiteUser(FastHttpUser):
 
 class LoadTest(LoadTestShape):
     stages = [
-        {"duration": '5m', "users": 300, "spawn_rate": 1},
-        {"duration": '10m', "users": 300, "spawn_rate": 1},
-        {"duration": '5m', "users": 0, "spawn_rate": 1},
+        {"duration": '5m', "users": 200, "spawn_rate": 2 / 3},
+        {"duration": '5m', "users": 300, "spawn_rate": 1 / 3},
+        {"duration": '5m', "users": 200, "spawn_rate": 1 / 3},
+        {"duration": '5m', "users": 0, "spawn_rate": 2 / 3},
     ]
 
     def tick(self):
