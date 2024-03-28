@@ -1,7 +1,7 @@
 <h1 align='center'>SWARDEN</h1>
 
-![GitHub License](https://img.shields.io/github/license/LucasGoncSilva/swarden?style=flat&labelColor=%23101010)
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/LucasGoncSilva/swarden/unittest.yml?style=flat&labelColor=%23101010)  
+![GitHub License](https://img.shields.io/github/license/LucasGoncSilva/swarden?labelColor=101010)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/LucasGoncSilva/swarden/django_unittest.yml?style=flat&labelColor=%23101010)
 
 <h4 align='justify'>Criado em Django como Framework MVC, sWarden funciona como um protótipo real de gerenciador de senhas e credenciais online. Este projeto introduz e apresenta conceitos básicos de segurança de forma prática e descritiva. <br>
 Foram utilizadas tanto class-based views quanto function-based views, de modo que os diferentes paradigmas implementados pelo Framework sejam exemplificados de forma prática. <br>
