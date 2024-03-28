@@ -1,0 +1,51 @@
+name: Django Unit Testing
+
+on: [push, fork, pull_request]
+
+env:
+  SECRET_KEY: ${{ secrets.SECRET_KEY }}
+  ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
+  DJANGO_SETTINGS_MODULE: ${{ secrets.DJANGO_SETTINGS_MODULE }}
+  EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
+  EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r SWARDEN/requirements.txt
+
+      - name: Install Docker
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker
+
+      - name: Set and Migrate DB
+        run: |
+          docker run --name psql_swarden -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=postgres -d postgres
+          python -c "import time; time.sleep(10)"
+          python SWARDEN/manage.py makemigrations
+          python SWARDEN/manage.py migrate
+
+      - name: Collect Staticfiles
+        run: |
+          python SWARDEN/manage.py collectstatic --noinput
+
+      - name: Run Tests
+        run: |
+          cd SWARDEN
+          python manage.py test --parallel

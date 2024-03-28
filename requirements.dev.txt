@@ -1,0 +1,7 @@
+-r ./SWARDEN/requirements.txt
+
+locust
+tqdm
+pyflakes
+black
+tblib

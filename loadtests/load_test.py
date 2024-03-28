@@ -1,0 +1,38 @@
+"""
+locust --headless -f loadtests/load_test.py -H http://localhost:8000 --processes -1 --csv report/cvs/load/load --html report/html/load.html
+"""
+
+from locust import FastHttpUser, LoadTestShape, TaskSet, constant, task
+
+from utils import handle_stages
+
+
+class UserTasks(TaskSet):
+    @task
+    def get_root(self):
+        self.client.get("/")
+
+
+class WebsiteUser(FastHttpUser):
+    wait_time = constant(0.5)
+    tasks = [UserTasks]
+
+
+class LoadTest(LoadTestShape):
+    stages = [
+        {"duration": '5m', "users": 300, "spawn_rate": 1},
+        {"duration": '10m', "users": 300, "spawn_rate": 1},
+        {"duration": '5m', "users": 0, "spawn_rate": 1},
+    ]
+
+    def tick(self):
+        run_time = self.get_run_time()
+
+        stages = handle_stages(self.stages.copy())
+
+        for stage in stages:
+            if run_time < stage["duration"]:
+                tick_data = (stage["users"], stage["spawn_rate"])
+                return tick_data
+
+        return None

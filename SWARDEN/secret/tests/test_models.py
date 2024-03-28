@@ -1,0 +1,599 @@
+from django.test import TestCase
+from django.db.transaction import atomic
+from django.db import DataError
+
+from account.models import User
+from secret.models import Card, LoginCredential, SecurityNote
+from secret.month.models import Month
+from utils import xor
+
+
+# Create your tests here.
+class CredentialTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='test_user',
+            password='testing_password',
+            email='test_user@example.com',
+        )
+
+        # Object 1
+        self.login_credential_1 = LoginCredential.objects.create(
+            owner=self.user,
+            service='google--',
+            name='Personal Main Account',
+            slug='google--personal-main-account',
+            thirdy_party_login=False,
+            thirdy_party_login_name='-----',
+            login='night_monkey123@gmail.com',
+            password='ilovemenotyou',
+        )  # Correct object
+
+        # Object 2
+        self.login_credential_2 = LoginCredential.objects.create(
+            owner=self.user,
+            service='steam--',
+            name='Little Fries',
+            slug='steam--little-fries',
+            thirdy_party_login=True,
+            thirdy_party_login_name='Personal Main Account',
+            login='-----',
+            password='-----',
+        )  # Correct object
+
+        # Object 3
+        self.login_credential_3 = LoginCredential.objects.create(
+            owner=self.user,
+            service='steam--',
+            name='Little Fries',
+            slug='steam--little-fries',
+            thirdy_party_login=True,  # Should be False or...
+            thirdy_party_login_name='-----',  # Should be something different to '-----'
+            login='night_monkey123',  # Should be '-----'
+            password='ilovemenotyou',  # Should be '-----'
+        )
+
+        # Object 4
+        self.login_credential_4 = LoginCredential.objects.create(
+            owner=self.user,
+            service='steam--',
+            name='Little Fries',
+            slug='steam--potato',  # Should be 'steam--little-fries'
+            thirdy_party_login=False,
+            thirdy_party_login_name='-----',
+            login='',  # Empty login
+            password='night_monkey123',
+        )
+
+        # Object 5
+        self.login_credential_5 = LoginCredential.objects.create(
+            owner=self.user,
+            service='steam--',
+            name='Little Fries',
+            slug='steam--little-fries',
+            thirdy_party_login=False,
+            thirdy_party_login_name='-----',
+            login='night_monkey123',
+            # Missing/empty password field
+        )
+
+        # Object 6
+        try:
+            with atomic():
+                self.login_credential_6 = LoginCredential.objects.create(
+                    owner=self.user,
+                    service='google--',
+                    name='Salve' * 9,  # More chars than the limit
+                    slug='google--personal-main-account',
+                    thirdy_party_login=False,
+                    thirdy_party_login_name='-----',
+                    login='x' * 201,  # More chars than the limit
+                    password='ilovemenotyou',
+                )
+        except DataError:
+            self.login_credential_6 = LoginCredential.objects.create(
+                owner=self.user,
+                service='steam--',
+                name='Little Fries',
+                slug='steam--little-fries',
+                thirdy_party_login=False,
+                thirdy_party_login_name='-----',
+                login='night_monkey123',
+                # Missing/empty password field
+            )
+
+        # Object 7
+        self.login_credential_7 = LoginCredential.objects.create(
+            owner=self.user,
+            service='pampas-gonden-radio--',  # Inexistent service
+            name='Little Fries',
+            slug='pampas-gonden-radio--little-fries',
+            thirdy_party_login=True,
+            thirdy_party_login_name='Personal Main Account',
+            login='-----',
+            password='-----',
+        )
+
+    def test_credential_instance_validity(self):
+        """Tests if setUp's credentials are correctly instancied"""
+
+        cred1 = LoginCredential.objects.get(pk=self.login_credential_1.pk)
+        cred2 = LoginCredential.objects.get(pk=self.login_credential_2.pk)
+        cred3 = LoginCredential.objects.get(pk=self.login_credential_3.pk)
+        cred4 = LoginCredential.objects.get(pk=self.login_credential_4.pk)
+        cred5 = LoginCredential.objects.get(pk=self.login_credential_5.pk)
+        cred6 = LoginCredential.objects.get(pk=self.login_credential_6.pk)
+        cred7 = LoginCredential.objects.get(pk=self.login_credential_7.pk)
+
+        self.assertIsInstance(cred1, LoginCredential)
+        self.assertIsInstance(cred2, LoginCredential)
+        self.assertIsInstance(cred3, LoginCredential)
+        self.assertIsInstance(cred4, LoginCredential)
+        self.assertIsInstance(cred5, LoginCredential)
+        self.assertIsInstance(cred6, LoginCredential)
+        self.assertIsInstance(cred7, LoginCredential)
+
+    def test_credential_key_value_assertion(self):
+        """Tests if credential's keys and values are properly assigned"""
+
+        cred1 = LoginCredential.objects.get(pk=self.login_credential_1.pk)
+
+        self.assertEqual(cred1.service, 'google--')
+        self.assertEqual(cred1.name, 'Personal Main Account')
+        self.assertEqual(cred1.slug, 'google--personal-main-account')
+        self.assertFalse(cred1.thirdy_party_login)
+        self.assertEqual(cred1.thirdy_party_login_name, '-----')
+        self.assertEqual(cred1.login, 'night_monkey123@gmail.com')
+        self.assertEqual(cred1.password, 'ilovemenotyou')
+
+    def test_credential_user_foreign_key_validity(self):
+        """Tests if credential.owner is properly assigned"""
+
+        cred1 = LoginCredential.objects.get(pk=self.login_credential_1.pk)
+        cred2 = LoginCredential.objects.get(pk=self.login_credential_2.pk)
+
+        cred1_owner = cred1.owner
+        cred2_owner = cred2.owner
+
+        self.assertEqual(cred1_owner, cred2_owner)
+        self.assertEqual(cred1_owner, self.user)
+
+    def test_credential_create_validity(self):
+        """Tests if created credentials are valid or not"""
+
+        cred1 = LoginCredential.objects.get(pk=self.login_credential_1.pk)
+        cred2 = LoginCredential.objects.get(pk=self.login_credential_2.pk)
+        cred3 = LoginCredential.objects.get(pk=self.login_credential_3.pk)
+        cred4 = LoginCredential.objects.get(pk=self.login_credential_4.pk)
+        cred5 = LoginCredential.objects.get(pk=self.login_credential_5.pk)
+        cred6 = LoginCredential.objects.get(pk=self.login_credential_6.pk)
+        cred7 = LoginCredential.objects.get(pk=self.login_credential_7.pk)
+
+        self.assertEqual(LoginCredential.objects.all().count(), 7)
+
+        self.assertTrue(cred1.is_valid())
+        self.assertTrue(cred2.is_valid())
+        self.assertFalse(cred3.is_valid())
+        self.assertFalse(cred4.is_valid())
+        self.assertFalse(cred5.is_valid())
+        self.assertFalse(cred6.is_valid())
+        self.assertFalse(cred7.is_valid())
+
+    def test_credential_update_validity(self):
+        """Tests if updated credentials are valid or not"""
+
+        LoginCredential.objects.filter(pk=self.login_credential_1.pk).update(service='')
+        LoginCredential.objects.filter(pk=self.login_credential_2.pk).update(
+            slug='diners-club-international--tupinamba'
+        )
+        LoginCredential.objects.filter(pk=self.login_credential_3.pk).update(
+            thirdy_party_login=False
+        )
+        LoginCredential.objects.filter(pk=self.login_credential_4.pk).update(
+            slug='steam--little-fries',
+            login='some_login_text_or_email_or_some_other_stuff_like_this',
+        )
+        LoginCredential.objects.filter(pk=self.login_credential_5.pk).update(
+            password='https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+        )
+        if len(self.login_credential_6.name) > 40:
+            LoginCredential.objects.filter(pk=self.login_credential_6.pk).update(
+                name='Personal Main Account', login='bananinha_assada_3_2_1'
+            )
+        else:
+            LoginCredential.objects.filter(pk=self.login_credential_6.pk).update(
+                password='https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+            )
+        LoginCredential.objects.filter(pk=self.login_credential_7.pk).update(
+            service='visa--', slug='visa--little-fries'
+        )
+
+        cred1 = LoginCredential.objects.get(pk=self.login_credential_1.pk)
+        cred2 = LoginCredential.objects.get(pk=self.login_credential_2.pk)
+        cred3 = LoginCredential.objects.get(pk=self.login_credential_3.pk)
+        cred4 = LoginCredential.objects.get(pk=self.login_credential_4.pk)
+        cred5 = LoginCredential.objects.get(pk=self.login_credential_5.pk)
+        cred6 = LoginCredential.objects.get(pk=self.login_credential_6.pk)
+        cred7 = LoginCredential.objects.get(pk=self.login_credential_7.pk)
+
+        self.assertFalse(cred1.is_valid())
+        self.assertFalse(cred2.is_valid())
+        self.assertTrue(cred3.is_valid())
+        self.assertTrue(cred4.is_valid())
+        self.assertTrue(cred5.is_valid())
+        self.assertTrue(cred6.is_valid())
+        self.assertTrue(cred7.is_valid())
+
+    def test_credential_delete_validity(self):
+        """Tests if credential objects are correctly deleted or not"""
+
+        cred1 = LoginCredential.objects.get(pk=self.login_credential_1.pk)
+        cred2 = LoginCredential.objects.get(pk=self.login_credential_2.pk)
+        cred3 = LoginCredential.objects.get(pk=self.login_credential_3.pk)
+        cred4 = LoginCredential.objects.get(pk=self.login_credential_4.pk)
+        cred5 = LoginCredential.objects.get(pk=self.login_credential_5.pk)
+        cred6 = LoginCredential.objects.get(pk=self.login_credential_6.pk)
+        cred7 = LoginCredential.objects.get(pk=self.login_credential_7.pk)
+
+        cred3.delete()
+        cred4.delete()
+        cred5.delete()
+        cred6.delete()
+        cred7.delete()
+
+        self.assertEqual(LoginCredential.objects.all().count(), 2)
+
+        self.assertTrue(cred1.is_valid())
+        self.assertTrue(cred2.is_valid())
+
+
+class CardTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='test_user',
+            password='testing_password',
+            email='test_user@example.com',
+        )
+
+        # Object 1
+        self.card_1 = Card.objects.create(
+            owner=self.user,
+            name='Personal Main Card',
+            card_type='deb',
+            number='4002892240028922',
+            expiration=Month(2028, 11),
+            cvv='113',
+            bank='nubank--',
+            brand='mastercard--',
+            slug='nubank--personal-main-card',
+            owners_name='TEST USER',
+        )  # Correct object
+
+        # Object 2
+        try:
+            with atomic():
+                self.card_2 = Card.objects.create(
+                    owner=self.user,
+                    name='Personal Main Card',
+                    card_type='creda',  # Inexintent type and more chars than the limit
+                    number='4002892240028922',
+                    expiration=Month(2028, 11),
+                    cvv=113,
+                    bank='nubank--',
+                    brand='mastercard--',
+                    slug='nubank--personal-main-card',
+                    owners_name='TEST USER',
+                )
+        except DataError:
+            self.card_2 = Card.objects.create(
+                owner=self.user,
+                name='Personal Main Card',
+                card_type='baka',  # Inexintent type
+                number='4002892240028922',
+                expiration=Month(2028, 11),
+                cvv=113,
+                bank='nubank--',
+                brand='mastercard--',
+                slug='nubank--personal-main-card',
+                owners_name='TEST USER',
+            )
+
+        # Object 3
+        self.card_3 = Card.objects.create(
+            owner=self.user,
+            name='Personal Main Card',
+            card_type='deb',
+            number='123456789',  # Length out of range
+            expiration=Month(2028, 11),
+            cvv=12,  # Length out of range
+            bank='nubank--',
+            brand='mastercard--',
+            slug='nubank--personal-main-card',
+            owners_name='TEST USER',
+        )
+
+        # Object 4
+        self.card_4 = Card.objects.create(
+            owner=self.user,
+            name='Personal Main Card',
+            card_type='deb',
+            number='4002892240028922',
+            expiration=Month(2028, 11),
+            cvv=113,
+            bank='mingau--',  # Inexistent bank
+            brand='mastercard--',
+            slug='mingau--personal-main-card',
+            owners_name='TEST USER',
+        )
+
+        # Object 5
+        self.card_5 = Card.objects.create(
+            owner=self.user,
+            name='Personal Main Card',
+            card_type='deb',
+            number='4002892240028922',
+            expiration=Month(2028, 11),
+            cvv=113,
+            bank='nubank--',
+            brand='mastercard--',
+            slug='nubank--minotauro',  # Should be 'nubank--personal-main-card'
+            owners_name='TEST USER',
+        )
+
+        # Object 6
+        self.card_6 = Card.objects.create(
+            owner=self.user,
+            name='Personal Main Card',
+            card_type='deb',
+            number='4002892240028922',
+            expiration='2023/4',
+            cvv=113,
+            bank='nubank--',
+            brand='vina--',  # Inexistent brand
+            slug='nubank--personal-main-card',
+            owners_name='TEST USER',
+        )
+
+    def test_card_instance_validity(self):
+        """Tests if setUp's cards are correctly instancied"""
+
+        card1 = Card.objects.get(pk=self.card_1.pk)
+        card2 = Card.objects.get(pk=self.card_2.pk)
+        card3 = Card.objects.get(pk=self.card_3.pk)
+        card4 = Card.objects.get(pk=self.card_4.pk)
+        card5 = Card.objects.get(pk=self.card_5.pk)
+        card6 = Card.objects.get(pk=self.card_6.pk)
+
+        self.assertIsInstance(card1, Card)
+        self.assertIsInstance(card2, Card)
+        self.assertIsInstance(card3, Card)
+        self.assertIsInstance(card4, Card)
+        self.assertIsInstance(card5, Card)
+        self.assertIsInstance(card6, Card)
+
+    def test_card_key_value_assertion(self):
+        """Tests if card's keys and values are properly assigned"""
+
+        card1 = Card.objects.get(pk=self.card_1.pk)
+
+        self.assertEqual(card1.name, 'Personal Main Card')
+        self.assertEqual(card1.card_type, 'deb')
+        self.assertEqual(card1.number, '4002892240028922')
+        self.assertEqual(card1.expiration, Month(2028, 11))
+        self.assertEqual(card1.cvv, '113')
+        self.assertEqual(card1.bank, 'nubank--')
+        self.assertEqual(card1.brand, 'mastercard--')
+        self.assertEqual(card1.slug, 'nubank--personal-main-card')
+        self.assertEqual(card1.owners_name, 'TEST USER')
+
+    def test_card_user_foreign_key_validity(self):
+        """Tests if card.owner is properly assigned"""
+
+        card1 = Card.objects.get(pk=self.card_1.pk)
+
+        self.assertEqual(card1.owner, self.user)
+
+    def test_card_create_validity(self):
+        """Tests if created cards are valid or not"""
+
+        card1 = Card.objects.get(pk=self.card_1.pk)
+        card2 = Card.objects.get(pk=self.card_2.pk)
+        card3 = Card.objects.get(pk=self.card_3.pk)
+        card4 = Card.objects.get(pk=self.card_4.pk)
+        card5 = Card.objects.get(pk=self.card_5.pk)
+        card6 = Card.objects.get(pk=self.card_6.pk)
+
+        self.assertEqual(Card.objects.all().count(), 6)
+
+        self.assertTrue(card1.is_valid())
+        self.assertFalse(card2.is_valid())
+        self.assertFalse(card3.is_valid())
+        self.assertFalse(card4.is_valid())
+        self.assertFalse(card5.is_valid())
+        self.assertFalse(card6.is_valid())
+
+    def test_card_update_validity(self):
+        """Tests if updated cards are valid or not"""
+
+        try:
+            with atomic():
+                Card.objects.filter(pk=self.card_1.pk).update(
+                    cvv=xor('14000605', self.user.password[21:])
+                )
+        except DataError:
+            Card.objects.filter(pk=self.card_1.pk).update(number='')
+        Card.objects.filter(pk=self.card_2.pk).update(
+            card_type=xor('deb', self.user.password[21:])
+        )
+        Card.objects.filter(pk=self.card_3.pk).update(
+            number=xor('1122334455667788', self.user.password[21:]),
+            cvv=xor('1986', self.user.password[21:]),
+        )
+        Card.objects.filter(pk=self.card_4.pk).update(
+            bank=xor('pagseguro--', self.user.password[21:]),
+            slug='pagseguro--personal-main-card',
+        )
+        Card.objects.filter(pk=self.card_5.pk).update(slug='nubank--personal-main-card')
+        Card.objects.filter(pk=self.card_6.pk).update(
+            brand=xor('mastercard--', self.user.password[21:])
+        )
+
+        card1 = Card.objects.get(pk=self.card_1.pk)
+        card2 = Card.objects.get(pk=self.card_2.pk)
+        card3 = Card.objects.get(pk=self.card_3.pk)
+        card4 = Card.objects.get(pk=self.card_4.pk)
+        card5 = Card.objects.get(pk=self.card_5.pk)
+        card6 = Card.objects.get(pk=self.card_6.pk)
+
+        self.assertFalse(card1.is_valid())
+        self.assertTrue(card2.is_valid())
+        self.assertTrue(card3.is_valid())
+        self.assertTrue(card4.is_valid())
+        self.assertTrue(card5.is_valid())
+        self.assertTrue(card6.is_valid())
+
+    def test_card_delete_validity(self):
+        """Tests if card objects are correctly deleted or not"""
+
+        card1 = Card.objects.get(pk=self.card_1.pk)
+        card2 = Card.objects.get(pk=self.card_2.pk)
+        card3 = Card.objects.get(pk=self.card_3.pk)
+        card4 = Card.objects.get(pk=self.card_4.pk)
+        card5 = Card.objects.get(pk=self.card_5.pk)
+        card6 = Card.objects.get(pk=self.card_6.pk)
+
+        card2.delete()
+        card3.delete()
+        card4.delete()
+        card5.delete()
+        card6.delete()
+
+        self.assertEqual(Card.objects.all().count(), 1)
+
+        self.assertTrue(card1.is_valid())
+
+
+class SecurityNoteTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='test_user',
+            password='testing_password',
+            email='test_user@example.com',
+        )
+
+        # Object 1
+        self.security_note_1 = SecurityNote.objects.create(
+            owner=self.user,
+            title='How to draw an apple',
+            slug='how-to-draw-an-apple',
+            content='Just draw an apple tree and erase the tree.',
+        )  # Correct object
+
+        # Object 2
+        self.security_note_2 = SecurityNote.objects.create(
+            owner=self.user,
+            title='How to draw a tree',
+            slug='howtodrawatree',  # Should be 'how-to-draw-a-tree'
+            content='Just draw an apple tree and erase the apples.',
+        )
+
+        # Object 3
+        self.security_note_3 = SecurityNote.objects.create(
+            owner=self.user,
+            title='How to draw an apple tree',
+            slug='how-to-draw-an-apple-tree',
+            content='x' * 333,  # Length out of range
+        )
+
+        # Object 4
+        self.security_note_4 = SecurityNote.objects.create(
+            owner=self.user,
+            title='How to draw an apple tree leaf',
+            slug='how-to-draw-an-apple-tree-leaf',
+        )  # Missing/empty content field
+
+    def test_note_instance_validity(self):
+        """Tests if setUp's notes are correctly instancied"""
+
+        note1 = SecurityNote.objects.get(pk=self.security_note_1.pk)
+        note2 = SecurityNote.objects.get(pk=self.security_note_2.pk)
+        note3 = SecurityNote.objects.get(pk=self.security_note_3.pk)
+        note4 = SecurityNote.objects.get(pk=self.security_note_4.pk)
+
+        self.assertIsInstance(note1, SecurityNote)
+        self.assertIsInstance(note2, SecurityNote)
+        self.assertIsInstance(note3, SecurityNote)
+        self.assertIsInstance(note4, SecurityNote)
+
+    def test_note_key_value_assertion(self):
+        """Tests if note's keys and values are properly assigned"""
+
+        note1 = SecurityNote.objects.get(pk=self.security_note_1.pk)
+
+        self.assertEqual(note1.title, 'How to draw an apple')
+        self.assertEqual(note1.slug, 'how-to-draw-an-apple')
+        self.assertEqual(note1.content, 'Just draw an apple tree and erase the tree.')
+
+    def test_note_user_foreign_key_validity(self):
+        """Tests if note.owner is properly assigned"""
+
+        note1 = SecurityNote.objects.get(pk=self.security_note_1.pk)
+
+        self.assertEqual(note1.owner, self.user)
+
+    def test_note_create_validity(self):
+        """Tests if created notes are valid or not"""
+
+        note1 = SecurityNote.objects.get(pk=self.security_note_1.pk)
+        note2 = SecurityNote.objects.get(pk=self.security_note_2.pk)
+        note3 = SecurityNote.objects.get(pk=self.security_note_3.pk)
+        note4 = SecurityNote.objects.get(pk=self.security_note_4.pk)
+
+        self.assertEqual(SecurityNote.objects.all().count(), 4)
+
+        self.assertTrue(note1.is_valid())
+        self.assertFalse(note2.is_valid())
+        self.assertFalse(note3.is_valid())
+        self.assertFalse(note4.is_valid())
+
+    def test_note_update_validity(self):
+        """Tests if updated notes are valid or not"""
+
+        SecurityNote.objects.filter(pk=self.security_note_1.pk).update(
+            title='How not to draw an apple'
+        )
+        SecurityNote.objects.filter(pk=self.security_note_2.pk).update(
+            slug='how-to-draw-a-tree'
+        )
+        SecurityNote.objects.filter(pk=self.security_note_3.pk).update(
+            content='Draw a tree and then the apples.'
+        )
+        SecurityNote.objects.filter(pk=self.security_note_4.pk).update(
+            content='Draw an apple tree and then erase the apples and the tree.'
+        )
+
+        note1 = SecurityNote.objects.get(pk=self.security_note_1.pk)
+        note2 = SecurityNote.objects.get(pk=self.security_note_2.pk)
+        note3 = SecurityNote.objects.get(pk=self.security_note_3.pk)
+        note4 = SecurityNote.objects.get(pk=self.security_note_4.pk)
+
+        self.assertFalse(note1.is_valid())
+        self.assertTrue(note2.is_valid())
+        self.assertTrue(note3.is_valid())
+        self.assertTrue(note4.is_valid())
+
+    def test_note_delete_validity(self):
+        """Tests if note objects are correctly deleted or not"""
+
+        note1 = SecurityNote.objects.get(pk=self.security_note_1.pk)
+        note2 = SecurityNote.objects.get(pk=self.security_note_2.pk)
+        note3 = SecurityNote.objects.get(pk=self.security_note_3.pk)
+        note4 = SecurityNote.objects.get(pk=self.security_note_4.pk)
+
+        note2.delete()
+        note3.delete()
+        note4.delete()
+
+        self.assertEqual(SecurityNote.objects.all().count(), 1)
+
+        self.assertTrue(note1.is_valid())
