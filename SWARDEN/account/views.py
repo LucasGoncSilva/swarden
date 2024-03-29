@@ -120,56 +120,56 @@ def register_view(r: HttpRequest) -> HttpResponse | HttpResponseRedirect:
     if r.user.is_authenticated:
         return HttpResponseRedirect(reverse('home:index'))
 
-    elif r.method == 'POST':
-        form: Form = RegisterForm(r.POST)
+    elif r.method != 'POST':
+        form: Form = RegisterForm()
+        return render(r, 'account/register.html', {'form': form})
+    
+    form: Form = RegisterForm(r.POST)
 
-        if form.is_valid():
-            password: str | None = form.cleaned_data.get('password')
-            password2: str | None = form.cleaned_data.get('password2')
+    if not form.is_valid():
+        return render(r, 'account/register.html', {'form': form})
+    
+    password: str | None = form.cleaned_data.get('password')
+    password2: str | None = form.cleaned_data.get('password2')
 
-            if not password or not password2 or password != password2:
-                messages.error(r, 'Senhas não compatíveis')
-                return render(r, 'account/register.html', {'form': form})
-
-            username: str | None = form.cleaned_data.get('username')
-            email: str | None = form.cleaned_data.get('email')
-
-            if (
-                User.objects.filter(username=username).exists()
-                or User.objects.filter(email=email).exists()
-                or username is None
-                or email is None
-            ):
-                messages.error(r, 'Username e/ou e-mail indisponível')
-                return render(r, 'account/register.html', {'form': form})
-
-            first_name: str | None = form.cleaned_data.get('first_name')
-            last_name: str | None = form.cleaned_data.get('last_name')
-
-            if first_name is None or last_name is None:
-                messages.error(r, 'Nome e/ou Sobrenome inválidos.')
-                return render(r, 'account/register.html', {'form': form})
-
-            user: User = User.objects.create_user(
-                username=username,
-                first_name=first_name,
-                last_name=last_name,
-                email=email,
-                password=password,
-                is_active=False,
-            )
-
-            send_activate_account_token(r.get_host(), user, password)
-
-            messages.success(
-                r, 'Conta criada. Acesse seu e-mail para ativar sua conta.'
-            )
-            return HttpResponseRedirect(reverse('account:login'))
-
+    if not password or not password2 or password != password2:
+        messages.error(r, 'Senhas não compatíveis')
         return render(r, 'account/register.html', {'form': form})
 
-    form: Form = RegisterForm()
-    return render(r, 'account/register.html', {'form': form})
+    username: str | None = form.cleaned_data.get('username')
+    email: str | None = form.cleaned_data.get('email')
+
+    if (
+        User.objects.filter(username=username).exists()
+        or User.objects.filter(email=email).exists()
+        or username is None
+        or email is None
+    ):
+        messages.error(r, 'Username e/ou e-mail indisponível')
+        return render(r, 'account/register.html', {'form': form})
+
+    first_name: str | None = form.cleaned_data.get('first_name')
+    last_name: str | None = form.cleaned_data.get('last_name')
+
+    if not first_name or not last_name:
+        messages.error(r, 'Nome e/ou Sobrenome inválidos.')
+        return render(r, 'account/register.html', {'form': form})
+
+    user: User = User.objects.create_user(
+        username=username,
+        first_name=first_name,
+        last_name=last_name,
+        email=email,
+        password=password,
+        is_active=False,
+    )
+
+    send_activate_account_token(r.get_host(), user, password)
+
+    messages.success(
+        r, 'Conta criada. Acesse seu e-mail para ativar sua conta.'
+    )
+    return HttpResponseRedirect(reverse('account:login'))
 
 
 def activate_account(r: HttpRequest, uidb64: str, token: str) -> HttpResponseRedirect:
@@ -184,49 +184,46 @@ def activate_account(r: HttpRequest, uidb64: str, token: str) -> HttpResponseRed
         user = get_object_or_404(User, pk=id)
 
     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-        user = None
+        raise Http404()
+    
+    user.is_active = True
+    user.save()
 
-    if user is not None:
-        user.is_active = True
-        user.save()
+    token_obj.used = True
+    token_obj.save()
 
-        token_obj.used = True
-        token_obj.save()
+    login(r, user)
 
-        login(r, user)
+    send_activate_account_done(str(user.email))
 
-        send_activate_account_done(str(user.email))
-
-        return HttpResponseRedirect(reverse('home:index'))
-
-    raise Http404()
+    return HttpResponseRedirect(reverse('home:index'))
 
 
 def login_view(r: HttpRequest) -> HttpResponse | HttpResponseRedirect:
     if r.user.is_authenticated:
         return HttpResponseRedirect(reverse('home:index'))
 
-    elif r.method == 'POST':
-        form: Form = LogInForm(r.POST)
+    elif r.method != 'POST':
+        return render(r, 'account/login.html', {'form': LogInForm()})
 
-        if not form.is_valid():
-            return render(r, 'account/login.html', {'form': form})
+    form: Form = LogInForm(r.POST)
 
-        username: str = str(form.cleaned_data.get('username')).strip()
-        password: str = str(form.cleaned_data.get('password')).strip()
+    if not form.is_valid():
+        return render(r, 'account/login.html', {'form': form})
 
-        user: AbstractBaseUser | None = authenticate(
-            username=username, password=password
-        )
+    username: str = str(form.cleaned_data.get('username')).strip()
+    password: str = str(form.cleaned_data.get('password')).strip()
 
-        if user is None:
-            messages.error(r, 'Username e/ou senha inválida')
-            return render(r, 'account/login.html', {'form': form})
+    user: AbstractBaseUser | None = authenticate(
+        username=username, password=password
+    )
 
-        login(r, user)
-        return HttpResponseRedirect(reverse('home:index'))
+    if user is None:
+        messages.error(r, 'Username e/ou senha inválida')
+        return render(r, 'account/login.html', {'form': form})
 
-    return render(r, 'account/login.html', {'form': LogInForm()})
+    login(r, user)
+    return HttpResponseRedirect(reverse('home:index'))
 
 
 @login_required(login_url='/conta/entrar')
