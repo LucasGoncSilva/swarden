@@ -1,4 +1,4 @@
-test_user::thull@example.com::test_password
+user::thull@example.com::password
 ostewart::hpires@example.com::oeCxXnCg(0
 millerluke::tcantimori@example.net::+RRkVKWGU1
 salvi11::teresaconte@example.org::o+Q538nm8V

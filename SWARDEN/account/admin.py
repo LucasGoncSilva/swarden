@@ -1,3 +1,5 @@
+from typing import Final
+
 from django.contrib import admin
 from django.contrib.auth import admin as auth_admin
 
@@ -8,7 +10,7 @@ from .forms import UserChangeForm, UserCreationForm
 # Register your models here.
 @admin.register(User)
 class UserAdmin(auth_admin.UserAdmin):
-    add_fieldsets = (
+    add_fieldsets: Final = (
         (
             None,
             {

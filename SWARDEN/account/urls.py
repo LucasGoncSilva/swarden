@@ -1,9 +1,11 @@
+from typing import Final
+
 from django.urls import path, URLPattern
 
 from . import views
 
 
-app_name = 'account'
+app_name: Final[str] = 'account'
 
 urlpatterns: list[URLPattern] = [
     path('registrar', views.register_view, name='register'),
