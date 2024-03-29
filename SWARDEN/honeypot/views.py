@@ -8,15 +8,15 @@ from .models import Attempt
 
 # Create your views here.
 def honeypot(r: HttpRequest, path: str | None = None) -> HttpResponse:
-    if r.method == 'POST':
-        ip: Any | None = get_ip_address(r)
+    if r.method != 'POST':
+        return render(r, 'honeypot/honeypot.html', {'next': r.path})
 
-        username: str | None = r.POST.get('username')
-        password: str | None = r.POST.get('password')
-        url: str = r.get_full_path().split('=')[1]
+    ip: Any | None = get_ip_address(r)
 
-        Attempt.objects.create(IP=ip, username=username, password=password, url=url)
+    username: str | None = r.POST.get('username')
+    password: str | None = r.POST.get('password')
+    url: str = r.get_full_path().split('=')[1]
 
-        return render(r, 'honeypot/loop.html', {'next': url})
+    Attempt.objects.create(IP=ip, username=username, password=password, url=url)
 
-    return render(r, 'honeypot/honeypot.html', {'next': r.path})
+    return render(r, 'honeypot/loop.html', {'next': url})

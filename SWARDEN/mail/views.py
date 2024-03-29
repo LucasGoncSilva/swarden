@@ -1,41 +1,59 @@
-from typing import Final, Literal
+from typing import Any, Final, Literal, Type
 from csv import writer
 from hashlib import sha256
 from io import StringIO
 
+from django import dispatch
 from django.urls import reverse
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.http import HttpRequest, HttpResponseRedirect
 from django.core.mail import EmailMessage
 from django.conf import settings
-from django.contrib import messages
+from django.contrib.messages import success, error
 
 from account.models import User, ActivationAccountToken
 from secret.models import Card, LoginCredential, SecurityNote
 
 
 # Create your views here.
-ACTIVATE_ACCOUNT_TOKEN_SEND: Final = """
-Sua conta foi criada com sucesso, contudo, você deve ativá-la. Para fazer isso, clique no link abaixo:
+NO_DATA_TO_EXPORT: Final = 'Não há dados para exportação.'
+SUCCESS_DATA_EXPORTING: Final = 'Dados exportadas com sucesso.'
 
-{domain}/conta/ativar/{uidb64}/{token}
+ACTIVATE_ACCOUNT_TOKEN_SEND: Final = """Sua conta foi criada com sucesso, contudo, você deve ativá-la. Para fazer isso, clique no link abaixo:\n\n\n{domain}/conta/ativar/{uidb64}/{token}\n\n\nEquipe sWarden"""
 
-
-Equipe sWarden
-"""
-
-ACTIVATE_ACCOUNT_CONFIRM_DONE: Final = """
-A partir de agora a sua conta está ativa e você pode utilizar dos recursos do sistema para armazenar seus dados sensíveis.
-
-
-Equipe sWarden
+ACTIVATE_ACCOUNT_CONFIRM_DONE: Final = """A partir de agora a sua conta está ativa e você pode utilizar dos recursos do sistema para armazenar seus dados sensíveis.\n\n\nEquipe sWarden
 """
 
 
 def export_secrets(
     r: HttpRequest, secret_type: Literal['Credenciais', 'Cartões', 'Anotações']
 ) -> HttpResponseRedirect:
+    CREDENTIALS: Final[str] = 'Credenciais'
+    CARDS: Final[str] = 'Cartões'
+    SECURITY_NOTES: Final[str] = 'Anotações'
+
+    if secret_type not in [CREDENTIALS, CARDS, SECURITY_NOTES]:
+        return HttpResponseRedirect(reverse('home:index'))
+    
+    dispatch_models: dict[str, Type[LoginCredential] | Type[Card] | Type[SecurityNote]] = {
+        CREDENTIALS: LoginCredential,
+        CARDS: Card,
+        SECURITY_NOTES: SecurityNote
+    }
+
+    query: list = dispatch_models[secret_type].objects.filter(owner=r.user)
+
+    if not query.exists():
+        error(r, NO_DATA_TO_EXPORT)
+
+        dispatch_redirect: dict[str, str] = {
+            CREDENTIALS: 'secret:credential_list_view',
+            CARDS: 'secret:card_list_view',
+            SECURITY_NOTES: 'secret:note_list_view'
+        }
+        return HttpResponseRedirect(reverse(dispatch_redirect[secret_type]))
+    
     csvfile: StringIO = StringIO()
     csvwriter = writer(csvfile, delimiter='¬', doublequote=True)
 
@@ -46,16 +64,12 @@ def export_secrets(
         to=[r.user.email],
     )
 
-    if secret_type == 'Credenciais':
-        if not LoginCredential.objects.filter(owner=r.user).exists():
-            messages.error(r, 'Não há credenciais para exportar.')
-            return HttpResponseRedirect(reverse('secret:credential_list_view'))
-
+    if secret_type == CREDENTIALS:
         csvwriter.writerow(
             ['Serviço', 'Apelido', 'Login 3rd', 'Apelido Login 3rd', 'Login', 'Senha']
         )
 
-        for i in LoginCredential.objects.filter(owner=r.user):
+        for i in query:
             csvwriter.writerow(
                 [
                     i.get_service_display(),
@@ -70,28 +84,15 @@ def export_secrets(
         email.attach('credenciais.csv', csvfile.getvalue(), 'text/csv')
         email.send()
 
-        messages.success(r, 'Credenciais exportadas com sucesso.')
+        success(r, SUCCESS_DATA_EXPORTING)
         return HttpResponseRedirect(reverse('secret:credential_list_view'))
 
-    elif secret_type == 'Cartões':
-        if not Card.objects.filter(owner=r.user).exists():
-            messages.error(r, 'Não há cartões para exportar.')
-            return HttpResponseRedirect(reverse('secret:card_list_view'))
-
+    elif secret_type == CARDS:
         csvwriter.writerow(
-            [
-                'Apelido',
-                'Tipo',
-                'Número',
-                'Expiração',
-                'CVV',
-                'Banco',
-                'Bandeira',
-                'Titular',
-            ]
+            ['Apelido', 'Tipo', 'Número', 'Expiração', 'CVV', 'Banco', 'Bandeira', 'Titular']
         )
 
-        for i in Card.objects.filter(owner=r.user):
+        for i in query:
             csvwriter.writerow(
                 [
                     i.name,
@@ -108,27 +109,20 @@ def export_secrets(
         email.attach('cartoes.csv', csvfile.getvalue(), 'text/csv')
         email.send()
 
-        messages.success(r, 'Cartões exportados com sucesso.')
+        success(r, SUCCESS_DATA_EXPORTING)
         return HttpResponseRedirect(reverse('secret:card_list_view'))
 
-    elif secret_type == 'Anotações':
-        if not SecurityNote.objects.filter(owner=r.user).exists():
-            messages.error(r, 'Não há anotações para exportar.')
-            return HttpResponseRedirect(reverse('secret:note_list_view'))
-
+    elif secret_type == SECURITY_NOTES:
         csvwriter.writerow(['Título', 'Conteúdo'])
 
-        for i in SecurityNote.objects.filter(owner=r.user):
+        for i in query:
             csvwriter.writerow([i.title, i.content])
 
         email.attach('anotacoes.csv', csvfile.getvalue(), 'text/csv')
         email.send()
 
-        messages.success(r, 'Anotações exportadas com sucesso.')
+        success(r, SUCCESS_DATA_EXPORTING)
         return HttpResponseRedirect(reverse('secret:note_list_view'))
-
-    else:
-        return HttpResponseRedirect(reverse('home:index'))
 
 
 def send_activate_account_token(domain: str, user: User, password: str) -> None:
