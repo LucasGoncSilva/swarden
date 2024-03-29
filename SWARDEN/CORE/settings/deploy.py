@@ -16,6 +16,9 @@ DEBUG = bool(getenv('DEBUG'))
 SECRET_KEY = getenv('SECRET_KEY')
 ALLOWED_HOSTS = list(str(getenv('ALLOWED_HOSTS')))
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST_USER: str | None = getenv('SWARDEN_EMAIL_DOMAIN')
+EMAIL_HOST_PASSWORD: str | None = getenv('SWARDEN_EMAIL_PASSWORD')
 
 # http -> https redirect
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
