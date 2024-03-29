@@ -1,4 +1,5 @@
 from uuid import uuid4
+from typing import Final
 
 from django.db.models import (
     Model,
@@ -23,10 +24,10 @@ from .choices import cards_banks, cards_brands, cards_types, credentials_service
 
 # Create your models here.
 class LoginCredential(Model):
-    id: UUIDField = UUIDField(
+    id: Final[UUIDField] = UUIDField(
         default=uuid4, unique=True, primary_key=True, editable=False
     )
-    owner: ForeignKey = ForeignKey(
+    owner: Final[ForeignKey] = ForeignKey(
         User, on_delete=CASCADE, related_name='credentials', verbose_name='Dono'
     )
     service: CharField = CharField(
@@ -46,9 +47,9 @@ class LoginCredential(Model):
     note: TextField = TextField(
         max_length=128, blank=True, null=True, verbose_name='Anotação particular'
     )
-    slug: SlugField = SlugField(max_length=128)
-    created: DateTimeField = DateTimeField(auto_now_add=True)
-    updated: DateTimeField = DateTimeField(auto_now=True)
+    slug: Final[SlugField] = SlugField(max_length=128)
+    created: Final[DateTimeField] = DateTimeField(auto_now_add=True)
+    updated: Final[DateTimeField] = DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['-created']
@@ -106,14 +107,7 @@ class LoginCredential(Model):
         return len(value) <= self.expected_max_length(var)
 
     def all_fields_of_right_length(self) -> bool:
-        vars = [
-            'service',
-            'name',
-            'slug',
-            'thirdy_party_login_name',
-            'login',
-            'password',
-        ]
+        vars = ['service', 'name', 'slug', 'thirdy_party_login_name', 'login', 'password']
 
         return all(map(self.check_field_length, vars))
 
@@ -172,10 +166,10 @@ class LoginCredential(Model):
 
 
 class Card(Model):
-    id: UUIDField = UUIDField(
+    id: Final[UUIDField] = UUIDField(
         default=uuid4, unique=True, primary_key=True, editable=False
     )
-    owner: ForeignKey = ForeignKey(
+    owner: Final[ForeignKey] = ForeignKey(
         User, on_delete=CASCADE, related_name='cards', verbose_name='Dono'
     )
     name: CharField = CharField(
@@ -189,7 +183,7 @@ class Card(Model):
         validators=[MinLengthValidator(12)],
         verbose_name='Número do Cartão',
     )
-    expiration: object = MonthField(verbose_name='Data de Expiração')
+    expiration = MonthField(verbose_name='Data de Expiração')
     cvv: CharField = CharField(
         max_length=4, validators=[MinLengthValidator(3)], verbose_name='cvv'
     )
@@ -205,9 +199,9 @@ class Card(Model):
     note: TextField = TextField(
         max_length=128, blank=True, null=True, verbose_name='Anotação Particular'
     )
-    slug: SlugField = SlugField(max_length=128)
-    created: DateTimeField = DateTimeField(auto_now_add=True)
-    updated: DateTimeField = DateTimeField(auto_now=True)
+    slug: Final[SlugField] = SlugField(max_length=128)
+    created: Final[DateTimeField] = DateTimeField(auto_now_add=True)
+    updated: Final[DateTimeField] = DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['-created']
@@ -360,17 +354,17 @@ class Card(Model):
 
 
 class SecurityNote(Model):
-    id: UUIDField = UUIDField(
+    id: Final[UUIDField] = UUIDField(
         default=uuid4, unique=True, primary_key=True, editable=False
     )
-    owner: ForeignKey = ForeignKey(
+    owner: Final[ForeignKey] = ForeignKey(
         User, on_delete=CASCADE, related_name='notes', verbose_name='Dono'
     )
-    title: CharField = CharField(max_length=40, verbose_name='Título')
+    title: Final[CharField] = CharField(max_length=40, verbose_name='Título')
     content: TextField = TextField(max_length=300, verbose_name='Conteúdo')
-    slug: SlugField = SlugField(max_length=50)
-    created: DateTimeField = DateTimeField(auto_now_add=True)
-    updated: DateTimeField = DateTimeField(auto_now=True)
+    slug: Final[SlugField] = SlugField(max_length=50)
+    created: Final[DateTimeField] = DateTimeField(auto_now_add=True)
+    updated: Final[DateTimeField] = DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
         return f'{str(self.owner.username)} | {self.title}'

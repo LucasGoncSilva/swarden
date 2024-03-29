@@ -1,8 +1,8 @@
-from typing import Literal, Any
+from typing import Final, Literal, Any
 
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
+from django.contrib.messages import error
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, UpdateView, DeleteView
 from django.http import HttpRequest, HttpResponse
@@ -11,12 +11,14 @@ from .models import Card, LoginCredential, SecurityNote
 
 
 # Create your views here.
+FEEDBACK_MSG: Final[str] = 'Slug já existente. Tente outro apelido ou título.'
+
 login_dec = login_required(login_url='/conta/entrar')
 login_dec_dispatch = method_decorator(login_dec, name='dispatch')
 
 
 def _list_view(r: HttpRequest, secret: Literal['credential', 'card', 'note']):
-    dispatch = {
+    dispatch: dict[Literal['credential', 'card', 'note'], dict[str, list | str]] = {
         'credential': {
             'object_list': r.user.credentials.all(),
             'model_name': 'Credenciais',
@@ -57,7 +59,7 @@ class CredentialCreateView(CreateView):
     fields = '__all__'
 
     def get_context_data(self, **kwargs: Any):
-        context = super(CredentialCreateView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['action'] = 'Adição'
         context['model'] = 'Credencial'
 
@@ -67,9 +69,8 @@ class CredentialCreateView(CreateView):
         if LoginCredential.objects.filter(
             owner=r.user, slug=r.POST.get('slug')
         ).exists():
-            messages.error(
-                r,
-                'O serviço e apelido inseridos já foram utilizados juntos por você. Tente outro apelido',
+            error(
+                r, FEEDBACK_MSG
             )
             return super().get(r)
 
@@ -83,7 +84,7 @@ class CredentialUpdateView(UpdateView):
     fields = '__all__'
 
     def get_context_data(self, **kwargs: Any):
-        context = super(CredentialUpdateView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['action'] = 'Edição'
         context['model'] = 'Credencial'
 
@@ -94,9 +95,8 @@ class CredentialUpdateView(UpdateView):
         filter = dict(owner=r.user, slug=r.POST.get('slug'))
 
         if LoginCredential.objects.filter(**filter).exclude(pk=post_pk).exists():
-            messages.error(
-                r,
-                'O serviço e apelido inseridos já foram utilizados juntos por você. Tente outro apelido',
+            error(
+                r, FEEDBACK_MSG
             )
             return super().get(r)
 
@@ -110,7 +110,7 @@ class CredentialDeleteView(DeleteView):
     success_url = '/segredos/credenciais'
 
     def get_context_data(self, **kwargs: Any):
-        context = super(CredentialDeleteView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['action'] = 'Exclusão'
         context['model'] = 'Credencial'
         return context
@@ -140,7 +140,7 @@ class CardCreateView(CreateView):
     fields = '__all__'
 
     def get_context_data(self, **kwargs: Any):
-        context = super(CardCreateView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['action'] = 'Adição'
         context['model'] = 'Cartão'
 
@@ -148,9 +148,8 @@ class CardCreateView(CreateView):
 
     def post(self, r):
         if Card.objects.filter(owner=r.user, slug=r.POST.get('slug')).exists():
-            messages.error(
-                r,
-                'O banco e apelido inseridos já foram utilizados juntos por você. Tente outro apelido',
+            error(
+                r, FEEDBACK_MSG
             )
             return super().get(r)
 
@@ -164,7 +163,7 @@ class CardUpdateView(UpdateView):
     fields = '__all__'
 
     def get_context_data(self, **kwargs: Any):
-        context = super(CardUpdateView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['action'] = 'Edição'
         context['model'] = 'Cartão'
 
@@ -175,9 +174,8 @@ class CardUpdateView(UpdateView):
         filter = dict(owner=r.user, slug=r.POST.get('slug'))
 
         if Card.objects.filter(**filter).exclude(pk=post_pk).exists():
-            messages.error(
-                r,
-                'O banco e apelido inseridos já foram utilizados juntos por você. Tente outro apelido',
+            error(
+                r, FEEDBACK_MSG
             )
             return super().get(r)
 
@@ -191,7 +189,7 @@ class CardDeleteView(DeleteView):
     success_url = '/segredos/cartoes'
 
     def get_context_data(self, **kwargs: Any):
-        context = super(CardDeleteView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['action'] = 'Exclusão'
         context['model'] = 'Cartão'
         return context
@@ -221,7 +219,7 @@ class NoteCreateView(CreateView):
     fields = '__all__'
 
     def get_context_data(self, **kwargs: Any):
-        context = super(NoteCreateView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['action'] = 'Adição'
         context['model'] = 'Anotação'
 
@@ -229,8 +227,8 @@ class NoteCreateView(CreateView):
 
     def post(self, r):
         if SecurityNote.objects.filter(owner=r.user, slug=r.POST.get('slug')).exists():
-            messages.error(
-                r, 'O título inserido já foi utilizado por você. Tente outro.'
+            error(
+                r, FEEDBACK_MSG
             )
             return super().get(r)
 
@@ -244,7 +242,7 @@ class NoteUpdateView(UpdateView):
     fields = '__all__'
 
     def get_context_data(self, **kwargs: Any):
-        context = super(NoteUpdateView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['action'] = 'Edição'
         context['model'] = 'Anotação'
 
@@ -255,8 +253,8 @@ class NoteUpdateView(UpdateView):
         filter = dict(owner=r.user, slug=r.POST.get('slug'))
 
         if SecurityNote.objects.filter(**filter).exclude(pk=post_pk).exists():
-            messages.error(
-                r, 'O título inserido já foi utilizado por você. Tente outro título'
+            error(
+                r, FEEDBACK_MSG
             )
             return super().get(r)
 
@@ -270,7 +268,7 @@ class NoteDeleteView(DeleteView):
     success_url = '/segredos/anotacoes'
 
     def get_context_data(self, **kwargs: Any):
-        context = super(NoteDeleteView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['action'] = 'Exclusão'
         context['model'] = 'Anotação'
         return context

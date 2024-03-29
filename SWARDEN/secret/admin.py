@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 from django.http import HttpRequest
 from django.contrib import admin
@@ -11,10 +11,10 @@ class BasesWardenModelAdmin(admin.ModelAdmin):
     exclude = tuple()
     _exclude = tuple()
 
-    def has_change_permission(self, r: HttpRequest, obj=None):
+    def has_change_permission(self, r: HttpRequest, obj=None) -> bool:
         return False if not r.user.is_superuser else True
 
-    def get_form(self, request: HttpRequest, obj: Any = None, **kwargs: Any):
+    def get_form(self, request: HttpRequest, obj: Any = None, **kwargs: Any) -> Any:
         if not request.user.is_superuser:
             self.exclude = self._exclude
 
@@ -23,9 +23,9 @@ class BasesWardenModelAdmin(admin.ModelAdmin):
 
 @admin.register(Card)
 class CardAdmin(BasesWardenModelAdmin):
-    prepopulated_fields = {'slug': ('bank', 'name')}
-    list_display = ('pk', 'slug', 'created', 'updated')
-    _exclude = (
+    prepopulated_fields: Final = {'slug': ('bank', 'name')}
+    list_display: Final = ('pk', 'slug', 'created', 'updated')
+    _exclude: Final = (
         'owner',
         'card_type',
         'number',
@@ -39,9 +39,9 @@ class CardAdmin(BasesWardenModelAdmin):
 
 @admin.register(LoginCredential)
 class LoginCredentialAdmin(BasesWardenModelAdmin):
-    prepopulated_fields = {'slug': ('service', 'name')}
-    list_display = ('pk', 'slug', 'created', 'updated')
-    _exclude = (
+    prepopulated_fields: Final = {'slug': ('service', 'name')}
+    list_display: Final = ('pk', 'slug', 'created', 'updated')
+    _exclude: Final = (
         'owner',
         'thirdy_party_login',
         'thirdy_party_login_name',
@@ -53,6 +53,6 @@ class LoginCredentialAdmin(BasesWardenModelAdmin):
 
 @admin.register(SecurityNote)
 class SecurityNoteAdmin(BasesWardenModelAdmin):
-    prepopulated_fields = {'slug': ('title',)}
-    list_display = ('pk', 'slug', 'created', 'updated')
-    _exclude = ('owner', 'content')
+    prepopulated_fields: Final = {'slug': ('title',)}
+    list_display: Final = ('pk', 'slug', 'created', 'updated')
+    _exclude: Final = ('owner', 'content')

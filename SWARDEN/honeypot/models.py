@@ -1,13 +1,15 @@
+from typing import Final
+
 from django.db.models import Model, CharField, DateTimeField
 
 
 # Create your models here.
 class Attempt(Model):
-    IP = CharField(max_length=64)
-    username = CharField(max_length=64, verbose_name='Nome de Usuário')
-    password = CharField(max_length=64, verbose_name='Senha')
-    url = CharField(max_length=64)
-    timestamp = DateTimeField(auto_now_add=True, verbose_name='Data e Horário')
+    IP: Final[CharField] = CharField(max_length=64)
+    username: Final[CharField] = CharField(max_length=64, verbose_name='Nome de Usuário')
+    password: Final[CharField] = CharField(max_length=64, verbose_name='Senha')
+    url: Final[CharField] = CharField(max_length=64)
+    timestamp: Final[DateTimeField] = DateTimeField(auto_now_add=True, verbose_name='Data e Horário')
 
     class Meta:
         verbose_name = 'Registro'

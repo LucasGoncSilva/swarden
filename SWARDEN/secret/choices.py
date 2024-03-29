@@ -41,7 +41,7 @@ services: list[tuple[str, str]] = (
         ('booking--', 'Booking'),
         ('deezer--', 'Deezer'),
         ('discord--', 'Discord'),
-        ('disney+--', 'Disney+'),
+        ('disney-plus--', 'Disney+'),
         ('epic-games--', 'Epic Games'),
         ('facebook--', 'Facebook'),
         ('github--', 'Github'),

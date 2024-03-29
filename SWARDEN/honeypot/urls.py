@@ -1,9 +1,11 @@
+from typing import Final
+
 from django.urls import path, re_path, URLPattern
 
 from . import views
 
 
-app_name = 'honeypot'
+app_name: Final[str] = 'honeypot'
 
 urlpatterns: list[URLPattern] = [
     path('', views.honeypot, name='empty_redirect'),
