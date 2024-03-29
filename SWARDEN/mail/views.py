@@ -1,9 +1,9 @@
-from typing import Any, Final, Literal, Type
+from typing import Final, Literal, Type
 from csv import writer
 from hashlib import sha256
 from io import StringIO
 
-from django import dispatch
+from django.db.models import QuerySet
 from django.urls import reverse
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
@@ -20,10 +20,13 @@ from secret.models import Card, LoginCredential, SecurityNote
 NO_DATA_TO_EXPORT: Final = 'Não há dados para exportação.'
 SUCCESS_DATA_EXPORTING: Final = 'Dados exportadas com sucesso.'
 
-ACTIVATE_ACCOUNT_TOKEN_SEND: Final = """Sua conta foi criada com sucesso, contudo, você deve ativá-la. Para fazer isso, clique no link abaixo:\n\n\n{domain}/conta/ativar/{uidb64}/{token}\n\n\nEquipe sWarden"""
+ACTIVATE_ACCOUNT_TOKEN_SEND: Final = (
+    """Sua conta foi criada com sucesso, contudo, você deve ativá-la. Para fazer isso, clique no link abaixo:\n\n\n{domain}/conta/ativar/{uidb64}/{token}\n\n\nEquipe sWarden"""
+)
 
-ACTIVATE_ACCOUNT_CONFIRM_DONE: Final = """A partir de agora a sua conta está ativa e você pode utilizar dos recursos do sistema para armazenar seus dados sensíveis.\n\n\nEquipe sWarden
-"""
+ACTIVATE_ACCOUNT_CONFIRM_DONE: Final = (
+    """A partir de agora a sua conta está ativa e você pode utilizar dos recursos do sistema para armazenar seus dados sensíveis.\n\n\nEquipe sWarden"""
+)
 
 
 def export_secrets(
@@ -35,14 +38,12 @@ def export_secrets(
 
     if secret_type not in [CREDENTIALS, CARDS, SECURITY_NOTES]:
         return HttpResponseRedirect(reverse('home:index'))
-    
-    dispatch_models: dict[str, Type[LoginCredential] | Type[Card] | Type[SecurityNote]] = {
-        CREDENTIALS: LoginCredential,
-        CARDS: Card,
-        SECURITY_NOTES: SecurityNote
-    }
 
-    query: list = dispatch_models[secret_type].objects.filter(owner=r.user)
+    dispatch_models: dict[
+        str, Type[LoginCredential] | Type[Card] | Type[SecurityNote]
+    ] = {CREDENTIALS: LoginCredential, CARDS: Card, SECURITY_NOTES: SecurityNote}
+
+    query: QuerySet = dispatch_models[secret_type].objects.filter(owner=r.user)
 
     if not query.exists():
         error(r, NO_DATA_TO_EXPORT)
@@ -50,10 +51,10 @@ def export_secrets(
         dispatch_redirect: dict[str, str] = {
             CREDENTIALS: 'secret:credential_list_view',
             CARDS: 'secret:card_list_view',
-            SECURITY_NOTES: 'secret:note_list_view'
+            SECURITY_NOTES: 'secret:note_list_view',
         }
         return HttpResponseRedirect(reverse(dispatch_redirect[secret_type]))
-    
+
     csvfile: StringIO = StringIO()
     csvwriter = writer(csvfile, delimiter='¬', doublequote=True)
 
@@ -89,7 +90,16 @@ def export_secrets(
 
     elif secret_type == CARDS:
         csvwriter.writerow(
-            ['Apelido', 'Tipo', 'Número', 'Expiração', 'CVV', 'Banco', 'Bandeira', 'Titular']
+            [
+                'Apelido',
+                'Tipo',
+                'Número',
+                'Expiração',
+                'CVV',
+                'Banco',
+                'Bandeira',
+                'Titular',
+            ]
         )
 
         for i in query:

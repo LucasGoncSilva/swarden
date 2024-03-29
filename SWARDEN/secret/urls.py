@@ -9,7 +9,6 @@ app_name: Final[str] = 'secret'
 
 urlpatterns: list[URLPattern] = [
     path('', v.index, name='index'),
-
     # Credentials views
     path('credenciais/', v.credential_list_view, name='credential_list_view'),
     path(
@@ -32,7 +31,6 @@ urlpatterns: list[URLPattern] = [
         v.CredentialDeleteView.as_view(),
         name='credential_delete_view',
     ),
-    
     # Cards views
     path('cartoes/', v.card_list_view, name='card_list_view'),
     path('cartoes/novo', v.CardCreateView.as_view(), name='card_create_view'),
@@ -47,7 +45,6 @@ urlpatterns: list[URLPattern] = [
         v.CardDeleteView.as_view(),
         name='card_delete_view',
     ),
-    
     # Security Notes views
     path('anotacoes/', v.note_list_view, name='note_list_view'),
     path('anotacoes/nova', v.NoteCreateView.as_view(), name='note_create_view'),

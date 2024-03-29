@@ -1,4 +1,3 @@
-from os import getenv
 from pathlib import Path
 
 from django.contrib.messages import constants as messages

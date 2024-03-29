@@ -123,12 +123,12 @@ def register_view(r: HttpRequest) -> HttpResponse | HttpResponseRedirect:
     elif r.method != 'POST':
         form: Form = RegisterForm()
         return render(r, 'account/register.html', {'form': form})
-    
+
     form: Form = RegisterForm(r.POST)
 
     if not form.is_valid():
         return render(r, 'account/register.html', {'form': form})
-    
+
     password: str | None = form.cleaned_data.get('password')
     password2: str | None = form.cleaned_data.get('password2')
 
@@ -166,9 +166,7 @@ def register_view(r: HttpRequest) -> HttpResponse | HttpResponseRedirect:
 
     send_activate_account_token(r.get_host(), user, password)
 
-    messages.success(
-        r, 'Conta criada. Acesse seu e-mail para ativar sua conta.'
-    )
+    messages.success(r, 'Conta criada. Acesse seu e-mail para ativar sua conta.')
     return HttpResponseRedirect(reverse('account:login'))
 
 
@@ -185,7 +183,7 @@ def activate_account(r: HttpRequest, uidb64: str, token: str) -> HttpResponseRed
 
     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
         raise Http404()
-    
+
     user.is_active = True
     user.save()
 
@@ -214,9 +212,7 @@ def login_view(r: HttpRequest) -> HttpResponse | HttpResponseRedirect:
     username: str = str(form.cleaned_data.get('username')).strip()
     password: str = str(form.cleaned_data.get('password')).strip()
 
-    user: AbstractBaseUser | None = authenticate(
-        username=username, password=password
-    )
+    user: AbstractBaseUser | None = authenticate(username=username, password=password)
 
     if user is None:
         messages.error(r, 'Username e/ou senha inválida')

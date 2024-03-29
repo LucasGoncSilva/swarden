@@ -69,9 +69,7 @@ class CredentialCreateView(CreateView):
         if LoginCredential.objects.filter(
             owner=r.user, slug=r.POST.get('slug')
         ).exists():
-            error(
-                r, FEEDBACK_MSG
-            )
+            error(r, FEEDBACK_MSG)
             return super().get(r)
 
         return super().post(r)
@@ -95,9 +93,7 @@ class CredentialUpdateView(UpdateView):
         filter = dict(owner=r.user, slug=r.POST.get('slug'))
 
         if LoginCredential.objects.filter(**filter).exclude(pk=post_pk).exists():
-            error(
-                r, FEEDBACK_MSG
-            )
+            error(r, FEEDBACK_MSG)
             return super().get(r)
 
         return super().post(r, *args, **kwargs)
@@ -148,9 +144,7 @@ class CardCreateView(CreateView):
 
     def post(self, r):
         if Card.objects.filter(owner=r.user, slug=r.POST.get('slug')).exists():
-            error(
-                r, FEEDBACK_MSG
-            )
+            error(r, FEEDBACK_MSG)
             return super().get(r)
 
         return super().post(r)
@@ -174,9 +168,7 @@ class CardUpdateView(UpdateView):
         filter = dict(owner=r.user, slug=r.POST.get('slug'))
 
         if Card.objects.filter(**filter).exclude(pk=post_pk).exists():
-            error(
-                r, FEEDBACK_MSG
-            )
+            error(r, FEEDBACK_MSG)
             return super().get(r)
 
         return super().post(r, *args, **kwargs)
@@ -227,9 +219,7 @@ class NoteCreateView(CreateView):
 
     def post(self, r):
         if SecurityNote.objects.filter(owner=r.user, slug=r.POST.get('slug')).exists():
-            error(
-                r, FEEDBACK_MSG
-            )
+            error(r, FEEDBACK_MSG)
             return super().get(r)
 
         return super().post(r)
@@ -253,9 +243,7 @@ class NoteUpdateView(UpdateView):
         filter = dict(owner=r.user, slug=r.POST.get('slug'))
 
         if SecurityNote.objects.filter(**filter).exclude(pk=post_pk).exists():
-            error(
-                r, FEEDBACK_MSG
-            )
+            error(r, FEEDBACK_MSG)
             return super().get(r)
 
         return super().post(r, *args, **kwargs)

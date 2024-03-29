@@ -107,7 +107,14 @@ class LoginCredential(Model):
         return len(value) <= self.expected_max_length(var)
 
     def all_fields_of_right_length(self) -> bool:
-        vars = ['service', 'name', 'slug', 'thirdy_party_login_name', 'login', 'password']
+        vars = [
+            'service',
+            'name',
+            'slug',
+            'thirdy_party_login_name',
+            'login',
+            'password',
+        ]
 
         return all(map(self.check_field_length, vars))
 
