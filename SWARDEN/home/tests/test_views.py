@@ -1,5 +1,7 @@
+from django.http import HttpResponse
 from django.test import TestCase
 from django.urls import reverse
+from django.contrib.auth import get_user
 
 from account.models import User
 from secret.models import Card, LoginCredential, SecurityNote
@@ -10,9 +12,9 @@ from secret.month.models import Month
 class HomeViewsTestCase(TestCase):
     def setUp(self) -> None:
         test_user = User.objects.create_user(
-            username='test_user',
-            password='superhyperultrahardpassword',
-            email='test_user@example.com',
+            username='user',
+            password='password',
+            email='user@example.com',
         )
 
         Card.objects.create(
@@ -57,17 +59,28 @@ class HomeViewsTestCase(TestCase):
             content='Just draw an apple tree and erase the tree.',
         )
 
-    def test_home_view_behavior_for_not_logged_and_logged_users(self):
-        """Tests view behavior at "/" for not logged and logged users"""
+    def test_home_view_behavior_for_not_logged_users(self):
+        """Tests view behavior at "/" for not logged users"""
 
-        res = self.client.get(reverse('home:index'))
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        res: HttpResponse = self.client.get(reverse('home:index'))
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'home/landing.html')
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
 
-        self.client.login(username='test_user', password='superhyperultrahardpassword')
+    def test_home_view_behavior_for_logged_users(self):
+        """Tests view behavior at "/" for logged users"""
 
-        res = self.client.get(reverse('home:index'))
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.client.login(username='user', password='password')
+
+        res: HttpResponse = self.client.get(reverse('home:index'))
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'home/index.html')
@@ -79,3 +92,6 @@ class HomeViewsTestCase(TestCase):
         self.assertEqual(len(res.context['cards']), 1)
         self.assertEqual(len(res.context['credentials']), 2)
         self.assertEqual(len(res.context['notes']), 1)
+
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
