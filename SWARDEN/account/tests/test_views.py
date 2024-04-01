@@ -1,5 +1,7 @@
+from django.http import HttpResponse
 from django.test import TestCase
 from django.urls import reverse
+from django.contrib.auth import get_user
 
 from account.models import User
 
@@ -8,69 +10,130 @@ from account.models import User
 class AccountViewsTestCase(TestCase):
     def setUp(self) -> None:
         User.objects.create_user(
-            username='test_user',
-            password='superhyperultrahardpassword',
-            email='test_user@example.com',
+            username='user',
+            password='password',
+            email='email@example.com',
         )
 
-    def test_register_view_behavior_for_not_logged_and_logged_users(self):
-        """Tests view behavior at "/conta/registrar" for not logged and logged users"""
+        self.REGISTER_URL: str = reverse('account:register')
+        self.LOGIN_URL: str = reverse('account:login')
+        self.LOGOUT_URL: str = reverse('account:logout')
 
-        res = self.client.get(reverse('account:register'))
+    def test_register_view_behavior_for_not_logged_users(self) -> None:
+        """Tests view behavior at "/conta/registrar" for not logged users"""
+
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        res: HttpResponse = self.client.get(self.REGISTER_URL)
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'account/register.html')
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
 
-        self.client.login(username='test_user', password='superhyperultrahardpassword')
+    def test_register_view_behavior_for_logged_users(self) -> None:
+        """Tests view behavior at "/conta/registrar" for logged users"""
 
-        res = self.client.get(reverse('account:register'))
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(self.client.login(username='user', password='password'))
+
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
+
+        res: HttpResponse = self.client.get(self.REGISTER_URL)
 
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(res, reverse('home:index'))
 
-        res = self.client.get(reverse('account:register'), follow=True)
+        res: HttpResponse = self.client.get(self.REGISTER_URL, follow=True)
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'home/index.html')
 
-    def test_login_view_behavior_for_not_logged_and_logged_users(self):
-        """Tests view behavior at "/conta/entrar" for not logged and logged users"""
+    def test_login_view_behavior_for_not_logged_users(self) -> None:
+        """Tests view behavior at "/conta/entrar" for not logged users"""
 
-        res = self.client.get(reverse('account:login'))
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        res: HttpResponse = self.client.get(self.LOGIN_URL)
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'account/login.html')
 
-        self.client.login(username='test_user', password='superhyperultrahardpassword')
-
-        res = self.client.get(reverse('account:login'))
-
-        self.assertEqual(res.status_code, 302)
-        self.assertRedirects(res, reverse('home:index'))
-
-        res = self.client.get(reverse('account:login'), follow=True)
-
-        self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, 'home/index.html')
-
-    def test_logout_view_behavior_for_not_logged_and_logged_users(self):
-        """Tests view behavior at "/conta/sair" for not logged and logged users"""
-
-        res = self.client.get(reverse('account:logout'))
-
-        self.assertEqual(res.status_code, 302)
-        self.assertRedirects(
-            res, reverse('account:login') + '?next=' + reverse('account:logout')
+        res: HttpResponse = self.client.post(
+            self.LOGIN_URL,
+            {'username': 'user', 'password': 'password', 'email': 'email@example.com'},
+            follow=True,
         )
 
-        res = self.client.get(reverse('account:logout'), follow=True)
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
+
+    def test_login_view_behavior_for_logged_users(self) -> None:
+        """Tests view behavior at "/conta/entrar" for logged users"""
+
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(self.client.login(username='user', password='password'))
+
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
+
+        res: HttpResponse = self.client.get(self.LOGIN_URL)
+
+        self.assertEqual(res.status_code, 302)
+        self.assertRedirects(res, reverse('home:index'))
+
+        res: HttpResponse = self.client.get(self.LOGIN_URL, follow=True)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTemplateUsed(res, 'home/index.html')
+
+    def test_logout_view_behavior_for_not_logged_users(self) -> None:
+        """Tests view behavior at "/conta/sair" for not logged users"""
+
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        res: HttpResponse = self.client.get(self.LOGOUT_URL)
+
+        self.assertEqual(res.status_code, 302)
+        self.assertRedirects(res, self.LOGIN_URL + '?next=' + self.LOGOUT_URL)
+
+        res: HttpResponse = self.client.get(self.LOGOUT_URL, follow=True)
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'account/login.html')
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
 
-        self.client.login(username='test_user', password='superhyperultrahardpassword')
+    def test_logout_view_behavior_for_logged_users(self) -> None:
+        """Tests view behavior at "/conta/sair" for logged users"""
 
-        res = self.client.get(reverse('account:logout'))
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(self.client.login(username='user', password='password'))
+
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
+
+        res: HttpResponse = self.client.post(self.LOGOUT_URL)
+
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+        self.assertEqual(res.status_code, 302)
+
+        self.assertTrue(self.client.login(username='user', password='password'))
+
+        res: HttpResponse = self.client.post(self.LOGOUT_URL, follow=True)
 
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, 'account/logout.html')
+        self.assertTemplateUsed(res, 'account/login.html')
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)

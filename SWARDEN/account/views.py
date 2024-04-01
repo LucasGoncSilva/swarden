@@ -1,3 +1,5 @@
+from django.db import DataError, IntegrityError
+from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
@@ -6,7 +8,13 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.decorators import login_required
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, Http404
+from django.http import (
+    HttpRequest,
+    HttpResponse,
+    HttpResponseRedirect,
+    Http404,
+    HttpResponseServerError,
+)
 from django.forms import Form, CharField, TextInput, EmailField, PasswordInput
 from django.contrib import messages
 
@@ -14,6 +22,7 @@ from captcha.fields import CaptchaField
 
 from .models import User, ActivationAccountToken
 from mail.views import send_activate_account_token, send_activate_account_done
+from err.views import handle500
 
 
 # Create your views here.
@@ -116,7 +125,9 @@ class LogInForm(Form):
     )
 
 
-def register_view(r: HttpRequest) -> HttpResponse | HttpResponseRedirect:
+def register_view(
+    r: HttpRequest,
+) -> HttpResponse | HttpResponseRedirect | HttpResponseServerError:
     if r.user.is_authenticated:
         return HttpResponseRedirect(reverse('home:index'))
 
@@ -164,7 +175,10 @@ def register_view(r: HttpRequest) -> HttpResponse | HttpResponseRedirect:
         is_active=False,
     )
 
-    send_activate_account_token(r.get_host(), user, password)
+    try:
+        send_activate_account_token(r.get_host(), user, password)
+    except (DataError, IntegrityError, ValidationError):
+        return handle500(r)
 
     messages.success(r, 'Conta criada. Acesse seu e-mail para ativar sua conta.')
     return HttpResponseRedirect(reverse('account:login'))
