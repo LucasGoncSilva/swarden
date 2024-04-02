@@ -50,8 +50,8 @@ class AttemptTestCase(TestCase):
     def test_attempt_instance_validity(self) -> None:
         """Tests model instance of correct class"""
 
-        for i, attempt in enumerate(Attempt.objects.all()):
-            with self.subTest(attempt=i + 1):
+        for attempt in Attempt.objects.all():
+            with self.subTest(attempt=attempt):
                 self.assertIsInstance(attempt, Attempt)
 
     def test_attempt_key_value_assertion(self) -> None:
@@ -89,8 +89,8 @@ class AttemptTestCase(TestCase):
 
         Attempt.objects.filter(pk=self.attempt5.pk).update(IP='192.168.55.36')
 
-        for i, attempt in enumerate(Attempt.objects.all()):
-            with self.subTest(attempt=i + 1):
+        for attempt in Attempt.objects.all():
+            with self.subTest(attempt=attempt):
                 self.assertTrue(attempt.is_valid())
 
     def test_attempt_delete_validity(self) -> None:

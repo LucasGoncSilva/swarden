@@ -1,16 +1,17 @@
 from django.test import TestCase
 from django.db.transaction import atomic
 from django.db import DataError
+from django.core.exceptions import ValidationError
 
 from account.models import User
 from secret.models import Card, LoginCredential, SecurityNote
 from secret.month.models import Month
-from utils import xor
+from utils import xor, create_scenarios
 
 
 # Create your tests here.
 class CredentialTestCase(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.user = User.objects.create_user(
             username='test_user',
             password='testing_password',
@@ -114,29 +115,19 @@ class CredentialTestCase(TestCase):
             password='-----',
         )
 
-    def test_credential_instance_validity(self):
-        """Tests if setUp's credentials are correctly instancied"""
+    def test_credential_instance_validity(self) -> None:
+        """Tests model instance of correct class"""
 
-        cred1 = LoginCredential.objects.get(pk=self.login_credential_1.pk)
-        cred2 = LoginCredential.objects.get(pk=self.login_credential_2.pk)
-        cred3 = LoginCredential.objects.get(pk=self.login_credential_3.pk)
-        cred4 = LoginCredential.objects.get(pk=self.login_credential_4.pk)
-        cred5 = LoginCredential.objects.get(pk=self.login_credential_5.pk)
-        cred6 = LoginCredential.objects.get(pk=self.login_credential_6.pk)
-        cred7 = LoginCredential.objects.get(pk=self.login_credential_7.pk)
+        for cred in LoginCredential.objects.all():
+            with self.subTest(cred=cred):
+                self.assertIsInstance(cred, LoginCredential)
 
-        self.assertIsInstance(cred1, LoginCredential)
-        self.assertIsInstance(cred2, LoginCredential)
-        self.assertIsInstance(cred3, LoginCredential)
-        self.assertIsInstance(cred4, LoginCredential)
-        self.assertIsInstance(cred5, LoginCredential)
-        self.assertIsInstance(cred6, LoginCredential)
-        self.assertIsInstance(cred7, LoginCredential)
+    def test_credential_key_value_assertion(self) -> None:
+        """Tests model correct attribuition of value"""
 
-    def test_credential_key_value_assertion(self):
-        """Tests if credential's keys and values are properly assigned"""
-
-        cred1 = LoginCredential.objects.get(pk=self.login_credential_1.pk)
+        cred1: LoginCredential = LoginCredential.objects.get(
+            pk=self.login_credential_1.pk
+        )
 
         self.assertEqual(cred1.service, 'google--')
         self.assertEqual(cred1.name, 'Personal Main Account')
@@ -146,28 +137,46 @@ class CredentialTestCase(TestCase):
         self.assertEqual(cred1.login, 'night_monkey123@gmail.com')
         self.assertEqual(cred1.password, 'ilovemenotyou')
 
-    def test_credential_user_foreign_key_validity(self):
-        """Tests if credential.owner is properly assigned"""
+    def test_credential_user_foreign_key_validity(self) -> None:
+        """Tests model foreign key validation"""
 
-        cred1 = LoginCredential.objects.get(pk=self.login_credential_1.pk)
-        cred2 = LoginCredential.objects.get(pk=self.login_credential_2.pk)
+        cred1: LoginCredential = LoginCredential.objects.get(
+            pk=self.login_credential_1.pk
+        )
+        cred2: LoginCredential = LoginCredential.objects.get(
+            pk=self.login_credential_2.pk
+        )
 
-        cred1_owner = cred1.owner
-        cred2_owner = cred2.owner
+        cred1_owner: User = cred1.owner
+        cred2_owner: User = cred2.owner
 
         self.assertEqual(cred1_owner, cred2_owner)
         self.assertEqual(cred1_owner, self.user)
 
-    def test_credential_create_validity(self):
-        """Tests if created credentials are valid or not"""
+    def test_credential_create_validity(self) -> None:
+        """Tests model creation integrity and validation"""
 
-        cred1 = LoginCredential.objects.get(pk=self.login_credential_1.pk)
-        cred2 = LoginCredential.objects.get(pk=self.login_credential_2.pk)
-        cred3 = LoginCredential.objects.get(pk=self.login_credential_3.pk)
-        cred4 = LoginCredential.objects.get(pk=self.login_credential_4.pk)
-        cred5 = LoginCredential.objects.get(pk=self.login_credential_5.pk)
-        cred6 = LoginCredential.objects.get(pk=self.login_credential_6.pk)
-        cred7 = LoginCredential.objects.get(pk=self.login_credential_7.pk)
+        cred1: LoginCredential = LoginCredential.objects.get(
+            pk=self.login_credential_1.pk
+        )
+        cred2: LoginCredential = LoginCredential.objects.get(
+            pk=self.login_credential_2.pk
+        )
+        cred3: LoginCredential = LoginCredential.objects.get(
+            pk=self.login_credential_3.pk
+        )
+        cred4: LoginCredential = LoginCredential.objects.get(
+            pk=self.login_credential_4.pk
+        )
+        cred5: LoginCredential = LoginCredential.objects.get(
+            pk=self.login_credential_5.pk
+        )
+        cred6: LoginCredential = LoginCredential.objects.get(
+            pk=self.login_credential_6.pk
+        )
+        cred7: LoginCredential = LoginCredential.objects.get(
+            pk=self.login_credential_7.pk
+        )
 
         self.assertEqual(LoginCredential.objects.all().count(), 7)
 
@@ -179,13 +188,9 @@ class CredentialTestCase(TestCase):
         self.assertFalse(cred6.is_valid())
         self.assertFalse(cred7.is_valid())
 
-    def test_credential_update_validity(self):
-        """Tests if updated credentials are valid or not"""
+    def test_credential_update_validity(self) -> None:
+        """Tests model update integrity and validation"""
 
-        LoginCredential.objects.filter(pk=self.login_credential_1.pk).update(service='')
-        LoginCredential.objects.filter(pk=self.login_credential_2.pk).update(
-            slug='diners-club-international--tupinamba'
-        )
         LoginCredential.objects.filter(pk=self.login_credential_3.pk).update(
             thirdy_party_login=False
         )
@@ -208,47 +213,137 @@ class CredentialTestCase(TestCase):
             service='visa--', slug='visa--little-fries'
         )
 
-        cred1 = LoginCredential.objects.get(pk=self.login_credential_1.pk)
-        cred2 = LoginCredential.objects.get(pk=self.login_credential_2.pk)
-        cred3 = LoginCredential.objects.get(pk=self.login_credential_3.pk)
-        cred4 = LoginCredential.objects.get(pk=self.login_credential_4.pk)
-        cred5 = LoginCredential.objects.get(pk=self.login_credential_5.pk)
-        cred6 = LoginCredential.objects.get(pk=self.login_credential_6.pk)
-        cred7 = LoginCredential.objects.get(pk=self.login_credential_7.pk)
+        for cred in LoginCredential.objects.all():
+            with self.subTest(cred=cred):
+                self.assertTrue(cred.is_valid())
 
-        self.assertFalse(cred1.is_valid())
-        self.assertFalse(cred2.is_valid())
-        self.assertTrue(cred3.is_valid())
-        self.assertTrue(cred4.is_valid())
-        self.assertTrue(cred5.is_valid())
-        self.assertTrue(cred6.is_valid())
-        self.assertTrue(cred7.is_valid())
+    def test_credential_delete_validity(self) -> None:
+        """Tests model correct deletion"""
 
-    def test_credential_delete_validity(self):
-        """Tests if credential objects are correctly deleted or not"""
-
-        cred1 = LoginCredential.objects.get(pk=self.login_credential_1.pk)
-        cred2 = LoginCredential.objects.get(pk=self.login_credential_2.pk)
-        cred3 = LoginCredential.objects.get(pk=self.login_credential_3.pk)
-        cred4 = LoginCredential.objects.get(pk=self.login_credential_4.pk)
-        cred5 = LoginCredential.objects.get(pk=self.login_credential_5.pk)
-        cred6 = LoginCredential.objects.get(pk=self.login_credential_6.pk)
-        cred7 = LoginCredential.objects.get(pk=self.login_credential_7.pk)
-
-        cred3.delete()
-        cred4.delete()
-        cred5.delete()
-        cred6.delete()
-        cred7.delete()
+        for cred in LoginCredential.objects.all():
+            if not cred.is_valid():
+                cred.delete()
 
         self.assertEqual(LoginCredential.objects.all().count(), 2)
 
-        self.assertTrue(cred1.is_valid())
-        self.assertTrue(cred2.is_valid())
+    def test_credential_db_exception_raises(self) -> None:
+        """Tests model correct integrity and validation with raised exceptions"""
+
+        # Expecting raises
+        params: list[dict[str, User | str | bool]] = [
+            {'owner': self.user},
+            {'service': 'aws--'},
+            {'name': 'Name'},
+            {'thirdy_party_login': False},
+            {'thirdy_party_login_name': '-----'},
+            {'login': 'LoginName'},
+            {'password': 'PasswordName'},
+            {'slug': 'aws--name'},
+        ]
+
+        for case, scenario in create_scenarios(params):
+            with self.subTest(scenario=case):
+                with self.assertRaises(ValidationError):
+                    with atomic():
+                        instance: LoginCredential = LoginCredential(**scenario)
+                        instance.full_clean()
+
+        raise_kwargs: dict[str, dict[str, User | str | bool]] = {
+            'cred1': {
+                'owner': self.user,
+                'service': 'aws--',
+                'name': 'x' * 41,
+                'thirdy_party_login': False,
+                'thirdy_party_login_name': 'x' * 40,
+                'login': 'x' * 200,
+                'password': 'x' * 200,
+                'note': 'x' * 128,
+                'slug': 'aws--' + 'x' * 123,
+            },
+            'cred2': {
+                'owner': self.user,
+                'service': 'aws--',
+                'name': 'x' * 40,
+                'thirdy_party_login': False,
+                'thirdy_party_login_name': 'x' * 41,
+                'login': 'x' * 201,
+                'password': 'x' * 200,
+                'note': 'x' * 128,
+                'slug': 'aws--' + 'x' * 123,
+            },
+            'cred3': {
+                'owner': self.user,
+                'service': 'aws--',
+                'name': 'x' * 40,
+                'thirdy_party_login': False,
+                'thirdy_party_login_name': 'x' * 40,
+                'login': 'x' * 200,
+                'password': 'x' * 201,
+                'note': 'x' * 128,
+                'slug': 'aws--' + 'x' * 123,
+            },
+            'cred4': {
+                'owner': self.user,
+                'service': 'aws--',
+                'name': 'x' * 40,
+                'thirdy_party_login': False,
+                'thirdy_party_login_name': 'x' * 40,
+                'login': 'x' * 200,
+                'password': 'x' * 200,
+                'note': 'x' * 129,
+                'slug': 'aws--' + 'x' * 123,
+            },
+            'cred5': {
+                'owner': self.user,
+                'service': 'aws--',
+                'name': 'x' * 40,
+                'thirdy_party_login': False,
+                'thirdy_party_login_name': 'x' * 40,
+                'login': 'x' * 200,
+                'password': 'x' * 200,
+                'note': 'x' * 128,
+                'slug': 'aws--' + 'x' * 124,
+            },
+        }
+
+        for scenario in raise_kwargs.keys():
+            with self.subTest(scenario=scenario):
+                with self.assertRaises(ValidationError):
+                    with atomic():
+                        instance: LoginCredential = LoginCredential(
+                            **raise_kwargs[scenario]
+                        )
+                        instance.full_clean()
+
+        # Not expecting raises
+        no_raise_kwargs: dict[str, dict[str, User | str | bool]] = {
+            'cred1': {
+                'owner': self.user,
+                'service': 'aws--',
+                'name': 'x' * 40,
+                'thirdy_party_login': False,
+                'thirdy_party_login_name': 'x' * 40,
+                'login': 'x' * 200,
+                'password': 'x' * 200,
+                'note': 'x' * 128,
+                'slug': 'aws--' + 'x' * 123,
+            },
+        }
+
+        for scenario in no_raise_kwargs.keys():
+            with self.subTest(scenario=scenario):
+                try:
+                    instance: LoginCredential = LoginCredential(
+                        **no_raise_kwargs[scenario]
+                    )
+                    instance.full_clean()
+
+                except Exception as e:
+                    self.fail(f'{scenario} raised unexpected exception:\n\n{e}')
 
 
 class CardTestCase(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.user = User.objects.create_user(
             username='test_user',
             password='testing_password',
@@ -258,14 +353,14 @@ class CardTestCase(TestCase):
         # Object 1
         self.card_1 = Card.objects.create(
             owner=self.user,
-            name='Personal Main Card',
+            name='Personal Main Card One',
             card_type='deb',
             number='4002892240028922',
             expiration=Month(2028, 11),
             cvv='113',
             bank='nubank--',
             brand='mastercard--',
-            slug='nubank--personal-main-card',
+            slug='nubank--personal-main-card-one',
             owners_name='TEST USER',
         )  # Correct object
 
@@ -287,121 +382,111 @@ class CardTestCase(TestCase):
         except DataError:
             self.card_2 = Card.objects.create(
                 owner=self.user,
-                name='Personal Main Card',
+                name='Personal Main Card Two',
                 card_type='baka',  # Inexintent type
                 number='4002892240028922',
                 expiration=Month(2028, 11),
                 cvv=113,
                 bank='nubank--',
                 brand='mastercard--',
-                slug='nubank--personal-main-card',
+                slug='nubank--personal-main-card-two',
                 owners_name='TEST USER',
             )
 
         # Object 3
         self.card_3 = Card.objects.create(
             owner=self.user,
-            name='Personal Main Card',
+            name='Personal Main Card Three',
             card_type='deb',
             number='123456789',  # Length out of range
             expiration=Month(2028, 11),
             cvv=12,  # Length out of range
             bank='nubank--',
             brand='mastercard--',
-            slug='nubank--personal-main-card',
+            slug='nubank--personal-main-card-three',
             owners_name='TEST USER',
         )
 
         # Object 4
         self.card_4 = Card.objects.create(
             owner=self.user,
-            name='Personal Main Card',
+            name='Personal Main Card Four',
             card_type='deb',
             number='4002892240028922',
             expiration=Month(2028, 11),
             cvv=113,
             bank='mingau--',  # Inexistent bank
             brand='mastercard--',
-            slug='mingau--personal-main-card',
+            slug='mingau--personal-main-card-four',
             owners_name='TEST USER',
         )
 
         # Object 5
         self.card_5 = Card.objects.create(
             owner=self.user,
-            name='Personal Main Card',
+            name='Personal Main Card Five',
             card_type='deb',
             number='4002892240028922',
             expiration=Month(2028, 11),
-            cvv=113,
+            cvv='113',
             bank='nubank--',
             brand='mastercard--',
-            slug='nubank--minotauro',  # Should be 'nubank--personal-main-card'
+            slug='nubank--personal-not-main-card',  # Should be 'nubank--personal-main-card-five'
             owners_name='TEST USER',
         )
 
         # Object 6
         self.card_6 = Card.objects.create(
             owner=self.user,
-            name='Personal Main Card',
+            name='Personal Main Card Six',
             card_type='deb',
             number='4002892240028922',
             expiration='2023/4',
             cvv=113,
             bank='nubank--',
             brand='vina--',  # Inexistent brand
-            slug='nubank--personal-main-card',
+            slug='nubank--personal-main-card-six',
             owners_name='TEST USER',
         )
 
-    def test_card_instance_validity(self):
-        """Tests if setUp's cards are correctly instancied"""
+    def test_card_instance_validity(self) -> None:
+        """Tests model instance of correct class"""
 
-        card1 = Card.objects.get(pk=self.card_1.pk)
-        card2 = Card.objects.get(pk=self.card_2.pk)
-        card3 = Card.objects.get(pk=self.card_3.pk)
-        card4 = Card.objects.get(pk=self.card_4.pk)
-        card5 = Card.objects.get(pk=self.card_5.pk)
-        card6 = Card.objects.get(pk=self.card_6.pk)
+        for card in Card.objects.all():
+            with self.subTest(card=card):
+                self.assertIsInstance(card, Card)
 
-        self.assertIsInstance(card1, Card)
-        self.assertIsInstance(card2, Card)
-        self.assertIsInstance(card3, Card)
-        self.assertIsInstance(card4, Card)
-        self.assertIsInstance(card5, Card)
-        self.assertIsInstance(card6, Card)
+    def test_card_key_value_assertion(self) -> None:
+        """Tests model correct attribuition of value"""
 
-    def test_card_key_value_assertion(self):
-        """Tests if card's keys and values are properly assigned"""
+        card1: Card = Card.objects.get(pk=self.card_1.pk)
 
-        card1 = Card.objects.get(pk=self.card_1.pk)
-
-        self.assertEqual(card1.name, 'Personal Main Card')
+        self.assertEqual(card1.name, 'Personal Main Card One')
         self.assertEqual(card1.card_type, 'deb')
         self.assertEqual(card1.number, '4002892240028922')
         self.assertEqual(card1.expiration, Month(2028, 11))
         self.assertEqual(card1.cvv, '113')
         self.assertEqual(card1.bank, 'nubank--')
         self.assertEqual(card1.brand, 'mastercard--')
-        self.assertEqual(card1.slug, 'nubank--personal-main-card')
+        self.assertEqual(card1.slug, 'nubank--personal-main-card-one')
         self.assertEqual(card1.owners_name, 'TEST USER')
 
-    def test_card_user_foreign_key_validity(self):
-        """Tests if card.owner is properly assigned"""
+    def test_card_user_foreign_key_validity(self) -> None:
+        """Tests model foreign key validation"""
 
-        card1 = Card.objects.get(pk=self.card_1.pk)
+        card1_owner: User = Card.objects.get(pk=self.card_1.pk).owner
 
-        self.assertEqual(card1.owner, self.user)
+        self.assertEqual(card1_owner, self.user)
 
-    def test_card_create_validity(self):
-        """Tests if created cards are valid or not"""
+    def test_card_create_validity(self) -> None:
+        """Tests model creation integrity and validation"""
 
-        card1 = Card.objects.get(pk=self.card_1.pk)
-        card2 = Card.objects.get(pk=self.card_2.pk)
-        card3 = Card.objects.get(pk=self.card_3.pk)
-        card4 = Card.objects.get(pk=self.card_4.pk)
-        card5 = Card.objects.get(pk=self.card_5.pk)
-        card6 = Card.objects.get(pk=self.card_6.pk)
+        card1: Card = Card.objects.get(pk=self.card_1.pk)
+        card2: Card = Card.objects.get(pk=self.card_2.pk)
+        card3: Card = Card.objects.get(pk=self.card_3.pk)
+        card4: Card = Card.objects.get(pk=self.card_4.pk)
+        card5: Card = Card.objects.get(pk=self.card_5.pk)
+        card6: Card = Card.objects.get(pk=self.card_6.pk)
 
         self.assertEqual(Card.objects.all().count(), 6)
 
@@ -412,18 +497,11 @@ class CardTestCase(TestCase):
         self.assertFalse(card5.is_valid())
         self.assertFalse(card6.is_valid())
 
-    def test_card_update_validity(self):
-        """Tests if updated cards are valid or not"""
+    def test_card_update_validity(self) -> None:
+        """Tests model update integrity and validation"""
 
-        try:
-            with atomic():
-                Card.objects.filter(pk=self.card_1.pk).update(
-                    cvv=xor('14000605', self.user.password[21:])
-                )
-        except DataError:
-            Card.objects.filter(pk=self.card_1.pk).update(number='')
         Card.objects.filter(pk=self.card_2.pk).update(
-            card_type=xor('deb', self.user.password[21:])
+            card_type=xor('cred', self.user.password[21:])
         )
         Card.objects.filter(pk=self.card_3.pk).update(
             number=xor('1122334455667788', self.user.password[21:]),
@@ -431,50 +509,207 @@ class CardTestCase(TestCase):
         )
         Card.objects.filter(pk=self.card_4.pk).update(
             bank=xor('pagseguro--', self.user.password[21:]),
-            slug='pagseguro--personal-main-card',
+            slug='pagseguro--personal-main-card-four',
         )
-        Card.objects.filter(pk=self.card_5.pk).update(slug='nubank--personal-main-card')
+        Card.objects.filter(pk=self.card_5.pk).update(
+            slug='nubank--personal-main-card-five'
+        )
         Card.objects.filter(pk=self.card_6.pk).update(
             brand=xor('mastercard--', self.user.password[21:])
         )
 
-        card1 = Card.objects.get(pk=self.card_1.pk)
-        card2 = Card.objects.get(pk=self.card_2.pk)
-        card3 = Card.objects.get(pk=self.card_3.pk)
-        card4 = Card.objects.get(pk=self.card_4.pk)
-        card5 = Card.objects.get(pk=self.card_5.pk)
-        card6 = Card.objects.get(pk=self.card_6.pk)
+        for card in Card.objects.all():
+            with self.subTest(card=card):
+                self.assertTrue(card.is_valid())
 
-        self.assertFalse(card1.is_valid())
-        self.assertTrue(card2.is_valid())
-        self.assertTrue(card3.is_valid())
-        self.assertTrue(card4.is_valid())
-        self.assertTrue(card5.is_valid())
-        self.assertTrue(card6.is_valid())
+    def test_card_delete_validity(self) -> None:
+        """Tests model correct deletion"""
 
-    def test_card_delete_validity(self):
-        """Tests if card objects are correctly deleted or not"""
-
-        card1 = Card.objects.get(pk=self.card_1.pk)
-        card2 = Card.objects.get(pk=self.card_2.pk)
-        card3 = Card.objects.get(pk=self.card_3.pk)
-        card4 = Card.objects.get(pk=self.card_4.pk)
-        card5 = Card.objects.get(pk=self.card_5.pk)
-        card6 = Card.objects.get(pk=self.card_6.pk)
-
-        card2.delete()
-        card3.delete()
-        card4.delete()
-        card5.delete()
-        card6.delete()
+        for card in Card.objects.all():
+            if not card.is_valid():
+                card.delete()
 
         self.assertEqual(Card.objects.all().count(), 1)
 
-        self.assertTrue(card1.is_valid())
+    def test_card_db_exception_raises(self) -> None:
+        """Tests model correct integrity and validation with raised exceptions"""
+
+        # Expecting raises
+        params: list[dict[str, User | str]] = [
+            {'owner': self.user},
+            {'name': 'Name'},
+            {'card_type': 'deb'},
+            {'number': '1111222233334444'},
+            {'cvv': '044'},
+            {'bank': 'nubank--'},
+            {'brand': 'visa--'},
+            {'owners_name': 'Owner\'s Name'},
+            {'slug': 'name'},
+        ]
+
+        for case, scenario in create_scenarios(params):
+            with self.subTest(scenario=case):
+                with self.assertRaises(ValidationError):
+                    with atomic():
+                        instance: Card = Card(**scenario)
+                        instance.full_clean()
+
+        raise_kwargs: dict[str, dict[str, str | Month]] = {
+            'card1': {
+                'owner': self.user,
+                'name': 'x' * 40,
+                'card_type': 'x' * 4,
+                'number': 'x' * 16,
+                'expiration': Month(2044, 4),
+                'cvv': 'x' * 3,
+                'bank': 'nubank--',
+                'brand': 'visa--',
+                'owners_name': 'x' * 64,
+                'note': 'x' * 128,
+                'slug': 'x' * 41,
+            },
+            'card2': {
+                'owner': self.user,
+                'name': 'x' * 41,
+                'card_type': 'x' * 4,
+                'number': 'x' * 16,
+                'expiration': Month(2044, 4),
+                'cvv': 'x' * 3,
+                'bank': 'nubank--',
+                'brand': 'visa--',
+                'owners_name': 'x' * 64,
+                'note': 'x' * 128,
+                'slug': 'x' * 40,
+            },
+            'card3': {
+                'owner': self.user,
+                'name': 'x' * 40,
+                'card_type': 'x' * 5,
+                'number': 'x' * 16,
+                'expiration': Month(2044, 4),
+                'cvv': 'x' * 3,
+                'bank': 'nubank--',
+                'brand': 'visa--',
+                'owners_name': 'x' * 64,
+                'note': 'x' * 128,
+                'slug': 'x' * 40,
+            },
+            'card4': {
+                'owner': self.user,
+                'name': 'x' * 40,
+                'card_type': 'x' * 4,
+                'number': 'x' * 11,
+                'expiration': Month(2044, 4),
+                'cvv': 'x' * 3,
+                'bank': 'nubank--',
+                'brand': 'visa--',
+                'owners_name': 'x' * 64,
+                'note': 'x' * 128,
+                'slug': 'x' * 40,
+            },
+            'card5': {
+                'owner': self.user,
+                'name': 'x' * 40,
+                'card_type': 'x' * 4,
+                'number': 'x' * 20,
+                'expiration': Month(2044, 4),
+                'cvv': 'x' * 3,
+                'bank': 'nubank--',
+                'brand': 'visa--',
+                'owners_name': 'x' * 64,
+                'note': 'x' * 128,
+                'slug': 'x' * 40,
+            },
+            'card6': {
+                'owner': self.user,
+                'name': 'x' * 40,
+                'card_type': 'x' * 4,
+                'number': 'x' * 16,
+                'expiration': Month(2044, 4),
+                'cvv': 'x' * 2,
+                'bank': 'nubank--',
+                'brand': 'visa--',
+                'owners_name': 'x' * 64,
+                'note': 'x' * 128,
+                'slug': 'x' * 40,
+            },
+            'card7': {
+                'owner': self.user,
+                'name': 'x' * 40,
+                'card_type': 'x' * 4,
+                'number': 'x' * 16,
+                'expiration': Month(2044, 4),
+                'cvv': 'x' * 5,
+                'bank': 'nubank--',
+                'brand': 'visa--',
+                'owners_name': 'x' * 64,
+                'note': 'x' * 128,
+                'slug': 'x' * 40,
+            },
+            'card8': {
+                'owner': self.user,
+                'name': 'x' * 40,
+                'card_type': 'x' * 4,
+                'number': 'x' * 16,
+                'expiration': Month(2044, 4),
+                'cvv': 'x' * 3,
+                'bank': 'nubank--',
+                'brand': 'visa--',
+                'owners_name': 'x' * 65,
+                'note': 'x' * 128,
+                'slug': 'x' * 40,
+            },
+            'card9': {
+                'owner': self.user,
+                'name': 'x' * 40,
+                'card_type': 'x' * 4,
+                'number': 'x' * 16,
+                'expiration': Month(2044, 4),
+                'cvv': 'x' * 3,
+                'bank': 'nubank--',
+                'brand': 'visa--',
+                'owners_name': 'x' * 64,
+                'note': 'x' * 129,
+                'slug': 'x' * 40,
+            },
+        }
+
+        for scenario in raise_kwargs.keys():
+            with self.subTest(scenario=scenario):
+                with self.assertRaises(ValidationError):
+                    with atomic():
+                        instance: Card = Card(**raise_kwargs[scenario])
+                        instance.full_clean()
+
+        # Not expecting raises
+        no_raise_kwargs: dict[str, dict[str, str | Month]] = {
+            'card1': {
+                'owner': self.user,
+                'name': 'x' * 40,
+                'card_type': 'cred',
+                'number': 'x' * 16,
+                'expiration': Month(2044, 4),
+                'cvv': 'x' * 3,
+                'bank': 'nubank--',
+                'brand': 'visa--',
+                'owners_name': 'x' * 64,
+                'note': 'x' * 128,
+                'slug': 'x' * 40,
+            },
+        }
+
+        for scenario in no_raise_kwargs.keys():
+            with self.subTest(scenario=scenario):
+                try:
+                    instance: Card = Card(**no_raise_kwargs[scenario])
+                    instance.full_clean()
+
+                except Exception as e:
+                    self.fail(f'{scenario} raised unexpected exception:\n\n{e}')
 
 
 class SecurityNoteTestCase(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.user = User.objects.create_user(
             username='test_user',
             password='testing_password',
@@ -512,42 +747,36 @@ class SecurityNoteTestCase(TestCase):
             slug='how-to-draw-an-apple-tree-leaf',
         )  # Missing/empty content field
 
-    def test_note_instance_validity(self):
-        """Tests if setUp's notes are correctly instancied"""
+    def test_note_instance_validity(self) -> None:
+        """Tests model instance of correct class"""
 
-        note1 = SecurityNote.objects.get(pk=self.security_note_1.pk)
-        note2 = SecurityNote.objects.get(pk=self.security_note_2.pk)
-        note3 = SecurityNote.objects.get(pk=self.security_note_3.pk)
-        note4 = SecurityNote.objects.get(pk=self.security_note_4.pk)
+        for note in SecurityNote.objects.all():
+            with self.subTest(note=note):
+                self.assertIsInstance(note, SecurityNote)
 
-        self.assertIsInstance(note1, SecurityNote)
-        self.assertIsInstance(note2, SecurityNote)
-        self.assertIsInstance(note3, SecurityNote)
-        self.assertIsInstance(note4, SecurityNote)
+    def test_note_key_value_assertion(self) -> None:
+        """Tests model correct attribuition of value"""
 
-    def test_note_key_value_assertion(self):
-        """Tests if note's keys and values are properly assigned"""
-
-        note1 = SecurityNote.objects.get(pk=self.security_note_1.pk)
+        note1: SecurityNote = SecurityNote.objects.get(pk=self.security_note_1.pk)
 
         self.assertEqual(note1.title, 'How to draw an apple')
         self.assertEqual(note1.slug, 'how-to-draw-an-apple')
         self.assertEqual(note1.content, 'Just draw an apple tree and erase the tree.')
 
-    def test_note_user_foreign_key_validity(self):
-        """Tests if note.owner is properly assigned"""
+    def test_note_user_foreign_key_validity(self) -> None:
+        """Tests model foreign key validation"""
 
-        note1 = SecurityNote.objects.get(pk=self.security_note_1.pk)
+        note1_owner: User = SecurityNote.objects.get(pk=self.security_note_1.pk).owner
 
-        self.assertEqual(note1.owner, self.user)
+        self.assertEqual(note1_owner, self.user)
 
-    def test_note_create_validity(self):
-        """Tests if created notes are valid or not"""
+    def test_note_create_validity(self) -> None:
+        """Tests model creation integrity and validation"""
 
-        note1 = SecurityNote.objects.get(pk=self.security_note_1.pk)
-        note2 = SecurityNote.objects.get(pk=self.security_note_2.pk)
-        note3 = SecurityNote.objects.get(pk=self.security_note_3.pk)
-        note4 = SecurityNote.objects.get(pk=self.security_note_4.pk)
+        note1: SecurityNote = SecurityNote.objects.get(pk=self.security_note_1.pk)
+        note2: SecurityNote = SecurityNote.objects.get(pk=self.security_note_2.pk)
+        note3: SecurityNote = SecurityNote.objects.get(pk=self.security_note_3.pk)
+        note4: SecurityNote = SecurityNote.objects.get(pk=self.security_note_4.pk)
 
         self.assertEqual(SecurityNote.objects.all().count(), 4)
 
@@ -556,12 +785,9 @@ class SecurityNoteTestCase(TestCase):
         self.assertFalse(note3.is_valid())
         self.assertFalse(note4.is_valid())
 
-    def test_note_update_validity(self):
-        """Tests if updated notes are valid or not"""
+    def test_note_update_validity(self) -> None:
+        """Tests model update integrity and validation"""
 
-        SecurityNote.objects.filter(pk=self.security_note_1.pk).update(
-            title='How not to draw an apple'
-        )
         SecurityNote.objects.filter(pk=self.security_note_2.pk).update(
             slug='how-to-draw-a-tree'
         )
@@ -572,28 +798,85 @@ class SecurityNoteTestCase(TestCase):
             content='Draw an apple tree and then erase the apples and the tree.'
         )
 
-        note1 = SecurityNote.objects.get(pk=self.security_note_1.pk)
-        note2 = SecurityNote.objects.get(pk=self.security_note_2.pk)
-        note3 = SecurityNote.objects.get(pk=self.security_note_3.pk)
-        note4 = SecurityNote.objects.get(pk=self.security_note_4.pk)
+        for note in SecurityNote.objects.all():
+            with self.subTest(note=note):
+                self.assertTrue(note.is_valid())
 
-        self.assertFalse(note1.is_valid())
-        self.assertTrue(note2.is_valid())
-        self.assertTrue(note3.is_valid())
-        self.assertTrue(note4.is_valid())
+    def test_note_delete_validity(self) -> None:
+        """Tests model correct deletion"""
 
-    def test_note_delete_validity(self):
-        """Tests if note objects are correctly deleted or not"""
-
-        note1 = SecurityNote.objects.get(pk=self.security_note_1.pk)
-        note2 = SecurityNote.objects.get(pk=self.security_note_2.pk)
-        note3 = SecurityNote.objects.get(pk=self.security_note_3.pk)
-        note4 = SecurityNote.objects.get(pk=self.security_note_4.pk)
-
-        note2.delete()
-        note3.delete()
-        note4.delete()
+        for note in SecurityNote.objects.all():
+            if not note.is_valid():
+                note.delete()
 
         self.assertEqual(SecurityNote.objects.all().count(), 1)
 
-        self.assertTrue(note1.is_valid())
+    def test_note_db_exception_raises(self) -> None:
+        """Tests model correct integrity and validation with raised exceptions"""
+
+        # Expecting raises
+        raise_kwargs: dict[str, dict[str, User | str]] = {
+            'note1': {'owner': self.user},
+            'note2': {'title': 'A Title'},
+            'note3': {'slug': 'a-title'},
+            'note4': {'content': 'A regular content'},
+            'note5': {'owner': self.user, 'title': 'A Title'},
+            'note6': {'owner': self.user, 'slug': 'a-title'},
+            'note7': {'owner': self.user, 'content': 'A regular content'},
+            'note8': {'owner': self.user, 'title': 'A Title', 'slug': 'a-title'},
+            'note9': {
+                'owner': self.user,
+                'title': 'A Title',
+                'content': 'A regular content',
+            },
+            'note10': {
+                'owner': self.user,
+                'title': 'x' * 41,
+                'content': 'A regular content',
+                'slug': 'a-title',
+            },
+            'note11': {
+                'owner': self.user,
+                'title': 'A Title',
+                'content': 'x' * 301,
+                'slug': 'a-title',
+            },
+            'note12': {
+                'owner': self.user,
+                'title': 'A Title',
+                'content': 'A regular content',
+                'slug': 'x' * 51,
+            },
+        }
+
+        for scenario in raise_kwargs.keys():
+            with self.subTest(scenario=scenario):
+                with self.assertRaises(ValidationError):
+                    with atomic():
+                        instance: SecurityNote = SecurityNote(**raise_kwargs[scenario])
+                        instance.full_clean()
+
+        # Not expecting raises
+        no_raise_kwargs: dict[str, dict[str, str]] = {
+            'note1': {
+                'owner': self.user,
+                'title': 'A Title',
+                'content': 'A regular content',
+                'slug': 'a-title',
+            },
+            'note2': {
+                'owner': self.user,
+                'title': 'x ' * 20,
+                'content': 'x' * 300,
+                'slug': 'x-' * 20,
+            },
+        }
+
+        for scenario in no_raise_kwargs.keys():
+            with self.subTest(scenario=scenario):
+                try:
+                    instance: SecurityNote = SecurityNote(**no_raise_kwargs[scenario])
+                    instance.full_clean()
+
+                except Exception as e:
+                    self.fail(f'{scenario} raised unexpected exception:\n\n{e}')

@@ -14,7 +14,7 @@ from django.db.models import (
 )
 from django.template.defaultfilters import slugify
 from django.urls import reverse
-from django.core.validators import MinLengthValidator
+from django.core.validators import MinLengthValidator, MaxLengthValidator
 
 from account.models import User
 from .month.models import MonthField
@@ -31,30 +31,47 @@ class LoginCredential(Model):
         User, on_delete=CASCADE, related_name='credentials', verbose_name='Dono'
     )
     service: CharField = CharField(
-        max_length=64, choices=credentials_services, verbose_name='Serviço'
+        max_length=64,
+        choices=credentials_services,
+        verbose_name='Serviço',
+        validators=[MaxLengthValidator(64)],
     )
     name: CharField = CharField(
-        max_length=40, verbose_name='Apelido (ex: Conta Principal)'
+        max_length=40,
+        verbose_name='Apelido (ex: Conta Principal)',
+        validators=[MaxLengthValidator(40)],
     )
     thirdy_party_login: BooleanField = BooleanField(
         verbose_name='Login com serviço de terceiro?'
     )
     thirdy_party_login_name: CharField = CharField(
-        max_length=40, verbose_name='Apelido do serviço de terceiro'
+        max_length=40,
+        verbose_name='Apelido do serviço de terceiro',
+        validators=[MaxLengthValidator(40)],
     )
-    login: CharField = CharField(max_length=200, verbose_name='Login')
-    password: CharField = CharField(max_length=200, verbose_name='Senha')
+    login: CharField = CharField(
+        max_length=200, verbose_name='Login', validators=[MaxLengthValidator(200)]
+    )
+    password: CharField = CharField(
+        max_length=200, verbose_name='Senha', validators=[MaxLengthValidator(200)]
+    )
     note: TextField = TextField(
-        max_length=128, blank=True, null=True, verbose_name='Anotação particular'
+        max_length=128,
+        blank=True,
+        null=True,
+        verbose_name='Anotação particular',
+        validators=[MaxLengthValidator(128)],
     )
-    slug: Final[SlugField] = SlugField(max_length=128)
+    slug: Final[SlugField] = SlugField(
+        max_length=128, validators=[MaxLengthValidator(128)]
+    )
     created: Final[DateTimeField] = DateTimeField(auto_now_add=True)
     updated: Final[DateTimeField] = DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['-created']
-        verbose_name = 'Credencial de Login'
-        verbose_name_plural = 'Credenciais de Login'
+        verbose_name = 'Credencial'
+        verbose_name_plural = 'Credenciais'
 
     def __str__(self) -> str:
         return f'{str(self.owner.username)} | {self.service} | {self.name}'
@@ -180,19 +197,26 @@ class Card(Model):
         User, on_delete=CASCADE, related_name='cards', verbose_name='Dono'
     )
     name: CharField = CharField(
-        max_length=40, verbose_name='Apelido (ex: Cartão da Família)'
+        max_length=40,
+        verbose_name='Apelido (ex: Cartão da Família)',
+        validators=[MaxLengthValidator(40)],
     )
     card_type: CharField = CharField(
-        max_length=4, choices=cards_types, verbose_name='Tipo (débito, crédito, ...)'
+        max_length=4,
+        choices=cards_types,
+        verbose_name='Tipo (débito, crédito, ...)',
+        validators=[MaxLengthValidator(4)],
     )
     number: CharField = CharField(
         max_length=19,
-        validators=[MinLengthValidator(12)],
+        validators=[MinLengthValidator(12), MaxLengthValidator(19)],
         verbose_name='Número do Cartão',
     )
     expiration = MonthField(verbose_name='Data de Expiração')
     cvv: CharField = CharField(
-        max_length=4, validators=[MinLengthValidator(3)], verbose_name='cvv'
+        max_length=4,
+        validators=[MinLengthValidator(3), MaxLengthValidator(4)],
+        verbose_name='cvv',
     )
     bank: CharField = CharField(
         max_length=64, choices=cards_banks, verbose_name='Banco'
@@ -201,12 +225,20 @@ class Card(Model):
         max_length=64, choices=cards_brands, verbose_name='Bandeira'
     )
     owners_name: CharField = CharField(
-        max_length=64, verbose_name='Nome do Titular (como no cartão)'
+        max_length=64,
+        verbose_name='Nome do Titular (como no cartão)',
+        validators=[MaxLengthValidator(64)],
     )
     note: TextField = TextField(
-        max_length=128, blank=True, null=True, verbose_name='Anotação Particular'
+        max_length=128,
+        blank=True,
+        null=True,
+        verbose_name='Anotação Particular',
+        validators=[MaxLengthValidator(128)],
     )
-    slug: Final[SlugField] = SlugField(max_length=128)
+    slug: Final[SlugField] = SlugField(
+        max_length=128, validators=[MaxLengthValidator(128)]
+    )
     created: Final[DateTimeField] = DateTimeField(auto_now_add=True)
     updated: Final[DateTimeField] = DateTimeField(auto_now=True)
 
@@ -367,9 +399,15 @@ class SecurityNote(Model):
     owner: Final[ForeignKey] = ForeignKey(
         User, on_delete=CASCADE, related_name='notes', verbose_name='Dono'
     )
-    title: Final[CharField] = CharField(max_length=40, verbose_name='Título')
-    content: TextField = TextField(max_length=300, verbose_name='Conteúdo')
-    slug: Final[SlugField] = SlugField(max_length=50)
+    title: Final[CharField] = CharField(
+        max_length=40, verbose_name='Título', validators=[MaxLengthValidator(40)]
+    )
+    content: TextField = TextField(
+        max_length=300, verbose_name='Conteúdo', validators=[MaxLengthValidator(300)]
+    )
+    slug: Final[SlugField] = SlugField(
+        max_length=50, validators=[MaxLengthValidator(50)]
+    )
     created: Final[DateTimeField] = DateTimeField(auto_now_add=True)
     updated: Final[DateTimeField] = DateTimeField(auto_now=True)
 

@@ -1,7 +1,7 @@
 from warnings import filterwarnings
 from datetime import datetime
 
-from django.db import DataError, IntegrityError
+from django.db import DataError
 from django.core.exceptions import ValidationError
 from django.db.transaction import atomic
 from django.test import TestCase
@@ -34,8 +34,8 @@ class ActivationAccountTokenTestCase(TestCase):
     def test_token_instance_validity(self) -> None:
         """Tests model instance of correct class"""
 
-        for i, token in enumerate(ActivationAccountToken.objects.all()):
-            with self.subTest(token=i + 1):
+        for token in ActivationAccountToken.objects.all():
+            with self.subTest(token=token):
                 self.assertIsInstance(token, ActivationAccountToken)
 
     def test_token_key_value_assertion(self) -> None:
@@ -75,8 +75,8 @@ class ActivationAccountTokenTestCase(TestCase):
             value='x' * 64, used=True
         )
 
-        for i, token in enumerate(ActivationAccountToken.objects.all()):
-            with self.subTest(token=i + 1):
+        for token in ActivationAccountToken.objects.all():
+            with self.subTest(token=token):
                 self.assertTrue(token.is_valid())
 
     def test_token_delete_validity(self) -> None:
