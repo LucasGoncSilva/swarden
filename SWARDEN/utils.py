@@ -1,3 +1,4 @@
+from itertools import compress, product
 from typing import Final, Any, Generator
 from hashlib import sha256
 
@@ -104,3 +105,17 @@ def send_activate_account_done(user_email: str) -> None:
         to=[user_email],
     )
     email.send()
+
+
+def create_scenarios(params: list[dict[str, Any]]):
+    for case in product([0, 1], repeat=len(params)):
+        if all(case):
+            break
+        temp = compress(params, case)
+        temp = list(temp)
+        scenario = {}
+
+        for param in temp:
+            scenario.update(param)
+
+        yield case, scenario
