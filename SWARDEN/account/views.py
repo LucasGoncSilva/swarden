@@ -20,8 +20,8 @@ from django.contrib import messages
 
 from captcha.fields import CaptchaField
 
+from utils import send_activate_account_token, send_activate_account_done
 from .models import User, ActivationAccountToken
-from mail.views import send_activate_account_token, send_activate_account_done
 from err.views import handle500
 
 

@@ -1,10 +1,28 @@
-from typing import Any, Generator
+from typing import Final, Any, Generator
+from hashlib import sha256
 
+from django.db import DataError, IntegrityError
+from django.core.exceptions import ValidationError
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 from django.http import HttpRequest
+from django.core.mail import EmailMessage
 from django.conf import settings
+
+from account.models import User, ActivationAccountToken
 
 
 SK: str = settings.SECRET_KEY
+NO_DATA_TO_EXPORT: Final = 'Não há dados para exportação.'
+SUCCESS_DATA_EXPORTING: Final = 'Dados exportados com sucesso.'
+
+ACTIVATE_ACCOUNT_TOKEN_SEND: Final = (
+    """Sua conta foi criada com sucesso, contudo, você deve ativá-la. Para fazer isso, clique no link abaixo:\n\n\n{domain}/conta/ativar/{uidb64}/{token}\n\n\nEquipe sWarden"""
+)
+
+ACTIVATE_ACCOUNT_CONFIRM_DONE: Final = (
+    """A partir de agora a sua conta está ativa e você pode utilizar dos recursos do sistema para armazenar seus dados sensíveis.\n\n\nEquipe sWarden"""
+)
 
 
 def get_ip_address(r: HttpRequest) -> Any | None:
@@ -46,3 +64,43 @@ def xor(text: str, key: str, encrypt: bool = True) -> str:
         ]
 
     return ''.join(transformed_chars)
+
+
+def send_activate_account_token(domain: str, user: User, password: str) -> None:
+    token_hash = sha256(f'{user.username}{password}'.encode()).hexdigest()
+    uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+
+    token: ActivationAccountToken = ActivationAccountToken.objects.create(
+        value=token_hash, used=False
+    )
+
+    try:
+        print('validating token')
+        token.full_clean()
+        if not token.is_valid():
+            token.failed = True
+            raise ValidationError(
+                f'ActivationAccountToken(value={token.value}, used={token.used}, created={token.created}) is invalid.'
+            )
+    except (DataError, IntegrityError, ValidationError) as e:
+        raise e
+
+    email: EmailMessage = EmailMessage(
+        subject='Ativação de Conta | sWarden',
+        body=ACTIVATE_ACCOUNT_TOKEN_SEND.format(
+            domain=domain, uidb64=uidb64, token=token_hash
+        ),
+        from_email=settings.EMAIL_HOST_USER,
+        to=[str(user.email)],
+    )
+    email.send()
+
+
+def send_activate_account_done(user_email: str) -> None:
+    email: EmailMessage = EmailMessage(
+        subject='Ativação de Conta | sWarden',
+        body=ACTIVATE_ACCOUNT_CONFIRM_DONE,
+        from_email=settings.EMAIL_HOST_USER,
+        to=[user_email],
+    )
+    email.send()

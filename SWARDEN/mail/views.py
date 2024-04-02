@@ -1,36 +1,19 @@
 from typing import Final, Literal, Type
 from csv import writer
-from hashlib import sha256
 from io import StringIO
 
-from django.db import DataError, IntegrityError
-from django.core.exceptions import ValidationError
 from django.db.models import QuerySet
 from django.urls import reverse
-from django.utils.encoding import force_bytes
-from django.utils.http import urlsafe_base64_encode
-from django.http import HttpRequest, HttpResponseRedirect, HttpResponseServerError
+from django.http import HttpRequest, HttpResponseRedirect
 from django.core.mail import EmailMessage
 from django.conf import settings
 from django.contrib.messages import success, error
 
-from account.models import User, ActivationAccountToken
 from secret.models import Card, LoginCredential, SecurityNote
+from utils import NO_DATA_TO_EXPORT, SUCCESS_DATA_EXPORTING
 
 
 # Create your views here.
-NO_DATA_TO_EXPORT: Final = 'Não há dados para exportação.'
-SUCCESS_DATA_EXPORTING: Final = 'Dados exportados com sucesso.'
-
-ACTIVATE_ACCOUNT_TOKEN_SEND: Final = (
-    """Sua conta foi criada com sucesso, contudo, você deve ativá-la. Para fazer isso, clique no link abaixo:\n\n\n{domain}/conta/ativar/{uidb64}/{token}\n\n\nEquipe sWarden"""
-)
-
-ACTIVATE_ACCOUNT_CONFIRM_DONE: Final = (
-    """A partir de agora a sua conta está ativa e você pode utilizar dos recursos do sistema para armazenar seus dados sensíveis.\n\n\nEquipe sWarden"""
-)
-
-
 def export_secrets(
     r: HttpRequest, secret_type: Literal['Credenciais', 'Cartões', 'Anotações']
 ) -> HttpResponseRedirect:
@@ -135,43 +118,3 @@ def export_secrets(
 
         success(r, SUCCESS_DATA_EXPORTING)
         return HttpResponseRedirect(reverse('secret:note_list_view'))
-
-
-def send_activate_account_token(domain: str, user: User, password: str) -> None:
-    token_hash = sha256(f'{user.username}{password}'.encode()).hexdigest()
-    uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
-
-    token: ActivationAccountToken = ActivationAccountToken.objects.create(
-        value=token_hash, used=False
-    )
-
-    try:
-        print('validating token')
-        token.full_clean()
-        if not token.is_valid():
-            token.failed = True
-            raise ValidationError(
-                f'ActivationAccountToken(value={token.value}, used={token.used}, created={token.created}) is invalid.'
-            )
-    except (DataError, IntegrityError, ValidationError) as e:
-        raise e
-
-    email: EmailMessage = EmailMessage(
-        subject='Ativação de Conta | sWarden',
-        body=ACTIVATE_ACCOUNT_TOKEN_SEND.format(
-            domain=domain, uidb64=uidb64, token=token_hash
-        ),
-        from_email=settings.EMAIL_HOST_USER,
-        to=[str(user.email)],
-    )
-    email.send()
-
-
-def send_activate_account_done(user_email: str) -> None:
-    email: EmailMessage = EmailMessage(
-        subject='Ativação de Conta | sWarden',
-        body=ACTIVATE_ACCOUNT_CONFIRM_DONE,
-        from_email=settings.EMAIL_HOST_USER,
-        to=[user_email],
-    )
-    email.send()
