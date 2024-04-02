@@ -110,20 +110,22 @@ class ActivationAccountTokenTestCase(TestCase):
                         instance.full_clean()
 
         # Not expecting raises
-        try:
-            no_raise_kwargs: dict[str, dict[str, str | bool | datetime]] = {
-                'token1': {'value': 'x' * 64},
-                'token2': {'value': 'x' * 64, 'used': False},
-                'token3': {'value': 'x' * 64, 'used': True},
-                'token4': {'value': 'x' * 64, 'created': datetime(2004, 5, 25)},
-            }
+        no_raise_kwargs: dict[str, dict[str, str | bool | datetime]] = {
+            'token1': {'value': 'x' * 64},
+            'token2': {'value': 'x' * 64, 'used': False},
+            'token3': {'value': 'x' * 64, 'used': True},
+            'token4': {'value': 'x' * 64, 'created': datetime(2004, 5, 25)},
+        }
 
-            for scenario in no_raise_kwargs.keys():
-                with self.subTest(scenario=scenario):
-                    instance = ActivationAccountToken(**no_raise_kwargs[scenario])
+        for scenario in no_raise_kwargs.keys():
+            with self.subTest(scenario=scenario):
+                try:
+                    instance: ActivationAccountToken = ActivationAccountToken(
+                        **no_raise_kwargs[scenario]
+                    )
                     instance.full_clean()
 
-        except Exception as e:
-            self.fail(
-                f'ActivationAccountToken({scenario}) raised unexpected exception: {e}'
-            )
+                except Exception as e:
+                    self.fail(
+                        f'ActivationAccountToken {no_raise_kwargs[scenario]} raised unexpected exception: {e}'
+                    )

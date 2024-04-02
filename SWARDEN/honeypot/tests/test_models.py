@@ -1,0 +1,173 @@
+from warnings import filterwarnings
+from datetime import datetime
+
+from django.test import TestCase
+from django.db.transaction import atomic
+from django.core.exceptions import ValidationError
+
+from honeypot.models import Attempt
+
+
+class AttemptTestCase(TestCase):
+    def setUp(self) -> None:
+        filterwarnings("ignore", category=RuntimeWarning)
+
+        self.attempt1: Attempt = Attempt.objects.create(
+            IP='255.255.255.255',
+            username='username',
+            password='password',
+            URL='<script>alert(1)</script>',
+            timestamp=datetime(2017, 7, 8),
+        )
+
+        self.attempt2: Attempt = Attempt.objects.create(
+            IP='0' * 64,
+            username='u' * 256,
+            password='p' * 256,
+            URL='!' * 256,
+        )
+
+        self.attempt3: Attempt = Attempt.objects.create(
+            IP='0' * 64,
+            username='u' * 256,
+            password='p' * 256,
+            URL='!' * 256,
+            timestamp='string',
+        )
+
+        self.attempt4: Attempt = Attempt.objects.create(
+            IP='0' * 64,
+            password='p' * 256,
+            URL='!' * 256,
+        )
+
+        self.attempt5: Attempt = Attempt.objects.create(
+            username='u' * 256,
+            password='p' * 256,
+            URL='!' * 256,
+        )
+
+    def test_attempt_instance_validity(self) -> None:
+        """Tests model instance of correct class"""
+
+        for i, attempt in enumerate(Attempt.objects.all()):
+            with self.subTest(attempt=i + 1):
+                self.assertIsInstance(attempt, Attempt)
+
+    def test_attempt_key_value_assertion(self) -> None:
+        """Tests model correct attribuition of value"""
+
+        attempt1: Attempt = Attempt.objects.get(pk=self.attempt1.pk)
+
+        self.assertEqual(attempt1.IP, '255.255.255.255')
+        self.assertEqual(attempt1.username, 'username')
+        self.assertEqual(attempt1.password, 'password')
+        self.assertEqual(attempt1.URL, '<script>alert(1)</script>')
+        self.assertNotEqual(attempt1.timestamp, datetime(2017, 7, 8))
+
+    def test_attempt_create_validity(self) -> None:
+        """Tests model creation integrity and validation"""
+
+        attempt1: Attempt = Attempt.objects.get(pk=self.attempt1.pk)
+        attempt2: Attempt = Attempt.objects.get(pk=self.attempt2.pk)
+        attempt3: Attempt = Attempt.objects.get(pk=self.attempt3.pk)
+        attempt4: Attempt = Attempt.objects.get(pk=self.attempt4.pk)
+        attempt5: Attempt = Attempt.objects.get(pk=self.attempt5.pk)
+
+        self.assertEqual(Attempt.objects.all().count(), 5)
+
+        self.assertTrue(attempt1.is_valid())
+        self.assertTrue(attempt2.is_valid())
+        self.assertTrue(attempt3.is_valid())
+        self.assertFalse(attempt4.is_valid())
+        self.assertFalse(attempt5.is_valid())
+
+    def test_attempt_update_validity(self) -> None:
+        """Tests model update integrity and validation"""
+
+        Attempt.objects.filter(pk=self.attempt4.pk).update(username='bob_a_bob')
+
+        Attempt.objects.filter(pk=self.attempt5.pk).update(IP='192.168.55.36')
+
+        for i, attempt in enumerate(Attempt.objects.all()):
+            with self.subTest(attempt=i + 1):
+                self.assertTrue(attempt.is_valid())
+
+    def test_attempt_delete_validity(self) -> None:
+        """Tests model correct deletion"""
+
+        for attempt in Attempt.objects.all():
+            if not attempt.is_valid():
+                attempt.delete()
+
+        self.assertEqual(Attempt.objects.all().count(), 3)
+
+    def test_attempt_db_exception_raises(self) -> None:
+        """Tests model correct integrity and validation with raised exceptions"""
+
+        # Expecting raises
+        raise_kwargs: dict[str, dict[str, str | None]] = {
+            'attemp1': {'IP': 'foobarbazqux'},
+            'attemp2': {'IP': 'x' * 65},
+            'attemp3': {'IP': None},
+            'attemp4': {'username': 'foobarbazqux'},
+            'attemp5': {'username': 'x' * 257},
+            'attemp6': {'username': None},
+            'attemp7': {'password': 'foobarbazqux'},
+            'attemp8': {'password': 'x' * 257},
+            'attemp9': {'password': None},
+            'attemp10': {'URL': 'foobarbazqux'},
+            'attemp11': {'URL': 'x' * 257},
+            'attemp12': {'URL': None},
+            'attemp13': {'timestamp': 'foobarbazqux'},
+            'attemp14': {'timestamp': None},
+        }
+
+        for scenario in raise_kwargs.keys():
+            with self.subTest(scenario=scenario):
+                with self.assertRaises(ValidationError):
+                    with atomic():
+                        instance: Attempt = Attempt(**raise_kwargs[scenario])
+                        instance.full_clean()
+
+        # Not expecting raises
+        no_raise_kwargs: dict[str, dict[str, str | datetime]] = {
+            'attemp1': {
+                'IP': '255.255.255.255',
+                'username': 'username',
+                'password': 'password',
+                'URL': 'URL',
+            },
+            'attemp2': {
+                'IP': '255.255.255.255',
+                'username': 'username',
+                'password': 'password',
+                'URL': 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                'timestamp': datetime(1980, 4, 25),
+            },
+            'attemp3': {
+                'IP': '255.255.255.255',
+                'username': 10**255,
+                'password': 10**255,
+                'URL': '<script>alert(404)</script>',
+                'timestamp': '2023-10-15',
+            },
+            'attemp4': {
+                'IP': 'x' * 64,
+                'username': 'x' * 256,
+                'password': 'x' * 256,
+                'URL': 'x' * 256,
+                'timestamp': datetime(2023, 10, 15),
+            },
+        }
+
+        for scenario in no_raise_kwargs.keys():
+            with self.subTest(scenario=scenario):
+                try:
+                    instance: Attempt = Attempt(**no_raise_kwargs[scenario])
+                    instance.full_clean()
+
+                except Exception as e:
+                    self.fail(
+                        f'Attempt {no_raise_kwargs[scenario]} raised unexpected exception:\n\n{e}'
+                    )

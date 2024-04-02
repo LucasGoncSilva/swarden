@@ -42,8 +42,10 @@ class ActivationAccountToken(Model):
 
     def is_valid(self) -> bool:
         if (
-            len(self.value) == 64
+            self.value
+            and len(self.value) == 64
             and isinstance(self.used, bool)
+            and self.created
             and isinstance(self.created, datetime)
         ):
             return True

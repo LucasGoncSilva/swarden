@@ -161,10 +161,104 @@ Aqui é onde você visualiza os detalhes do segredo escolhido, informação por 
 <br>
 <hr>
 
-<h2 align='center'>Avisos</h2>
+<h2 align='center'>Contrib</h2>
 
-* This project is already online, but also under development. Use it knowing that some bugs might happen, so keep, at least for now, your secrets that you have another way to access besides sWarden.
-* Due to it's gratuity, sWarden supports a limited number of users, requests/online time and secrets stored on it's database. At some point this system will no longer offers registration for new users, preventing the database to colapse.
+### Escrevendo Testes de Models
+
+```py
+class MyModelTestCase(TestCase):
+    def setUp(self) -> None:
+        self.model1: MyModel = MyModel.objects.create(...)
+
+        self.model2: MyModel = MyModel.objects.create(...)
+
+        self.model3: MyModel = MyModel.objects.create(...)
+
+        self.model4: MyModel = MyModel.objects.create(...)
+
+        self.model5: MyModel = MyModel.objects.create(...)
+
+    def test_model_instance_validity(self) -> None:
+        """Tests model instance of correct class"""
+
+        for i, model in enumerate(MyModel.objects.all()):
+            with self.subTest(model=i + 1):
+                self.assertIsInstance(model, MyModel)
+
+    def test_model_key_value_assertion(self) -> None:
+        """Tests model correct attribuition of value"""
+
+        model1: MyModel = MyModel.objects.get(pk=self.model1.pk)
+
+        self.assert...(...)
+        ...
+
+    def test_model_create_validity(self) -> None:
+        """Tests model creation integrity and validation"""
+
+        model1: MyModel = MyModel.objects.get(pk=self.model1.pk)
+        model2: MyModel = MyModel.objects.get(pk=self.model2.pk)
+        model3: MyModel = MyModel.objects.get(pk=self.model3.pk)
+        model4: MyModel = MyModel.objects.get(pk=self.model4.pk)
+        model5: MyModel = MyModel.objects.get(pk=self.model5.pk)
+
+        self.assertEqual(MyModel.objects.all().count(), 5)
+
+        self.assertTrue(model1.is_valid())
+        self.assertTrue(model2.is_valid())
+        self.assertTrue(model3.is_valid())
+        self.assertFalse(model4.is_valid())
+        self.assertFalse(model5.is_valid())
+
+    def test_model_update_validity(self) -> None:
+        """Tests model update integrity and validation"""
+
+        MyModel.objects.filter(pk=self.model4.pk).update(...)
+
+        MyModel.objects.filter(pk=self.model5.pk).update(...)
+
+        for i, model in enumerate(MyModel.objects.all()):
+            with self.subTest(model=i + 1):
+                self.assertTrue(model.is_valid())
+
+    def test_model_delete_validity(self) -> None:
+        """Tests model correct deletion"""
+
+        for model in MyModel.objects.all():
+            if not model.is_valid():
+                model.delete()
+
+        self.assertEqual(MyModel.objects.all().count(), <int>)
+
+    def test_model_db_exception_raises(self) -> None:
+        """Tests model correct integrity and validation with raised exceptions"""
+
+        # Expecting raises
+        raise_kwargs: dict[str, dict[str, ...]] = {
+            'model1': {...},
+            'model2': {...},
+            ...
+        }
+
+        for scenario in raise_kwargs.keys():
+            with self.subTest(scenario=scenario):
+                with self.assertRaises(Exception):
+                    with atomic():
+                        instance: MyModel = MyModel(**raise_kwargs[scenario])
+                        instance.full_clean()
+
+        # Not expecting raises
+        for scenario in no_raise_kwargs.keys():
+            with self.subTest(scenario=scenario):
+                try:
+                    instance: Attempt = Attempt(**no_raise_kwargs[scenario])
+                    instance.full_clean()
+
+                except Exception as e:
+                    self.fail(
+                        f'Attempt {no_raise_kwargs[scenario]} raised unexpected exception:\n\n{e}'
+                    )
+```
 
 <br>
 <hr>
