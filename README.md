@@ -181,8 +181,8 @@ class MyModelTestCase(TestCase):
     def test_model_instance_validity(self) -> None:
         """Tests model instance of correct class"""
 
-        for i, model in enumerate(MyModel.objects.all()):
-            with self.subTest(model=i + 1):
+        for model in MyModel.objects.all():
+            with self.subTest(model=model):
                 self.assertIsInstance(model, MyModel)
 
     def test_model_key_value_assertion(self) -> None:
@@ -217,8 +217,8 @@ class MyModelTestCase(TestCase):
 
         MyModel.objects.filter(pk=self.model5.pk).update(...)
 
-        for i, model in enumerate(MyModel.objects.all()):
-            with self.subTest(model=i + 1):
+        for model in MyModel.objects.all():
+            with self.subTest(model=model):
                 self.assertTrue(model.is_valid())
 
     def test_model_delete_validity(self) -> None:
@@ -234,6 +234,25 @@ class MyModelTestCase(TestCase):
         """Tests model correct integrity and validation with raised exceptions"""
 
         # Expecting raises
+        params: list[dict[str, User | str]] = [
+            {'field': 'value'},
+            {'field': 'value'},
+            {'field': 'value'},
+            {'field': 'value'},
+            {'field': 'value'},
+            {'field': 'value'},
+            {'field': 'value'},
+            {'field': 'value'},
+            {'field': 'value'},
+        ]
+
+        for case, scenario in create_scenarios(params):
+            with self.subTest(scenario=case):
+                with self.assertRaises(ValidationError):
+                    with atomic():
+                        instance: MyModel = MyModel(**scenario)
+                        instance.full_clean()
+
         raise_kwargs: dict[str, dict[str, ...]] = {
             'model1': {...},
             'model2': {...},
@@ -251,12 +270,12 @@ class MyModelTestCase(TestCase):
         for scenario in no_raise_kwargs.keys():
             with self.subTest(scenario=scenario):
                 try:
-                    instance: Attempt = Attempt(**no_raise_kwargs[scenario])
+                    instance: MyModel = MyModel(**no_raise_kwargs[scenario])
                     instance.full_clean()
 
                 except Exception as e:
                     self.fail(
-                        f'Attempt {no_raise_kwargs[scenario]} raised unexpected exception:\n\n{e}'
+                        f'MyModel {no_raise_kwargs[scenario]} raised unexpected exception:\n\n{e}'
                     )
 ```
 
