@@ -32,14 +32,14 @@ class ActivationAccountTokenTestCase(TestCase):
         self.token5 = ActivationAccountToken.objects.create(value='x' * 63, used=False)
 
     def test_token_instance_validity(self) -> None:
-        """Tests model instance of correct class"""
+        """Tests token instance of correct class"""
 
         for token in ActivationAccountToken.objects.all():
             with self.subTest(token=token):
                 self.assertIsInstance(token, ActivationAccountToken)
 
     def test_token_key_value_assertion(self) -> None:
-        """Tests model correct attribuition of value"""
+        """Tests token correct attribuition of value"""
 
         token1 = ActivationAccountToken.objects.get(pk=self.token1.pk)
 
@@ -48,7 +48,7 @@ class ActivationAccountTokenTestCase(TestCase):
         self.assertIsInstance(token1.created, datetime)
 
     def test_token_create_validity(self) -> None:
-        """Tests model creation integrity and validation"""
+        """Tests token creation integrity and validation"""
 
         token1 = ActivationAccountToken.objects.get(pk=self.token1.pk)
         token2 = ActivationAccountToken.objects.get(pk=self.token2.pk)
@@ -65,7 +65,7 @@ class ActivationAccountTokenTestCase(TestCase):
         self.assertFalse(token5.is_valid())
 
     def test_token_update_validity(self) -> None:
-        """Tests model update integrity and validation"""
+        """Tests token update integrity and validation"""
 
         ActivationAccountToken.objects.filter(pk=self.token4.pk).update(
             value='x' * 64, created='2009-6-5'
@@ -80,7 +80,7 @@ class ActivationAccountTokenTestCase(TestCase):
                 self.assertTrue(token.is_valid())
 
     def test_token_delete_validity(self) -> None:
-        """Tests model correct deletion"""
+        """Tests token correct deletion"""
 
         for token in ActivationAccountToken.objects.all():
             if not token.is_valid():
@@ -89,7 +89,7 @@ class ActivationAccountTokenTestCase(TestCase):
         self.assertEqual(ActivationAccountToken.objects.all().count(), 3)
 
     def test_token_db_exception_raises(self) -> None:
-        """Tests model correct integrity and validation with raised exceptions"""
+        """Tests token correct integrity and validation with raised exceptions"""
 
         # Expecting raises
         raise_kwargs: dict[str, dict[str, str | bool | int | None]] = {

@@ -116,14 +116,14 @@ class CredentialTestCase(TestCase):
         )
 
     def test_credential_instance_validity(self) -> None:
-        """Tests model instance of correct class"""
+        """Tests credential instance of correct class"""
 
         for cred in LoginCredential.objects.all():
             with self.subTest(cred=cred):
                 self.assertIsInstance(cred, LoginCredential)
 
     def test_credential_key_value_assertion(self) -> None:
-        """Tests model correct attribuition of value"""
+        """Tests credential correct attribuition of value"""
 
         cred1: LoginCredential = LoginCredential.objects.get(
             pk=self.login_credential_1.pk
@@ -138,7 +138,7 @@ class CredentialTestCase(TestCase):
         self.assertEqual(cred1.password, 'ilovemenotyou')
 
     def test_credential_user_foreign_key_validity(self) -> None:
-        """Tests model foreign key validation"""
+        """Tests credential foreign key validation"""
 
         cred1: LoginCredential = LoginCredential.objects.get(
             pk=self.login_credential_1.pk
@@ -154,7 +154,7 @@ class CredentialTestCase(TestCase):
         self.assertEqual(cred1_owner, self.user)
 
     def test_credential_create_validity(self) -> None:
-        """Tests model creation integrity and validation"""
+        """Tests credential creation integrity and validation"""
 
         cred1: LoginCredential = LoginCredential.objects.get(
             pk=self.login_credential_1.pk
@@ -189,7 +189,7 @@ class CredentialTestCase(TestCase):
         self.assertFalse(cred7.is_valid())
 
     def test_credential_update_validity(self) -> None:
-        """Tests model update integrity and validation"""
+        """Tests credential update integrity and validation"""
 
         LoginCredential.objects.filter(pk=self.login_credential_3.pk).update(
             thirdy_party_login=False
@@ -218,7 +218,7 @@ class CredentialTestCase(TestCase):
                 self.assertTrue(cred.is_valid())
 
     def test_credential_delete_validity(self) -> None:
-        """Tests model correct deletion"""
+        """Tests credential correct deletion"""
 
         for cred in LoginCredential.objects.all():
             if not cred.is_valid():
@@ -227,7 +227,7 @@ class CredentialTestCase(TestCase):
         self.assertEqual(LoginCredential.objects.all().count(), 2)
 
     def test_credential_db_exception_raises(self) -> None:
-        """Tests model correct integrity and validation with raised exceptions"""
+        """Tests credential correct integrity and validation with raised exceptions"""
 
         # Expecting raises
         params: list[dict[str, User | str | bool]] = [
@@ -450,14 +450,14 @@ class CardTestCase(TestCase):
         )
 
     def test_card_instance_validity(self) -> None:
-        """Tests model instance of correct class"""
+        """Tests card instance of correct class"""
 
         for card in Card.objects.all():
             with self.subTest(card=card):
                 self.assertIsInstance(card, Card)
 
     def test_card_key_value_assertion(self) -> None:
-        """Tests model correct attribuition of value"""
+        """Tests card correct attribuition of value"""
 
         card1: Card = Card.objects.get(pk=self.card_1.pk)
 
@@ -472,14 +472,14 @@ class CardTestCase(TestCase):
         self.assertEqual(card1.owners_name, 'TEST USER')
 
     def test_card_user_foreign_key_validity(self) -> None:
-        """Tests model foreign key validation"""
+        """Tests card foreign key validation"""
 
         card1_owner: User = Card.objects.get(pk=self.card_1.pk).owner
 
         self.assertEqual(card1_owner, self.user)
 
     def test_card_create_validity(self) -> None:
-        """Tests model creation integrity and validation"""
+        """Tests card creation integrity and validation"""
 
         card1: Card = Card.objects.get(pk=self.card_1.pk)
         card2: Card = Card.objects.get(pk=self.card_2.pk)
@@ -498,7 +498,7 @@ class CardTestCase(TestCase):
         self.assertFalse(card6.is_valid())
 
     def test_card_update_validity(self) -> None:
-        """Tests model update integrity and validation"""
+        """Tests card update integrity and validation"""
 
         Card.objects.filter(pk=self.card_2.pk).update(
             card_type=xor('cred', self.user.password[21:])
@@ -523,7 +523,7 @@ class CardTestCase(TestCase):
                 self.assertTrue(card.is_valid())
 
     def test_card_delete_validity(self) -> None:
-        """Tests model correct deletion"""
+        """Tests card correct deletion"""
 
         for card in Card.objects.all():
             if not card.is_valid():
@@ -532,7 +532,7 @@ class CardTestCase(TestCase):
         self.assertEqual(Card.objects.all().count(), 1)
 
     def test_card_db_exception_raises(self) -> None:
-        """Tests model correct integrity and validation with raised exceptions"""
+        """Tests card correct integrity and validation with raised exceptions"""
 
         # Expecting raises
         params: list[dict[str, User | str]] = [
@@ -748,14 +748,14 @@ class SecurityNoteTestCase(TestCase):
         )  # Missing/empty content field
 
     def test_note_instance_validity(self) -> None:
-        """Tests model instance of correct class"""
+        """Tests note instance of correct class"""
 
         for note in SecurityNote.objects.all():
             with self.subTest(note=note):
                 self.assertIsInstance(note, SecurityNote)
 
     def test_note_key_value_assertion(self) -> None:
-        """Tests model correct attribuition of value"""
+        """Tests note correct attribuition of value"""
 
         note1: SecurityNote = SecurityNote.objects.get(pk=self.security_note_1.pk)
 
@@ -764,14 +764,14 @@ class SecurityNoteTestCase(TestCase):
         self.assertEqual(note1.content, 'Just draw an apple tree and erase the tree.')
 
     def test_note_user_foreign_key_validity(self) -> None:
-        """Tests model foreign key validation"""
+        """Tests note foreign key validation"""
 
         note1_owner: User = SecurityNote.objects.get(pk=self.security_note_1.pk).owner
 
         self.assertEqual(note1_owner, self.user)
 
     def test_note_create_validity(self) -> None:
-        """Tests model creation integrity and validation"""
+        """Tests note creation integrity and validation"""
 
         note1: SecurityNote = SecurityNote.objects.get(pk=self.security_note_1.pk)
         note2: SecurityNote = SecurityNote.objects.get(pk=self.security_note_2.pk)
@@ -786,7 +786,7 @@ class SecurityNoteTestCase(TestCase):
         self.assertFalse(note4.is_valid())
 
     def test_note_update_validity(self) -> None:
-        """Tests model update integrity and validation"""
+        """Tests note update integrity and validation"""
 
         SecurityNote.objects.filter(pk=self.security_note_2.pk).update(
             slug='how-to-draw-a-tree'
@@ -803,7 +803,7 @@ class SecurityNoteTestCase(TestCase):
                 self.assertTrue(note.is_valid())
 
     def test_note_delete_validity(self) -> None:
-        """Tests model correct deletion"""
+        """Tests note correct deletion"""
 
         for note in SecurityNote.objects.all():
             if not note.is_valid():
@@ -812,7 +812,7 @@ class SecurityNoteTestCase(TestCase):
         self.assertEqual(SecurityNote.objects.all().count(), 1)
 
     def test_note_db_exception_raises(self) -> None:
-        """Tests model correct integrity and validation with raised exceptions"""
+        """Tests note correct integrity and validation with raised exceptions"""
 
         # Expecting raises
         raise_kwargs: dict[str, dict[str, User | str]] = {

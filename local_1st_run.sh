@@ -22,7 +22,7 @@ environ['EMAIL_HOST_PASSWORD'] = ''
 
 system('black -S .')
 system('find -name "*.pyc" -type f -delete')
-system('rm -rf `find -type d -name __pycache__`')
+system('rm -rf \`find -type d -name __pycache__\`')
 
 
 def run_false():
@@ -57,7 +57,7 @@ def test():
 
 
 def cleardb():
-    system('rm -rf `find -type d -name migrations -not -path "./env/*"`')
+    system('rm -rf \`find -type d -name migrations -not -path "./env/*"\`')
     system('find -name "*.sqlite3" -type f -delete')
     exit(0)
 
@@ -75,8 +75,9 @@ def docker():
 
 def coverage():
     module = argv[2]
+    omit_list = ['*/month/*', 'orchestrator.py', '*/migrations/*']
     test()
-    system(f'coverage run --source=\'{module}\' manage.py test {module}')
+    system(f'coverage run --source=\'{module}\' --omit=\'{",".join(omit_list)}\' manage.py test {module}')
     system('coverage html')
 
 
@@ -102,8 +103,7 @@ elif argv[1] == 'coverage':
 
 
 sleep(3)
-system('python3 manage.py ' + ' '.join([i for i in argv[1:]]))
-""" > orchestrator.py
+system('python3 manage.py ' + ' '.join([i for i in argv[1:]]))""" > orchestrator.py
 
 python3 orchestrator.py populatedb
 python3 orchestrator.py test

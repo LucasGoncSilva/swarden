@@ -48,14 +48,14 @@ class AttemptTestCase(TestCase):
         )
 
     def test_attempt_instance_validity(self) -> None:
-        """Tests model instance of correct class"""
+        """Tests attempt instance of correct class"""
 
         for attempt in Attempt.objects.all():
             with self.subTest(attempt=attempt):
                 self.assertIsInstance(attempt, Attempt)
 
     def test_attempt_key_value_assertion(self) -> None:
-        """Tests model correct attribuition of value"""
+        """Tests attempt correct attribuition of value"""
 
         attempt1: Attempt = Attempt.objects.get(pk=self.attempt1.pk)
 
@@ -66,7 +66,7 @@ class AttemptTestCase(TestCase):
         self.assertNotEqual(attempt1.timestamp, datetime(2017, 7, 8))
 
     def test_attempt_create_validity(self) -> None:
-        """Tests model creation integrity and validation"""
+        """Tests attempt creation integrity and validation"""
 
         attempt1: Attempt = Attempt.objects.get(pk=self.attempt1.pk)
         attempt2: Attempt = Attempt.objects.get(pk=self.attempt2.pk)
@@ -83,7 +83,7 @@ class AttemptTestCase(TestCase):
         self.assertFalse(attempt5.is_valid())
 
     def test_attempt_update_validity(self) -> None:
-        """Tests model update integrity and validation"""
+        """Tests attempt update integrity and validation"""
 
         Attempt.objects.filter(pk=self.attempt4.pk).update(username='bob_a_bob')
 
@@ -94,7 +94,7 @@ class AttemptTestCase(TestCase):
                 self.assertTrue(attempt.is_valid())
 
     def test_attempt_delete_validity(self) -> None:
-        """Tests model correct deletion"""
+        """Tests attempt correct deletion"""
 
         for attempt in Attempt.objects.all():
             if not attempt.is_valid():
@@ -103,7 +103,7 @@ class AttemptTestCase(TestCase):
         self.assertEqual(Attempt.objects.all().count(), 3)
 
     def test_attempt_db_exception_raises(self) -> None:
-        """Tests model correct integrity and validation with raised exceptions"""
+        """Tests attempt correct integrity and validation with raised exceptions"""
 
         # Expecting raises
         raise_kwargs: dict[str, dict[str, str | None]] = {
