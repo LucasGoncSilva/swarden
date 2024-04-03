@@ -275,7 +275,7 @@ class MyModelTestCase(TestCase):
 
                 except Exception as e:
                     self.fail(
-                        f'MyModel {no_raise_kwargs[scenario]} raised unexpected exception:\n\n{e}'
+                        f'{scenario} raised unexpected exception:\n\n{e}'
                     )
 ```
 
