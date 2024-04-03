@@ -8,7 +8,7 @@ from utils import xor
 
 
 class XORTestCase(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.password = User.objects.create_user(
             username='test_user',
             password='testing_password',
@@ -17,10 +17,18 @@ class XORTestCase(TestCase):
 
         self.q = queue.Queue()
         self.num = 100_000
-        # self.password = User.objects.get(pk=1).password
 
-    def test_xor_null_value(self):
-        """Tests if xor() retuns a NULL (\x00) value"""
+    def test_xor_return_values(self) -> None:
+        """Tests raises and return values"""
+
+        self.assertIsNone(xor(None, self.password[21:]))
+
+        self.assertEqual(xor('', self.password[21:]), '')
+
+        self.assertEqual(xor(5, self.password[21:]), 5)
+
+    def test_xor_null_value(self) -> None:
+        """Tests return values"""
 
         with open('secret/tests/sample.txt', 'r') as txt:
             lines = txt.readlines()
@@ -38,7 +46,7 @@ class XORTestCase(TestCase):
         threading.Thread(target=self.assert_xor_null_value_in_data, daemon=True).start()
         self.q.join()
 
-    def assert_xor_null_value_in_data(self):
+    def assert_xor_null_value_in_data(self) -> None:
         while True:
             data = self.q.get()
 

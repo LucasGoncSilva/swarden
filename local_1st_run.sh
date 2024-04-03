@@ -39,6 +39,7 @@ def makemigrations():
         'staticfiles',
         'env',
         'media',
+        'htmlcov',
     ]
     apps = [d for d in listdir('.') if isdir(d) and d not in exclude_list]
     system('python3 manage.py makemigrations ' + ' '.join(apps))

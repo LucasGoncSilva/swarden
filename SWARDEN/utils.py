@@ -36,7 +36,7 @@ def get_ip_address(r: HttpRequest) -> Any | None:
 
 
 def xor(text: str, key: str, encrypt: bool = True) -> str:
-    if text is None or not len(key):
+    if text is None or not isinstance(text, str) or not len(key):
         return text
 
     # Calculate the necessary key repetitions
