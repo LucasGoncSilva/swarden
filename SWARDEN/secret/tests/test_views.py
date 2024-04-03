@@ -1,5 +1,7 @@
+from django.http import HttpResponse
 from django.test import TestCase
 from django.urls import reverse
+from django.contrib.auth import get_user
 
 from account.models import User
 from secret.models import Card, LoginCredential, SecurityNote
@@ -10,39 +12,55 @@ from secret.month.models import Month
 class SecretIndexViewTestCase(TestCase):
     def setUp(self) -> None:
         User.objects.create_user(
-            username='test_user',
-            password='superhyperultrahardpassword',
+            username='user',
+            password='password',
             email='test_user@example.com',
         )
 
-    def test_index_view_behavior_for_not_logged_and_logged_users(self):
-        """Tests view behavior at "/segredo/" for not logged and logged users"""
+    def test_index_view_behavior_for_not_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/" for not logged users"""
 
-        res = self.client.get(reverse('secret:index'))
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        res: HttpResponse = self.client.get(reverse('secret:index'))
 
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
             res, reverse('account:login') + '?next=' + reverse('secret:index')
         )
 
-        res = self.client.get(reverse('secret:index'), follow=True)
+        res: HttpResponse = self.client.get(reverse('secret:index'), follow=True)
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'account/login.html')
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
 
-        self.client.login(username='test_user', password='superhyperultrahardpassword')
+    def test_index_view_behavior_for_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/" for logged users"""
 
-        res = self.client.get(reverse('secret:index'))
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(self.client.login(username='user', password='password'))
+
+        res: HttpResponse = self.client.get(reverse('secret:index'))
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'secret/index.html')
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
 
 
 class LoginCredentialViewsTestCase(TestCase):
     def setUp(self) -> None:
         test_user = User.objects.create_user(
-            username='test_user',
-            password='superhyperultrahardpassword',
+            username='user',
+            password='password',
             email='test_user@example.com',
         )
 
@@ -68,10 +86,12 @@ class LoginCredentialViewsTestCase(TestCase):
             password='-----',
         )
 
-    def test_credential_create_view_behavior_for_not_logged_and_logged_users(self):
-        """Tests view behavior at "/segredo/credenciais/nova" for not logged and logged users"""
+    def test_credential_create_view_behavior_for_not_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/credenciais/nova" for not logged users"""
 
-        res = self.client.get(reverse('secret:credential_create_view'))
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+        res: HttpResponse = self.client.get(reverse('secret:credential_create_view'))
 
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
@@ -81,14 +101,26 @@ class LoginCredentialViewsTestCase(TestCase):
             + reverse('secret:credential_create_view'),
         )
 
-        res = self.client.get(reverse('secret:credential_create_view'), follow=True)
+        res: HttpResponse = self.client.get(
+            reverse('secret:credential_create_view'), follow=True
+        )
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'account/login.html')
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
 
-        self.client.login(username='test_user', password='superhyperultrahardpassword')
+    def test_credential_create_view_behavior_for_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/credenciais/nova" for logged users"""
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
 
-        res = self.client.get(reverse('secret:credential_create_view'))
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(self.client.login(username='user', password='password'))
+
+        res: HttpResponse = self.client.get(reverse('secret:credential_create_view'))
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'secret/create_view.html')
@@ -98,11 +130,16 @@ class LoginCredentialViewsTestCase(TestCase):
 
         self.assertIn('model', res.context.keys())
         self.assertEqual(res.context['model'], 'Credencial')
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_credential_list_view_behavior_for_not_logged_and_logged_users(self):
-        """Tests view behavior at "/segredo/credenciais/" for not logged and logged users"""
+    def test_credential_list_view_behavior_for_not_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/credenciais/" for not logged users"""
 
-        res = self.client.get(reverse('secret:credential_list_view'))
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        res: HttpResponse = self.client.get(reverse('secret:credential_list_view'))
 
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
@@ -112,14 +149,26 @@ class LoginCredentialViewsTestCase(TestCase):
             + reverse('secret:credential_list_view'),
         )
 
-        res = self.client.get(reverse('secret:credential_list_view'), follow=True)
+        res: HttpResponse = self.client.get(
+            reverse('secret:credential_list_view'), follow=True
+        )
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'account/login.html')
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
 
-        self.client.login(username='test_user', password='superhyperultrahardpassword')
+    def test_credential_list_view_behavior_for_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/credenciais/" for logged users"""
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
 
-        res = self.client.get(reverse('secret:credential_list_view'))
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(self.client.login(username='user', password='password'))
+
+        res: HttpResponse = self.client.get(reverse('secret:credential_list_view'))
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'secret/list_view.html')
@@ -129,11 +178,13 @@ class LoginCredentialViewsTestCase(TestCase):
 
         self.assertIn('model_name', res.context.keys())
         self.assertEqual(res.context['model_name'], 'Credenciais')
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_credential_detail_view_behavior_for_not_logged_and_logged_users(self):
-        """Tests view behavior at "/segredo/credenciais/<slug:slug>" for not logged and logged users"""
+    def test_credential_detail_view_behavior_for_not_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/credenciais/<slug:slug>" for not logged users"""
 
-        res = self.client.get(
+        res: HttpResponse = self.client.get(
             reverse(
                 'secret:credential_detail_view',
                 kwargs={'slug': 'google--personal-main-account'},
@@ -151,7 +202,7 @@ class LoginCredentialViewsTestCase(TestCase):
             ),
         )
 
-        res = self.client.get(
+        res: HttpResponse = self.client.get(
             reverse(
                 'secret:credential_detail_view',
                 kwargs={'slug': 'google--personal-main-account'},
@@ -161,10 +212,20 @@ class LoginCredentialViewsTestCase(TestCase):
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'account/login.html')
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
 
-        self.client.login(username='test_user', password='superhyperultrahardpassword')
+    def test_credential_detail_view_behavior_for_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/credenciais/<slug:slug>" for logged users"""
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
 
-        res = self.client.get(
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(self.client.login(username='user', password='password'))
+
+        res: HttpResponse = self.client.get(
             reverse(
                 'secret:credential_detail_view',
                 kwargs={'slug': 'google--personal-main-account'},
@@ -182,7 +243,7 @@ class LoginCredentialViewsTestCase(TestCase):
             ),
         )
 
-        res = self.client.get(
+        res: HttpResponse = self.client.get(
             reverse(
                 'secret:credential_detail_view',
                 kwargs={'slug': 'lasagna--double-pizza'},
@@ -191,11 +252,13 @@ class LoginCredentialViewsTestCase(TestCase):
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'err/error_template.html')
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_credential_update_view_behavior_for_not_logged_and_logged_users(self):
-        """Tests view behavior at "/segredo/credenciais/<slug:slug>/editar" for not logged and logged users"""
+    def test_credential_update_view_behavior_for_not_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/credenciais/<slug:slug>/editar" for not logged users"""
 
-        res = self.client.get(
+        res: HttpResponse = self.client.get(
             reverse(
                 'secret:credential_update_view',
                 kwargs={'slug': 'google--personal-main-account'},
@@ -213,7 +276,7 @@ class LoginCredentialViewsTestCase(TestCase):
             ),
         )
 
-        res = self.client.get(
+        res: HttpResponse = self.client.get(
             reverse(
                 'secret:credential_update_view',
                 kwargs={'slug': 'google--personal-main-account'},
@@ -223,10 +286,20 @@ class LoginCredentialViewsTestCase(TestCase):
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'account/login.html')
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
 
-        self.client.login(username='test_user', password='superhyperultrahardpassword')
+    def test_credential_update_view_behavior_for_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/credenciais/<slug:slug>/editar" for logged users"""
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
 
-        res = self.client.get(
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(self.client.login(username='user', password='password'))
+
+        res: HttpResponse = self.client.get(
             reverse(
                 'secret:credential_update_view',
                 kwargs={'slug': 'google--personal-main-account'},
@@ -250,7 +323,7 @@ class LoginCredentialViewsTestCase(TestCase):
             ),
         )
 
-        res = self.client.get(
+        res: HttpResponse = self.client.get(
             reverse(
                 'secret:credential_update_view',
                 kwargs={'slug': 'lasagna--double-pizza'},
@@ -259,11 +332,16 @@ class LoginCredentialViewsTestCase(TestCase):
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'err/error_template.html')
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_credential_delete_view_behavior_for_not_logged_and_logged_users(self):
-        """Tests view behavior at "/segredo/credenciais/<slug:slug>/deletar" for not logged and logged users"""
+    def test_credential_delete_view_behavior_for_not_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/credenciais/<slug:slug>/deletar" for not logged users"""
 
-        res = self.client.get(
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        res: HttpResponse = self.client.get(
             reverse(
                 'secret:credential_delete_view',
                 kwargs={'slug': 'google--personal-main-account'},
@@ -281,7 +359,7 @@ class LoginCredentialViewsTestCase(TestCase):
             ),
         )
 
-        res = self.client.get(
+        res: HttpResponse = self.client.get(
             reverse(
                 'secret:credential_delete_view',
                 kwargs={'slug': 'google--personal-main-account'},
@@ -291,10 +369,21 @@ class LoginCredentialViewsTestCase(TestCase):
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'account/login.html')
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
 
-        self.client.login(username='test_user', password='superhyperultrahardpassword')
+    def test_credential_delete_view_behavior_for_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/credenciais/<slug:slug>/deletar" for logged users"""
 
-        res = self.client.get(
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(self.client.login(username='user', password='password'))
+
+        res: HttpResponse = self.client.get(
             reverse(
                 'secret:credential_delete_view',
                 kwargs={'slug': 'google--personal-main-account'},
@@ -318,7 +407,7 @@ class LoginCredentialViewsTestCase(TestCase):
             ),
         )
 
-        res = self.client.get(
+        res: HttpResponse = self.client.get(
             reverse(
                 'secret:credential_delete_view',
                 kwargs={'slug': 'lasagna--double-pizza'},
@@ -327,13 +416,15 @@ class LoginCredentialViewsTestCase(TestCase):
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'err/error_template.html')
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
 
 
 class CardViewsTestCase(TestCase):
     def setUp(self) -> None:
         test_user = User.objects.create_user(
-            username='test_user',
-            password='superhyperultrahardpassword',
+            username='user',
+            password='password',
             email='test_user@example.com',
         )
 
@@ -350,10 +441,13 @@ class CardViewsTestCase(TestCase):
             owners_name='TEST USER',
         )
 
-    def test_card_create_view_behavior_for_not_logged_and_logged_users(self):
-        """Tests view behavior at "/segredo/cartoes/novo" for not logged and logged users"""
+    def test_card_create_view_behavior_for_not_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/cartoes/novo" for not logged users"""
 
-        res = self.client.get(reverse('secret:card_create_view'))
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        res: HttpResponse = self.client.get(reverse('secret:card_create_view'))
 
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
@@ -361,14 +455,27 @@ class CardViewsTestCase(TestCase):
             reverse('account:login') + '?next=' + reverse('secret:card_create_view'),
         )
 
-        res = self.client.get(reverse('secret:card_create_view'), follow=True)
+        res: HttpResponse = self.client.get(
+            reverse('secret:card_create_view'), follow=True
+        )
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'account/login.html')
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
 
-        self.client.login(username='test_user', password='superhyperultrahardpassword')
+    def test_card_create_view_behavior_for_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/cartoes/novo" for logged users"""
 
-        res = self.client.get(reverse('secret:card_create_view'))
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(self.client.login(username='user', password='password'))
+
+        res: HttpResponse = self.client.get(reverse('secret:card_create_view'))
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'secret/create_view.html')
@@ -378,25 +485,43 @@ class CardViewsTestCase(TestCase):
 
         self.assertIn('model', res.context.keys())
         self.assertEqual(res.context['model'], 'Cartão')
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_card_list_view_behavior_for_not_logged_and_logged_users(self):
-        """Tests view behavior at "/segredo/cartoes/" for not logged and logged users"""
+    def test_card_list_view_behavior_for_not_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/cartoes/" for not logged users"""
 
-        res = self.client.get(reverse('secret:card_list_view'))
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        res: HttpResponse = self.client.get(reverse('secret:card_list_view'))
 
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
             res, reverse('account:login') + '?next=' + reverse('secret:card_list_view')
         )
 
-        res = self.client.get(reverse('secret:card_list_view'), follow=True)
+        res: HttpResponse = self.client.get(
+            reverse('secret:card_list_view'), follow=True
+        )
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'account/login.html')
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
 
-        self.client.login(username='test_user', password='superhyperultrahardpassword')
+    def test_card_list_view_behavior_for_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/cartoes/" for logged users"""
 
-        res = self.client.get(reverse('secret:card_list_view'))
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(self.client.login(username='user', password='password'))
+
+        res: HttpResponse = self.client.get(reverse('secret:card_list_view'))
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'secret/list_view.html')
@@ -406,11 +531,16 @@ class CardViewsTestCase(TestCase):
 
         self.assertIn('model_name', res.context.keys())
         self.assertEqual(res.context['model_name'], 'Cartões')
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_card_detail_view_behavior_for_not_logged_and_logged_users(self):
-        """Tests view behavior at "/segredo/cartoes/<slug:slug>" for not logged and logged users"""
+    def test_card_detail_view_behavior_for_not_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/cartoes/<slug:slug>" for not logged users"""
 
-        res = self.client.get(
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        res: HttpResponse = self.client.get(
             reverse(
                 'secret:card_detail_view', kwargs={'slug': 'nubank--personal-main-card'}
             )
@@ -426,7 +556,7 @@ class CardViewsTestCase(TestCase):
             ),
         )
 
-        res = self.client.get(
+        res: HttpResponse = self.client.get(
             reverse(
                 'secret:card_detail_view', kwargs={'slug': 'nubank--personal-main-card'}
             ),
@@ -435,10 +565,21 @@ class CardViewsTestCase(TestCase):
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'account/login.html')
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
 
-        self.client.login(username='test_user', password='superhyperultrahardpassword')
+    def test_card_detail_view_behavior_for_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/cartoes/<slug:slug>" for logged users"""
 
-        res = self.client.get(
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(self.client.login(username='user', password='password'))
+
+        res: HttpResponse = self.client.get(
             reverse(
                 'secret:card_detail_view', kwargs={'slug': 'nubank--personal-main-card'}
             )
@@ -455,17 +596,22 @@ class CardViewsTestCase(TestCase):
             ),
         )
 
-        res = self.client.get(
+        res: HttpResponse = self.client.get(
             reverse('secret:card_detail_view', kwargs={'slug': 'lasagna--double-pizza'})
         )
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'err/error_template.html')
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_card_update_view_behavior_for_not_logged_and_logged_users(self):
-        """Tests view behavior at "/segredo/cartoes/<slug:slug>/editar" for not logged and logged users"""
+    def test_card_update_view_behavior_for_not_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/cartoes/<slug:slug>/editar" for not logged users"""
 
-        res = self.client.get(
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        res: HttpResponse = self.client.get(
             reverse(
                 'secret:card_update_view', kwargs={'slug': 'nubank--personal-main-card'}
             )
@@ -481,7 +627,7 @@ class CardViewsTestCase(TestCase):
             ),
         )
 
-        res = self.client.get(
+        res: HttpResponse = self.client.get(
             reverse(
                 'secret:card_update_view', kwargs={'slug': 'nubank--personal-main-card'}
             ),
@@ -490,10 +636,21 @@ class CardViewsTestCase(TestCase):
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'account/login.html')
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
 
-        self.client.login(username='test_user', password='superhyperultrahardpassword')
+    def test_card_update_view_behavior_for_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/cartoes/<slug:slug>/editar" for logged users"""
 
-        res = self.client.get(
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(self.client.login(username='user', password='password'))
+
+        res: HttpResponse = self.client.get(
             reverse(
                 'secret:card_update_view', kwargs={'slug': 'nubank--personal-main-card'}
             )
@@ -516,17 +673,22 @@ class CardViewsTestCase(TestCase):
             ),
         )
 
-        res = self.client.get(
+        res: HttpResponse = self.client.get(
             reverse('secret:card_update_view', kwargs={'slug': 'lasagna--double-pizza'})
         )
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'err/error_template.html')
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_card_delete_view_behavior_for_not_logged_and_logged_users(self):
-        """Tests view behavior at "/segredo/cartoes/<slug:slug>/deletar" for not logged and logged users"""
+    def test_card_delete_view_behavior_for_not_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/cartoes/<slug:slug>/deletar" for not logged users"""
 
-        res = self.client.get(
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        res: HttpResponse = self.client.get(
             reverse(
                 'secret:card_delete_view', kwargs={'slug': 'nubank--personal-main-card'}
             )
@@ -542,7 +704,7 @@ class CardViewsTestCase(TestCase):
             ),
         )
 
-        res = self.client.get(
+        res: HttpResponse = self.client.get(
             reverse(
                 'secret:card_delete_view', kwargs={'slug': 'nubank--personal-main-card'}
             ),
@@ -551,10 +713,21 @@ class CardViewsTestCase(TestCase):
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'account/login.html')
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
 
-        self.client.login(username='test_user', password='superhyperultrahardpassword')
+    def test_card_delete_view_behavior_for_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/cartoes/<slug:slug>/deletar" for logged users"""
 
-        res = self.client.get(
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(self.client.login(username='user', password='password'))
+
+        res: HttpResponse = self.client.get(
             reverse(
                 'secret:card_delete_view', kwargs={'slug': 'nubank--personal-main-card'}
             )
@@ -577,19 +750,21 @@ class CardViewsTestCase(TestCase):
             ),
         )
 
-        res = self.client.get(
+        res: HttpResponse = self.client.get(
             reverse('secret:card_delete_view', kwargs={'slug': 'lasagna--double-pizza'})
         )
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'err/error_template.html')
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
 
 
 class SecurityNoteViewsTestCase(TestCase):
     def setUp(self) -> None:
         test_user = User.objects.create_user(
-            username='test_user',
-            password='superhyperultrahardpassword',
+            username='user',
+            password='password',
             email='test_user@example.com',
         )
 
@@ -600,10 +775,13 @@ class SecurityNoteViewsTestCase(TestCase):
             content='Just draw an apple tree and erase the tree.',
         )
 
-    def test_note_create_view_behavior_for_not_logged_and_logged_users(self):
-        """Tests view behavior at "/segredo/anotacoes/novo" for not logged and logged users"""
+    def test_note_create_view_behavior_for_not_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/anotacoes/novo" for not logged users"""
 
-        res = self.client.get(reverse('secret:note_create_view'))
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        res: HttpResponse = self.client.get(reverse('secret:note_create_view'))
 
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
@@ -611,14 +789,24 @@ class SecurityNoteViewsTestCase(TestCase):
             reverse('account:login') + '?next=' + reverse('secret:note_create_view'),
         )
 
-        res = self.client.get(reverse('secret:note_create_view'), follow=True)
+        res: HttpResponse = self.client.get(
+            reverse('secret:note_create_view'), follow=True
+        )
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'account/login.html')
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
 
-        self.client.login(username='test_user', password='superhyperultrahardpassword')
+    def test_note_create_view_behavior_for_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/anotacoes/novo" for logged users"""
 
-        res = self.client.get(reverse('secret:note_create_view'))
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(self.client.login(username='user', password='password'))
+
+        res: HttpResponse = self.client.get(reverse('secret:note_create_view'))
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'secret/create_view.html')
@@ -628,25 +816,37 @@ class SecurityNoteViewsTestCase(TestCase):
 
         self.assertIn('model', res.context.keys())
         self.assertEqual(res.context['model'], 'Anotação')
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_note_list_view_behavior_for_not_logged_and_logged_users(self):
-        """Tests view behavior at "/segredo/anotacoes/" for not logged and logged users"""
+    def test_note_list_view_behavior_for_not_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/anotacoes/" for not logged users"""
 
-        res = self.client.get(reverse('secret:note_list_view'))
+        res: HttpResponse = self.client.get(reverse('secret:note_list_view'))
 
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
             res, reverse('account:login') + '?next=' + reverse('secret:note_list_view')
         )
 
-        res = self.client.get(reverse('secret:note_list_view'), follow=True)
+        res: HttpResponse = self.client.get(
+            reverse('secret:note_list_view'), follow=True
+        )
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'account/login.html')
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
 
-        self.client.login(username='test_user', password='superhyperultrahardpassword')
+    def test_note_list_view_behavior_for_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/anotacoes/" for logged users"""
 
-        res = self.client.get(reverse('secret:note_list_view'))
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(self.client.login(username='user', password='password'))
+
+        res: HttpResponse = self.client.get(reverse('secret:note_list_view'))
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'secret/list_view.html')
@@ -656,11 +856,13 @@ class SecurityNoteViewsTestCase(TestCase):
 
         self.assertIn('model_name', res.context.keys())
         self.assertEqual(res.context['model_name'], 'Anotações')
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_note_detail_view_behavior_for_not_logged_and_logged_users(self):
-        """Tests view behavior at "/segredo/anotacoes/<slug:slug>" for not logged and logged users"""
+    def test_note_detail_view_behavior_for_not_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/anotacoes/<slug:slug>" for not logged users"""
 
-        res = self.client.get(
+        res: HttpResponse = self.client.get(
             reverse('secret:note_detail_view', kwargs={'slug': 'how-to-draw-an-apple'})
         )
 
@@ -674,17 +876,25 @@ class SecurityNoteViewsTestCase(TestCase):
             ),
         )
 
-        res = self.client.get(
+        res: HttpResponse = self.client.get(
             reverse('secret:note_detail_view', kwargs={'slug': 'how-to-draw-an-apple'}),
             follow=True,
         )
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'account/login.html')
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
 
-        self.client.login(username='test_user', password='superhyperultrahardpassword')
+    def test_note_detail_view_behavior_for_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/anotacoes/<slug:slug>" for logged users"""
 
-        res = self.client.get(
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(self.client.login(username='user', password='password'))
+
+        res: HttpResponse = self.client.get(
             reverse('secret:note_detail_view', kwargs={'slug': 'how-to-draw-an-apple'})
         )
 
@@ -699,17 +909,19 @@ class SecurityNoteViewsTestCase(TestCase):
             ),
         )
 
-        res = self.client.get(
+        res: HttpResponse = self.client.get(
             reverse('secret:note_detail_view', kwargs={'slug': 'lasagna--double-pizza'})
         )
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'err/error_template.html')
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_note_update_view_behavior_for_not_logged_and_logged_users(self):
-        """Tests view behavior at "/segredo/anotacoes/<slug:slug>/editar" for not logged and logged users"""
+    def test_note_update_view_behavior_for_not_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/anotacoes/<slug:slug>/editar" for not logged users"""
 
-        res = self.client.get(
+        res: HttpResponse = self.client.get(
             reverse('secret:note_update_view', kwargs={'slug': 'how-to-draw-an-apple'})
         )
 
@@ -723,17 +935,25 @@ class SecurityNoteViewsTestCase(TestCase):
             ),
         )
 
-        res = self.client.get(
+        res: HttpResponse = self.client.get(
             reverse('secret:note_update_view', kwargs={'slug': 'how-to-draw-an-apple'}),
             follow=True,
         )
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'account/login.html')
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
 
-        self.client.login(username='test_user', password='superhyperultrahardpassword')
+    def test_note_update_view_behavior_for_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/anotacoes/<slug:slug>/editar" for logged users"""
 
-        res = self.client.get(
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(self.client.login(username='user', password='password'))
+
+        res: HttpResponse = self.client.get(
             reverse('secret:note_update_view', kwargs={'slug': 'how-to-draw-an-apple'})
         )
 
@@ -754,17 +974,19 @@ class SecurityNoteViewsTestCase(TestCase):
             ),
         )
 
-        res = self.client.get(
+        res: HttpResponse = self.client.get(
             reverse('secret:note_update_view', kwargs={'slug': 'lasagna--double-pizza'})
         )
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'err/error_template.html')
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_note_delete_view_behavior_for_not_logged_and_logged_users(self):
-        """Tests view behavior at "/segredo/anotacoes/<slug:slug>/deletar" for not logged and logged users"""
+    def test_note_delete_view_behavior_for_not_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/anotacoes/<slug:slug>/deletar" for not logged users"""
 
-        res = self.client.get(
+        res: HttpResponse = self.client.get(
             reverse('secret:note_delete_view', kwargs={'slug': 'how-to-draw-an-apple'})
         )
 
@@ -778,17 +1000,25 @@ class SecurityNoteViewsTestCase(TestCase):
             ),
         )
 
-        res = self.client.get(
+        res: HttpResponse = self.client.get(
             reverse('secret:note_delete_view', kwargs={'slug': 'how-to-draw-an-apple'}),
             follow=True,
         )
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'account/login.html')
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
 
-        self.client.login(username='test_user', password='superhyperultrahardpassword')
+    def test_note_delete_view_behavior_for_logged_users(self) -> None:
+        """Tests view behavior at "/segredo/anotacoes/<slug:slug>/deletar" for logged users"""
 
-        res = self.client.get(
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(self.client.login(username='user', password='password'))
+
+        res: HttpResponse = self.client.get(
             reverse('secret:note_delete_view', kwargs={'slug': 'how-to-draw-an-apple'})
         )
 
@@ -809,9 +1039,11 @@ class SecurityNoteViewsTestCase(TestCase):
             ),
         )
 
-        res = self.client.get(
+        res: HttpResponse = self.client.get(
             reverse('secret:note_delete_view', kwargs={'slug': 'lasagna--double-pizza'})
         )
 
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'err/error_template.html')
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
