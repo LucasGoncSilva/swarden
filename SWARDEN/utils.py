@@ -1,5 +1,6 @@
+from io import StringIO
 from itertools import compress, product
-from typing import Final, Any, Generator
+from typing import Final, Any, Generator, Literal
 from hashlib import sha256
 
 from django.db import DataError, IntegrityError
@@ -67,7 +68,7 @@ def xor(text: str, key: str, encrypt: bool = True) -> str:
     return ''.join(transformed_chars)
 
 
-def send_activate_account_token(domain: str, user: User, password: str) -> None:
+def send_email_activation_account_token(domain: str, user: User, password: str) -> None:
     token_hash = sha256(f'{user.username}{password}'.encode()).hexdigest()
     uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
 
@@ -97,13 +98,28 @@ def send_activate_account_token(domain: str, user: User, password: str) -> None:
     email.send()
 
 
-def send_activate_account_done(user_email: str) -> None:
+def send_email_activate_account_completed(user_email: str) -> None:
     email: EmailMessage = EmailMessage(
         subject='Ativação de Conta | sWarden',
         body=ACTIVATE_ACCOUNT_CONFIRM_DONE,
         from_email=settings.EMAIL_HOST_USER,
         to=[user_email],
     )
+    email.send()
+
+
+def send_email_exporting_secrets(
+    secret_type: Literal['Credenciais', 'Cartões', 'Anotações'],
+    csvfile: StringIO,
+    user_email: str,
+) -> None:
+    email: EmailMessage = EmailMessage(
+        subject='Exportação de Segredos | sWarden',
+        body=f'Aqui estão seus segredos armazenados em "{secret_type}" no sWarden.\n\n\nEquipe sWarden',
+        from_email=settings.EMAIL_HOST_USER,
+        to=[user_email],
+    )
+    email.attach('anotacoes.csv', csvfile.getvalue(), 'text/csv')
     email.send()
 
 

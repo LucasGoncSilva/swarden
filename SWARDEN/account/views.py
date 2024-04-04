@@ -20,7 +20,10 @@ from django.contrib import messages
 
 from captcha.fields import CaptchaField
 
-from utils import send_activate_account_token, send_activate_account_done
+from utils import (
+    send_email_activation_account_token,
+    send_email_activate_account_completed,
+)
 from .models import User, ActivationAccountToken
 from err.views import handle500
 
@@ -176,7 +179,7 @@ def register_view(
     )
 
     try:
-        send_activate_account_token(r.get_host(), user, password)
+        send_email_activation_account_token(r.get_host(), user, password)
     except (DataError, IntegrityError, ValidationError):
         return handle500(r)
 
@@ -206,7 +209,7 @@ def activate_account(r: HttpRequest, uidb64: str, token: str) -> HttpResponseRed
 
     login(r, user)
 
-    send_activate_account_done(str(user.email))
+    send_email_activate_account_completed(str(user.email))
 
     return HttpResponseRedirect(reverse('home:index'))
 

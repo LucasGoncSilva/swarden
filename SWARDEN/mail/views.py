@@ -10,7 +10,11 @@ from django.conf import settings
 from django.contrib.messages import success, error
 
 from secret.models import Card, LoginCredential, SecurityNote
-from utils import NO_DATA_TO_EXPORT, SUCCESS_DATA_EXPORTING
+from utils import (
+    NO_DATA_TO_EXPORT,
+    SUCCESS_DATA_EXPORTING,
+    send_email_exporting_secrets,
+)
 
 
 # Create your views here.
@@ -30,25 +34,18 @@ def export_secrets(
 
     query: QuerySet = dispatch_models[secret_type].objects.filter(owner=r.user)
 
+    dispatch_redirect: dict[str, str] = {
+        CREDENTIALS: 'secret:credential_list_view',
+        CARDS: 'secret:card_list_view',
+        SECURITY_NOTES: 'secret:note_list_view',
+    }
+
     if not query.exists():
         error(r, NO_DATA_TO_EXPORT)
-
-        dispatch_redirect: dict[str, str] = {
-            CREDENTIALS: 'secret:credential_list_view',
-            CARDS: 'secret:card_list_view',
-            SECURITY_NOTES: 'secret:note_list_view',
-        }
         return HttpResponseRedirect(reverse(dispatch_redirect[secret_type]))
 
     csvfile: StringIO = StringIO()
     csvwriter = writer(csvfile, delimiter='¬', doublequote=True)
-
-    email: EmailMessage = EmailMessage(
-        subject='Exportação de Segredos | sWarden',
-        body=f'Aqui estão seus segredos armazenados em "{secret_type}" no sWarden.\n\n\nEquipe sWarden',
-        from_email=settings.EMAIL_HOST_USER,
-        to=[r.user.email],
-    )
 
     if secret_type == CREDENTIALS:
         csvwriter.writerow(
@@ -66,12 +63,6 @@ def export_secrets(
                     i.password,
                 ]
             )
-
-        email.attach('credenciais.csv', csvfile.getvalue(), 'text/csv')
-        email.send()
-
-        success(r, SUCCESS_DATA_EXPORTING)
-        return HttpResponseRedirect(reverse('secret:credential_list_view'))
 
     elif secret_type == CARDS:
         csvwriter.writerow(
@@ -101,20 +92,12 @@ def export_secrets(
                 ]
             )
 
-        email.attach('cartoes.csv', csvfile.getvalue(), 'text/csv')
-        email.send()
-
-        success(r, SUCCESS_DATA_EXPORTING)
-        return HttpResponseRedirect(reverse('secret:card_list_view'))
-
     elif secret_type == SECURITY_NOTES:
         csvwriter.writerow(['Título', 'Conteúdo'])
 
         for i in query:
             csvwriter.writerow([i.title, i.content])
 
-        email.attach('anotacoes.csv', csvfile.getvalue(), 'text/csv')
-        email.send()
-
-        success(r, SUCCESS_DATA_EXPORTING)
-        return HttpResponseRedirect(reverse('secret:note_list_view'))
+    send_email_exporting_secrets(secret_type, csvfile, str(r.user.email))
+    success(r, SUCCESS_DATA_EXPORTING)
+    return HttpResponseRedirect(reverse(dispatch_redirect[secret_type]))
