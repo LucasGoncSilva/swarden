@@ -185,6 +185,13 @@ class MyModelTestCase(TestCase):
             with self.subTest(model=model):
                 self.assertIsInstance(model, MyModel)
 
+    def test_token_special_str_method_return(self) -> None:
+        """Tests token return value of __str__ method"""
+
+        model = MyModel.objects.get(pk=self.model.pk)
+
+        self.assertEqual(model.__str__(), ...)
+
     def test_model_key_value_assertion(self) -> None:
         """Tests model correct attribuition of value"""
 
