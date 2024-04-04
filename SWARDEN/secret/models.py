@@ -17,9 +17,9 @@ from django.urls import reverse
 from django.core.validators import MinLengthValidator, MaxLengthValidator
 
 from account.models import User
-from .month.models import MonthField
+from secret.month.models import MonthField
 from utils import xor
-from .choices import cards_banks, cards_brands, cards_types, credentials_services
+from secret.choices import cards_banks, cards_brands, cards_types, credentials_services
 
 
 # Create your models here.

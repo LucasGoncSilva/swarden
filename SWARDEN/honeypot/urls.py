@@ -2,14 +2,14 @@ from typing import Final
 
 from django.urls import path, re_path, URLPattern
 
-from . import views
+from honeypot.views import honeypot
 
 
 app_name: Final[str] = 'honeypot'
 
 urlpatterns: list[URLPattern] = [
-    path('', views.honeypot, name='empty_redirect'),
-    path('<path:path>', views.honeypot, name='redirect'),
-    re_path(r'^(?P<path>.*)/$', views.honeypot, name='re_redirect'),
-    path('login', views.honeypot, name='honeypot'),
+    path('', honeypot, name='empty_redirect'),
+    path('<path:path>', honeypot, name='redirect'),
+    re_path(r'^(?P<path>.*)/$', honeypot, name='re_redirect'),
+    path('login', honeypot, name='honeypot'),
 ]

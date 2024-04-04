@@ -7,7 +7,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, UpdateView, DeleteView
 from django.http import HttpRequest, HttpResponse
 
-from .models import Card, LoginCredential, SecurityNote
+from secret.models import Card, LoginCredential, SecurityNote
 
 
 # Create your views here.

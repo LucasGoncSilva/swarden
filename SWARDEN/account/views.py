@@ -24,7 +24,7 @@ from utils import (
     send_email_activation_account_token,
     send_email_activate_account_completed,
 )
-from .models import User, ActivationAccountToken
+from account.models import User, ActivationAccountToken
 from err.views import handle500
 
 

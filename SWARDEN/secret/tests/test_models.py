@@ -201,14 +201,9 @@ class CredentialTestCase(TestCase):
         LoginCredential.objects.filter(pk=self.login_credential_5.pk).update(
             password='https://www.youtube.com/watch?v=dQw4w9WgXcQ'
         )
-        if len(self.login_credential_6.name) > 40:
-            LoginCredential.objects.filter(pk=self.login_credential_6.pk).update(
-                name='Personal Main Account', login='bananinha_assada_3_2_1'
-            )
-        else:
-            LoginCredential.objects.filter(pk=self.login_credential_6.pk).update(
-                password='https://www.youtube.com/watch?v=dQw4w9WgXcQ'
-            )
+        LoginCredential.objects.filter(pk=self.login_credential_6.pk).update(
+            password='https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+        )
         LoginCredential.objects.filter(pk=self.login_credential_7.pk).update(
             service='visa--', slug='visa--little-fries'
         )
@@ -332,14 +327,8 @@ class CredentialTestCase(TestCase):
 
         for scenario in no_raise_kwargs.keys():
             with self.subTest(scenario=scenario):
-                try:
-                    instance: LoginCredential = LoginCredential(
-                        **no_raise_kwargs[scenario]
-                    )
-                    instance.full_clean()
-
-                except Exception as e:
-                    self.fail(f'{scenario} raised unexpected exception:\n\n{e}')
+                instance: LoginCredential = LoginCredential(**no_raise_kwargs[scenario])
+                instance.full_clean()
 
 
 class CardTestCase(TestCase):
@@ -700,12 +689,8 @@ class CardTestCase(TestCase):
 
         for scenario in no_raise_kwargs.keys():
             with self.subTest(scenario=scenario):
-                try:
-                    instance: Card = Card(**no_raise_kwargs[scenario])
-                    instance.full_clean()
-
-                except Exception as e:
-                    self.fail(f'{scenario} raised unexpected exception:\n\n{e}')
+                instance: Card = Card(**no_raise_kwargs[scenario])
+                instance.full_clean()
 
 
 class SecurityNoteTestCase(TestCase):
@@ -874,9 +859,5 @@ class SecurityNoteTestCase(TestCase):
 
         for scenario in no_raise_kwargs.keys():
             with self.subTest(scenario=scenario):
-                try:
-                    instance: SecurityNote = SecurityNote(**no_raise_kwargs[scenario])
-                    instance.full_clean()
-
-                except Exception as e:
-                    self.fail(f'{scenario} raised unexpected exception:\n\n{e}')
+                instance: SecurityNote = SecurityNote(**no_raise_kwargs[scenario])
+                instance.full_clean()

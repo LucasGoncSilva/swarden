@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.http import HttpRequest, HttpResponse
 
 from utils import get_ip_address
-from .models import Attempt
+from honeypot.models import Attempt
 
 
 # Create your views here.

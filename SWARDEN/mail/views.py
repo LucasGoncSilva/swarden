@@ -5,9 +5,8 @@ from io import StringIO
 from django.db.models import QuerySet
 from django.urls import reverse
 from django.http import HttpRequest, HttpResponseRedirect
-from django.core.mail import EmailMessage
-from django.conf import settings
-from django.contrib.messages import success, error
+from django.contrib.messages import success, error, warning
+from django.contrib.auth.decorators import login_required
 
 from secret.models import Card, LoginCredential, SecurityNote
 from utils import (
@@ -18,6 +17,12 @@ from utils import (
 
 
 # Create your views here.
+@login_required(login_url='/conta/entrar')
+def export_secrets_no_argument(r: HttpRequest):
+    return HttpResponseRedirect(reverse('home:index'))
+
+
+@login_required(login_url='/conta/entrar')
 def export_secrets(
     r: HttpRequest, secret_type: Literal['Credenciais', 'Cartões', 'Anotações']
 ) -> HttpResponseRedirect:
@@ -26,6 +31,7 @@ def export_secrets(
     SECURITY_NOTES: Final[str] = 'Anotações'
 
     if secret_type not in [CREDENTIALS, CARDS, SECURITY_NOTES]:
+        warning(r, 'Impossível exportar segredos do tipo informado.')
         return HttpResponseRedirect(reverse('home:index'))
 
     dispatch_models: dict[

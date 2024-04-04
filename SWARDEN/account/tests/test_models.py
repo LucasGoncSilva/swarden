@@ -119,13 +119,7 @@ class ActivationAccountTokenTestCase(TestCase):
 
         for scenario in no_raise_kwargs.keys():
             with self.subTest(scenario=scenario):
-                try:
-                    instance: ActivationAccountToken = ActivationAccountToken(
-                        **no_raise_kwargs[scenario]
-                    )
-                    instance.full_clean()
-
-                except Exception as e:
-                    self.fail(
-                        f'ActivationAccountToken {no_raise_kwargs[scenario]} raised unexpected exception: {e}'
-                    )
+                instance: ActivationAccountToken = ActivationAccountToken(
+                    **no_raise_kwargs[scenario]
+                )
+                instance.full_clean()

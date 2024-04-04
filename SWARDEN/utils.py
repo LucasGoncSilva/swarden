@@ -77,7 +77,6 @@ def send_email_activation_account_token(domain: str, user: User, password: str) 
     )
 
     try:
-        print('validating token')
         token.full_clean()
         if not token.is_valid():
             token.failed = True

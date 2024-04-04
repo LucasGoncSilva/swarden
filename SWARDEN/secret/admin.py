@@ -3,7 +3,7 @@ from typing import Any, Final
 from django.http import HttpRequest
 from django.contrib import admin
 
-from .models import Card, LoginCredential, SecurityNote
+from secret.models import Card, LoginCredential, SecurityNote
 
 
 # Register your models here.

@@ -163,11 +163,5 @@ class AttemptTestCase(TestCase):
 
         for scenario in no_raise_kwargs.keys():
             with self.subTest(scenario=scenario):
-                try:
-                    instance: Attempt = Attempt(**no_raise_kwargs[scenario])
-                    instance.full_clean()
-
-                except Exception as e:
-                    self.fail(
-                        f'Attempt {no_raise_kwargs[scenario]} raised unexpected exception:\n\n{e}'
-                    )
+                instance: Attempt = Attempt(**no_raise_kwargs[scenario])
+                instance.full_clean()

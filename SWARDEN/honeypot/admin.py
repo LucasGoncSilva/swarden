@@ -2,7 +2,7 @@ from typing import Final
 
 from django.contrib import admin
 
-from .models import Attempt
+from honeypot.models import Attempt
 
 
 # Register your models here.

@@ -269,14 +269,8 @@ class MyModelTestCase(TestCase):
         # Not expecting raises
         for scenario in no_raise_kwargs.keys():
             with self.subTest(scenario=scenario):
-                try:
-                    instance: MyModel = MyModel(**no_raise_kwargs[scenario])
-                    instance.full_clean()
-
-                except Exception as e:
-                    self.fail(
-                        f'{scenario} raised unexpected exception:\n\n{e}'
-                    )
+                instance: MyModel = MyModel(**no_raise_kwargs[scenario])
+                instance.full_clean()
 ```
 
 <br>

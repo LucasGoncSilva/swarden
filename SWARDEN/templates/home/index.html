@@ -11,6 +11,13 @@
 
 
 {% block content %}
+
+{% if messages %}
+{% for message in messages %}
+<div class='alert {{ message.tags }} mt-3 py-2 text-center' role='alert'>{{ message }}</div>
+{% endfor %}
+{% endif %}
+
 <h1 class="text-center">Informações Gerais</h1>
 
 <section class="mt-5 mx-auto px-5 pt-3 pb-5">
