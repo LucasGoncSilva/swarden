@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.db.transaction import atomic
 from django.db import DataError
 from django.core.exceptions import ValidationError
+from django.urls import reverse
 
 from account.models import User
 from secret.models import Card, LoginCredential, SecurityNote
@@ -136,6 +137,29 @@ class CredentialTestCase(TestCase):
         self.assertEqual(cred1.thirdy_party_login_name, '-----')
         self.assertEqual(cred1.login, 'night_monkey123@gmail.com')
         self.assertEqual(cred1.password, 'ilovemenotyou')
+
+    def test_credential_special_str_method_return(self) -> None:
+        """Tests credential return value of __str__ method"""
+
+        cred1: LoginCredential = LoginCredential.objects.get(
+            pk=self.login_credential_1.pk
+        )
+
+        self.assertEqual(
+            cred1.__str__(),
+            f'{str(cred1.owner.username)} | {cred1.service} | {cred1.name}',
+        )
+
+    def test_credential_absolute_url_method_return(self) -> None:
+        """Tests credential return value of get_absolute_url method"""
+
+        cred1: LoginCredential = LoginCredential.objects.get(
+            pk=self.login_credential_1.pk
+        )
+
+        self.assertEqual(
+            cred1.get_absolute_url(), reverse('secret:credential_list_view')
+        )
 
     def test_credential_user_foreign_key_validity(self) -> None:
         """Tests credential foreign key validation"""
@@ -445,6 +469,23 @@ class CardTestCase(TestCase):
             with self.subTest(card=card):
                 self.assertIsInstance(card, Card)
 
+    def test_card_special_str_method_return(self) -> None:
+        """Tests card return value of __str__ method"""
+
+        card1: Card = Card.objects.get(pk=self.card_1.pk)
+
+        self.assertEqual(
+            card1.__str__(),
+            f'{str(card1.owner.username)} | {card1.card_type} | {card1.name}',
+        )
+
+    def test_card_absolute_url_method_return(self) -> None:
+        """Tests card return value of get_absolute_url method"""
+
+        cred1: Card = Card.objects.get(pk=self.card_1.pk)
+
+        self.assertEqual(cred1.get_absolute_url(), reverse('secret:card_list_view'))
+
     def test_card_key_value_assertion(self) -> None:
         """Tests card correct attribuition of value"""
 
@@ -738,6 +779,22 @@ class SecurityNoteTestCase(TestCase):
         for note in SecurityNote.objects.all():
             with self.subTest(note=note):
                 self.assertIsInstance(note, SecurityNote)
+
+    def test_note_special_str_method_return(self) -> None:
+        """Tests note return value of __str__ method"""
+
+        note1: SecurityNote = SecurityNote.objects.get(pk=self.security_note_1.pk)
+
+        self.assertEqual(
+            note1.__str__(), f'{str(note1.owner.username)} | {note1.title}'
+        )
+
+    def test_note_absolute_url_method_return(self) -> None:
+        """Tests note return value of get_absolute_url method"""
+
+        cred1: SecurityNote = SecurityNote.objects.get(pk=self.security_note_1.pk)
+
+        self.assertEqual(cred1.get_absolute_url(), reverse('secret:note_list_view'))
 
     def test_note_key_value_assertion(self) -> None:
         """Tests note correct attribuition of value"""
