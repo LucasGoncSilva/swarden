@@ -41,14 +41,18 @@ class ActivationAccountTokenTestCase(TestCase):
     def test_token_special_str_method_return(self) -> None:
         """Tests token return value of __str__ method"""
 
-        token1: ActivationAccountToken = ActivationAccountToken.objects.get(pk=self.token1.pk)
+        token1: ActivationAccountToken = ActivationAccountToken.objects.get(
+            pk=self.token1.pk
+        )
 
         self.assertEqual(token1.__str__(), 'x' * 64)
 
     def test_token_key_value_assertion(self) -> None:
         """Tests token correct attribuition of value"""
 
-        token1: ActivationAccountToken = ActivationAccountToken.objects.get(pk=self.token1.pk)
+        token1: ActivationAccountToken = ActivationAccountToken.objects.get(
+            pk=self.token1.pk
+        )
 
         self.assertEqual(token1.value, 'x' * 64)
         self.assertFalse(token1.used)

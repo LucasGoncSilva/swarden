@@ -49,8 +49,8 @@
                         <form action="/admin/login/?next=/admin/" method="post" id="login-form">
                             {% csrf_token %}
                             <p class="errornote">
-                                Por favor, insira um usuário e senha corretos para uma conta de equipe. Note que ambos
-                                campos são sensíveis a maiúsculas e minúsculas.
+                                Você está autenticado como {{ user }}, mas não está autorizado a acessar esta página.
+                                Você gostaria de realizar login com uma conta diferente?
                             </p>
                             <div class="form-row">
                                 <label for="id_username" class="required">Usuário:</label> <input type="text"

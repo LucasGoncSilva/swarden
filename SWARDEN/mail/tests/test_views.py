@@ -17,9 +17,6 @@ class MailViewTestCase(TestCase):
             email='email@example.com',
         )
 
-    def tearDown(self) -> None:
-        return super().tearDown()
-
     def test_export_secrets_no_argument_view_behavior_for_not_logged_users(
         self,
     ) -> None:

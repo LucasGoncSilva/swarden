@@ -16,9 +16,15 @@ class Attempt(Model):
         max_length=256,
         verbose_name='Nome de Usuário',
         validators=[MaxLengthValidator(256)],
+        blank=True,
+        null=True,
     )
     password: Final[CharField] = CharField(
-        max_length=256, verbose_name='Senha', validators=[MaxLengthValidator(256)]
+        max_length=256,
+        verbose_name='Senha',
+        validators=[MaxLengthValidator(256)],
+        blank=True,
+        null=True,
     )
     URL: Final[CharField] = CharField(
         max_length=256, validators=[MaxLengthValidator(256)]
