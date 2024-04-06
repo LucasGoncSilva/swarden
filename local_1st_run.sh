@@ -75,7 +75,7 @@ def docker():
 
 def coverage():
     module = argv[2]
-    omit_list = ['*/month/*', 'orchestrator.py', '*/migrations/*']
+    omit_list = ['*/month/*', 'orchestrator.py', '*/migrations/*', 'manage.py']
     test()
     system(f'coverage run --source=\'{module}\' --omit=\'{",".join(omit_list)}\' manage.py test {module}')
     system('coverage html')

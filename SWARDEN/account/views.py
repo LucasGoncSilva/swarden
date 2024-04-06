@@ -16,7 +16,7 @@ from django.http import (
     HttpResponseServerError,
 )
 from django.forms import Form, CharField, TextInput, EmailField, PasswordInput
-from django.contrib import messages
+from django.contrib.messages import success, error
 
 from captcha.fields import CaptchaField
 
@@ -147,7 +147,7 @@ def register_view(
     password2: str | None = form.cleaned_data.get('password2')
 
     if not password or not password2 or password != password2:
-        messages.error(r, 'Senhas não compatíveis')
+        error(r, 'Senhas não compatíveis')
         return render(r, 'account/register.html', {'form': form})
 
     username: str | None = form.cleaned_data.get('username')
@@ -159,14 +159,14 @@ def register_view(
         or username is None
         or email is None
     ):
-        messages.error(r, 'Username e/ou e-mail indisponível')
+        error(r, 'Username e/ou e-mail indisponível')
         return render(r, 'account/register.html', {'form': form})
 
     first_name: str | None = form.cleaned_data.get('first_name')
     last_name: str | None = form.cleaned_data.get('last_name')
 
     if not first_name or not last_name:
-        messages.error(r, 'Nome e/ou Sobrenome inválidos.')
+        error(r, 'Nome e/ou Sobrenome inválidos.')
         return render(r, 'account/register.html', {'form': form})
 
     user: User = User.objects.create_user(
@@ -180,10 +180,10 @@ def register_view(
 
     try:
         send_email_activation_account_token(r.get_host(), user, password)
-    except (DataError, IntegrityError, ValidationError):
+    except (DataError, IntegrityError, ValidationError, TypeError):
         return handle500(r)
 
-    messages.success(r, 'Conta criada. Acesse seu e-mail para ativar sua conta.')
+    success(r, 'Conta criada. Acesse seu e-mail para ativar sua conta.')
     return HttpResponseRedirect(reverse('account:login'))
 
 
@@ -209,7 +209,13 @@ def activate_account(r: HttpRequest, uidb64: str, token: str) -> HttpResponseRed
 
     login(r, user)
 
-    send_email_activate_account_completed(str(user.email))
+    try:
+        send_email_activate_account_completed(str(user.email))
+    except ValidationError:
+        error(
+            r,
+            'Houve um problema com relação ao seu e-mail. Tente novamente mais tarde.',
+        )
 
     return HttpResponseRedirect(reverse('home:index'))
 
@@ -232,7 +238,7 @@ def login_view(r: HttpRequest) -> HttpResponse | HttpResponseRedirect:
     user: AbstractBaseUser | None = authenticate(username=username, password=password)
 
     if user is None:
-        messages.error(r, 'Username e/ou senha inválida')
+        error(r, 'Username e/ou senha inválida')
         return render(r, 'account/login.html', {'form': form})
 
     login(r, user)

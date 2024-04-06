@@ -1,12 +1,18 @@
 from django.http import HttpResponse
 from django.test import TestCase
 from django.core import mail
+from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user
 from django.urls import reverse
 
 from account.models import User
 from secret.models import LoginCredential, Card, SecurityNote
 from secret.month.models import Month
+from utils import (
+    create_scenarios,
+    send_email_activation_account_token,
+    send_email_activate_account_completed,
+)
 
 
 class MailViewTestCase(TestCase):
@@ -174,7 +180,7 @@ class MailViewTestCase(TestCase):
             slug='google--personal-main-account',
             thirdy_party_login=False,
             thirdy_party_login_name='-----',
-            login='night_monkey123@gmail.com',
+            login='night_monkey123@gcom',
             password='ilovemenotyou',
         )
 
@@ -276,3 +282,91 @@ class MailViewTestCase(TestCase):
             mail.outbox[-1].body,
             'Aqui estão seus segredos armazenados em "Anotações" no sWarden.\n\n\nEquipe sWarden',
         )
+
+
+class EmailActivationAccountTokenTestCase(TestCase):
+    def setUp(self) -> None:
+        self.user: User = User(
+            username='username',
+            password='password',
+            email='email@example.com',
+        )
+
+    def test_fuction_behavior_ideal_scenario(self) -> None:
+        """Tests function behavior when calling with expected arguments"""
+
+        self.assertIsNone(
+            send_email_activation_account_token('domain', self.user, 'password')
+        )
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertTrue(mail.outbox[-1].subject, 'Ativação de Conta | sWarden')
+        self.assertTrue(mail.outbox[-1].to, ['email@example.com'])
+
+    def test_fuction_behavior_invalid_User_scenario(self) -> None:
+        """Tests function behavior when user is an invalid instance"""
+
+        user: User = User()
+
+        with self.assertRaises(ValidationError):
+            send_email_activation_account_token('domain', user, 'password')
+
+    def test_fuction_behavior_wrong_type_for_domain_arg(self) -> None:
+        """Tests function behavior when type(domain) != str"""
+
+        with self.assertRaises(TypeError):
+            send_email_activation_account_token(500, self.user, 'password')
+
+    def test_fuction_behavior_wrong_type_for_user_arg(self) -> None:
+        """Tests function behavior when type(user) != User"""
+
+        with self.assertRaises(TypeError):
+            send_email_activation_account_token('domain', 'self.user', 'password')
+
+    def test_fuction_behavior_wrong_type_for_password_arg(self) -> None:
+        """Tests function behavior when type(password) != str"""
+
+        with self.assertRaises(TypeError):
+            send_email_activation_account_token('domain', self.user, 500)
+
+    def test_fuction_behavior_missing_args_scenario(self) -> None:
+        """Tests function behavior when missing args"""
+
+        params: list[dict[str, str | User]] = [
+            {'domain': 'domain'},
+            {'user': self.user},
+            {'password': 'password'},
+        ]
+
+        for case, scenario in create_scenarios(params):
+            with self.subTest(scenario=case):
+                with self.assertRaises(TypeError):
+                    send_email_activation_account_token(**scenario)
+
+
+class EmailActivationAccountDoneTestCase(TestCase):
+    def setUp(self) -> None:
+        self.user: User = User(
+            username='username',
+            password='password',
+            email='email@example.com',
+        )
+
+    def test_fuction_behavior_ideal_scenario(self) -> None:
+        """Tests function behavior when calling with expected arguments"""
+
+        self.assertIsNone(send_email_activate_account_completed('email@example.com'))
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertTrue(mail.outbox[-1].subject, 'Ativação de Conta | sWarden')
+        self.assertTrue(mail.outbox[-1].to, ['email@example.com'])
+
+    def test_fuction_behavior_invalid_email_scenario(self) -> None:
+        """Tests function behavior when invalid user_email"""
+
+        with self.assertRaises(TypeError):
+            send_email_activate_account_completed(4)
+
+    def test_function_behavior_no_argument(self) -> None:
+        """Tests function behavior when missing arg user_email"""
+
+        with self.assertRaises(TypeError):
+            send_email_activate_account_completed()

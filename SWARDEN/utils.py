@@ -5,6 +5,7 @@ from hashlib import sha256
 
 from django.db import DataError, IntegrityError
 from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.http import HttpRequest
@@ -69,14 +70,23 @@ def xor(text: str, key: str, encrypt: bool = True) -> str:
 
 
 def send_email_activation_account_token(domain: str, user: User, password: str) -> None:
+    if (
+        not isinstance(domain, str)
+        or not isinstance(user, User)
+        or not isinstance(password, str)
+    ):
+        raise TypeError(f'{domain}, {user} and {password} are invalid arguments')
+
+    validate_email(user.email)
+
     token_hash = sha256(f'{user.username}{password}'.encode()).hexdigest()
     uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
 
-    token: ActivationAccountToken = ActivationAccountToken.objects.create(
-        value=token_hash, used=False
-    )
-
     try:
+        token: ActivationAccountToken = ActivationAccountToken.objects.create(
+            value=token_hash, used=False
+        )
+
         token.full_clean()
         if not token.is_valid():
             token.failed = True
@@ -98,6 +108,8 @@ def send_email_activation_account_token(domain: str, user: User, password: str) 
 
 
 def send_email_activate_account_completed(user_email: str) -> None:
+    validate_email(user_email)
+
     email: EmailMessage = EmailMessage(
         subject='Ativação de Conta | sWarden',
         body=ACTIVATE_ACCOUNT_CONFIRM_DONE,
@@ -112,6 +124,8 @@ def send_email_exporting_secrets(
     csvfile: StringIO,
     user_email: str,
 ) -> None:
+    validate_email(user_email)
+
     email: EmailMessage = EmailMessage(
         subject='Exportação de Segredos | sWarden',
         body=f'Aqui estão seus segredos armazenados em "{secret_type}" no sWarden.\n\n\nEquipe sWarden',
