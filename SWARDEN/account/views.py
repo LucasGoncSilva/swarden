@@ -165,10 +165,6 @@ def register_view(
     first_name: str | None = form.cleaned_data.get('first_name')
     last_name: str | None = form.cleaned_data.get('last_name')
 
-    if not first_name or not last_name:
-        error(r, 'Nome e/ou Sobrenome inválidos.')
-        return render(r, 'account/register.html', {'form': form})
-
     user: User = User.objects.create_user(
         username=username,
         first_name=first_name,
@@ -178,19 +174,21 @@ def register_view(
         is_active=False,
     )
 
-    try:
-        send_email_activation_account_token(r.get_host(), user, password)
-    except (DataError, IntegrityError, ValidationError, TypeError):
-        return handle500(r)
+    send_email_activation_account_token(r.get_host(), user, password)
 
     success(r, 'Conta criada. Acesse seu e-mail para ativar sua conta.')
     return HttpResponseRedirect(reverse('account:login'))
 
 
+def activate_account_missing_parameter(
+    r: HttpRequest, uidb64: str | None = None
+) -> HttpResponseRedirect:
+    return HttpResponseRedirect(reverse('home:index'))
+
+
 def activate_account(r: HttpRequest, uidb64: str, token: str) -> HttpResponseRedirect:
-    token_obj: ActivationAccountToken = get_object_or_404(
-        ActivationAccountToken, value=token, used=False
-    )
+    if r.user.is_authenticated:
+        return HttpResponseRedirect(reverse('home:index'))
 
     user: User | None = None
 
@@ -201,6 +199,10 @@ def activate_account(r: HttpRequest, uidb64: str, token: str) -> HttpResponseRed
     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
         raise Http404()
 
+    token_obj: ActivationAccountToken = get_object_or_404(
+        ActivationAccountToken, value=token, used=False
+    )
+
     user.is_active = True
     user.save()
 
@@ -209,13 +211,7 @@ def activate_account(r: HttpRequest, uidb64: str, token: str) -> HttpResponseRed
 
     login(r, user)
 
-    try:
-        send_email_activate_account_completed(str(user.email))
-    except ValidationError:
-        error(
-            r,
-            'Houve um problema com relação ao seu e-mail. Tente novamente mais tarde.',
-        )
+    send_email_activate_account_completed(str(user.email))
 
     return HttpResponseRedirect(reverse('home:index'))
 
