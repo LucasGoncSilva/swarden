@@ -59,8 +59,8 @@ class HomeViewsTestCase(TestCase):
             content='Just draw an apple tree and erase the tree.',
         )
 
-    def test_home_view_behavior_for_not_logged_users(self):
-        """Tests view behavior at "/" for not logged users"""
+    def test_GET_anonymous_user(self):
+        """GET / | anonymous user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -72,8 +72,8 @@ class HomeViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-    def test_home_view_behavior_for_logged_users(self):
-        """Tests view behavior at "/" for logged users"""
+    def test_GET_authenticated_user(self):
+        """GET / | authenticated user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
