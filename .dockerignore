@@ -136,6 +136,7 @@ dmypy.json
 # Dev files
 orchestrator.py
 .vscode/
+xpto.py
 
 # Media folder
 media/

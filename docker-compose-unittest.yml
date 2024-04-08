@@ -22,6 +22,7 @@ services:
       - DATABASE_USER=postgres
       - DATABASE_PASSWORD=postgres
       - DATABASE_HOST=db
+      - CAPTCHA_TEST_MODE=True
     depends_on:
       db:
         condition: service_healthy
