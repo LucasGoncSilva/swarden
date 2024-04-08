@@ -40,6 +40,7 @@ urlpatterns: list[URLResolver | URLPattern] = [
     ),
     path('captcha/', include('captcha.urls')),
     path('enviar-email/', include('mail.urls')),
+    path('erro/', include('err.urls')),
     # User's pages
     path('', include('home.urls')),
     path('segredos/', include('secret.urls')),
