@@ -15,10 +15,8 @@ class HoneypotViewsTestCase(TestCase):
             email='email@example.com',
         )
 
-    def test_honeypot_view_behavior_with_GET_method_and_no_argument_for_not_logged_users(
-        self,
-    ) -> None:
-        """Tests view behavior at GET "/admin/" for not logged users"""
+    def test_GET_anonymous_user_no_argument(self) -> None:
+        """GET /admin/ | anonymous user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -38,10 +36,8 @@ class HoneypotViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-    def test_honeypot_view_behavior_with_GET_method_and_no_argument_for_logged_users(
-        self,
-    ) -> None:
-        """Tests view behavior at GET "/admin/" for logged users"""
+    def test_GET_authenticated_user_no_argument(self) -> None:
+        """GET /admin/ | authenticated user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -63,10 +59,8 @@ class HoneypotViewsTestCase(TestCase):
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_honeypot_view_behavior_with_POST_method_and_no_argument_for_not_logged_users(
-        self,
-    ) -> None:
-        """Tests view behavior at POST "/admin/" for not logged users"""
+    def test_POST_anonymous_user_no_argument(self) -> None:
+        """POST /admin/ | anonymous user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -86,10 +80,8 @@ class HoneypotViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-    def test_honeypot_view_behavior_with_POST_method_and_no_argument_for_logged_users(
-        self,
-    ) -> None:
-        """Tests view behavior at POST "/admin/" for logged users"""
+    def test_POST_authenticated_user_no_argument(self) -> None:
+        """POST /admin/ | authenticated user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -111,10 +103,8 @@ class HoneypotViewsTestCase(TestCase):
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_honeypot_view_behavior_with_GET_method_and_argument_for_not_logged_users(
-        self,
-    ) -> None:
-        """Tests view behavior at GET "/admin/" for not logged users"""
+    def test_GET_anonymous_user_argument(self) -> None:
+        """GET /admin/^(?P<path>.*)/$ | anonymous user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -137,10 +127,8 @@ class HoneypotViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-    def test_honeypot_view_behavior_with_GET_method_and_argument_for_logged_users(
-        self,
-    ) -> None:
-        """Tests view behavior at GET "/admin/" for logged users"""
+    def test_GET_authenticated_user_argument(self) -> None:
+        """GET /admin/^(?P<path>.*)/$ | authenticated user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -165,10 +153,8 @@ class HoneypotViewsTestCase(TestCase):
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_honeypot_view_behavior_with_POST_method_and_argument_for_not_logged_users(
-        self,
-    ) -> None:
-        """Tests view behavior at POST "/admin/" for not logged users"""
+    def test_POST_anonymous_user_argument(self) -> None:
+        """POST /admin/^(?P<path>.*)/$ | anonymous user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -191,10 +177,8 @@ class HoneypotViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-    def test_honeypot_view_behavior_with_POST_method_and_argument_for_logged_users(
-        self,
-    ) -> None:
-        """Tests view behavior at POST "/admin/" for logged users"""
+    def test_POST_authenticated_user_argument(self) -> None:
+        """POST /admin/^(?P<path>.*)/$ | authenticated user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -219,10 +203,8 @@ class HoneypotViewsTestCase(TestCase):
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_honeypot_view_behavior_with_POST_method_and_username_in_form_for_not_logged_users(
-        self,
-    ) -> None:
-        """Tests view behavior at POST "/admin/" for not logged users"""
+    def test_POST_anonymous_user_posting_username(self) -> None:
+        """POST /admin/login | anonymous user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -247,10 +229,8 @@ class HoneypotViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-    def test_honeypot_view_behavior_with_POST_method_and_username_in_form_for_logged_users(
-        self,
-    ) -> None:
-        """Tests view behavior at POST "/admin/" for logged users"""
+    def test_POST_authenticated_user_posting_username(self) -> None:
+        """POST /admin/login | authenticated user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -277,10 +257,8 @@ class HoneypotViewsTestCase(TestCase):
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_honeypot_view_behavior_with_POST_method_and_password_in_form_for_not_logged_users(
-        self,
-    ) -> None:
-        """Tests view behavior at POST "/admin/" for not logged users"""
+    def test_POST_anonymous_user_posting_password(self) -> None:
+        """POST /admin/login | anonymous user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -305,10 +283,8 @@ class HoneypotViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-    def test_honeypot_view_behavior_with_POST_method_and_password_in_form_for_logged_users(
-        self,
-    ) -> None:
-        """Tests view behavior at POST "/admin/" for logged users"""
+    def test_POST_authenticated_user_posting_password(self) -> None:
+        """POST /admin/login | authenticated user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
