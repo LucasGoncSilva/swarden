@@ -15,7 +15,7 @@ from utils import (
 )
 
 
-class MailViewTestCase(TestCase):
+class BaseMailTestCase(TestCase):
     def setUp(self) -> None:
         self.user = User.objects.create_user(
             username='user',
@@ -23,10 +23,10 @@ class MailViewTestCase(TestCase):
             email='email@example.com',
         )
 
-    def test_export_secrets_no_argument_view_behavior_for_not_logged_users(
-        self,
-    ) -> None:
-        """Tests view behavior at "/enviar-email/exportar-segredos/" for not logged users"""
+
+class ExportSecretsViewTestCase(BaseMailTestCase):
+    def test_GET_anonymous_user_no_argument(self) -> None:
+        """GET /enviar-email/exportar-segredos/ | anonymous user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -51,8 +51,8 @@ class MailViewTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-    def test_export_secrets_no_argument_view_behavior_for_logged_users(self) -> None:
-        """Tests view behavior at "/enviar-email/exportar-segredos/" for logged users"""
+    def test_GET_authenticated_user_no_argument(self) -> None:
+        """GET /enviar-email/exportar-segredos/ | authenticated user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -74,10 +74,8 @@ class MailViewTestCase(TestCase):
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_export_secrets_invalid_argument_view_behavior_for_not_logged_users(
-        self,
-    ) -> None:
-        """Tests view behavior at "/enviar-email/exportar-segredos/<Any>" for not logged users"""
+    def test_GET_anonymous_user_invalid_secret(self) -> None:
+        """GET /enviar-email/exportar-segredos/<Any> | anonymous user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -104,10 +102,8 @@ class MailViewTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-    def test_export_secrets_invalid_argument_view_behavior_for_logged_users(
-        self,
-    ) -> None:
-        """Tests view behavior at "/enviar-email/exportar-segredos/<Any>" for logged users"""
+    def test_GET_authenticated_user_invalid_secret(self) -> None:
+        """GET /enviar-email/exportar-segredos/<Any> | authenticated user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -130,10 +126,8 @@ class MailViewTestCase(TestCase):
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_export_secrets_argument_with_no_secret_view_behavior_for_logged_users(
-        self,
-    ) -> None:
-        """Tests view behavior at "/enviar-email/exportar-segredos/<Credenciais | Cartões | Anotações>" for logged users"""
+    def test_GET_authenticated_user_no_secret(self) -> None:
+        """GET /enviar-email/exportar-segredos/<Credenciais | Cartões | Anotações> | authenticated user | no secret"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -165,8 +159,8 @@ class MailViewTestCase(TestCase):
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_export_secrets_for_credential_view_behavior_for_logged_users(self) -> None:
-        """Tests view behavior at "/enviar-email/exportar-segredos/Credenciais" for logged users"""
+    def test_GET_authenticated_user_credential(self) -> None:
+        """GET /enviar-email/exportar-segredos/Credenciais | authenticated user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -205,8 +199,8 @@ class MailViewTestCase(TestCase):
             'Aqui estão seus segredos armazenados em "Credenciais" no sWarden.\n\n\nEquipe sWarden',
         )
 
-    def test_export_secrets_for_card_view_behavior_for_logged_users(self) -> None:
-        """Tests view behavior at "/enviar-email/exportar-segredos/Cartões" for logged users"""
+    def test_GET_authenticated_user_card(self) -> None:
+        """GET /enviar-email/exportar-segredos/Cartões | authenticated user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -247,8 +241,8 @@ class MailViewTestCase(TestCase):
             'Aqui estão seus segredos armazenados em "Cartões" no sWarden.\n\n\nEquipe sWarden',
         )
 
-    def test_export_secrets_for_note_view_behavior_for_logged_users(self) -> None:
-        """Tests view behavior at "/enviar-email/exportar-segredos/Anotações" for logged users"""
+    def test_GET_authenticated_user_note(self) -> None:
+        """GET /enviar-email/exportar-segredos/Anotações | authenticated user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -284,16 +278,9 @@ class MailViewTestCase(TestCase):
         )
 
 
-class EmailActivationAccountTokenTestCase(TestCase):
-    def setUp(self) -> None:
-        self.user: User = User(
-            username='username',
-            password='password',
-            email='email@example.com',
-        )
-
-    def test_fuction_behavior_ideal_scenario(self) -> None:
-        """Tests function behavior when calling with expected arguments"""
+class EmailActivationAccountTokenTestCase(BaseMailTestCase):
+    def test_ideal(self) -> None:
+        """send_email_activation_account_token(domain: str, user: User, password: str)"""
 
         self.assertIsNone(
             send_email_activation_account_token('domain', self.user, 'password')
@@ -302,34 +289,34 @@ class EmailActivationAccountTokenTestCase(TestCase):
         self.assertTrue(mail.outbox[-1].subject, 'Ativação de Conta | sWarden')
         self.assertTrue(mail.outbox[-1].to, ['email@example.com'])
 
-    def test_fuction_behavior_invalid_User_scenario(self) -> None:
-        """Tests function behavior when user is an invalid instance"""
+    def test_invalid_User(self) -> None:
+        """send_email_activation_account_token(domain: str, user: User, password: str)"""
 
         user: User = User()
 
         with self.assertRaises(ValidationError):
             send_email_activation_account_token('domain', user, 'password')
 
-    def test_fuction_behavior_wrong_type_for_domain_arg(self) -> None:
-        """Tests function behavior when type(domain) != str"""
+    def test_wrong_type_domain_arg(self) -> None:
+        """send_email_activation_account_token(domain: not str, user: User, password: str)"""
 
         with self.assertRaises(TypeError):
             send_email_activation_account_token(500, self.user, 'password')
 
-    def test_fuction_behavior_wrong_type_for_user_arg(self) -> None:
-        """Tests function behavior when type(user) != User"""
+    def test_wrong_type_user_arg(self) -> None:
+        """send_email_activation_account_token(domain: str, user: not User, password: str)"""
 
         with self.assertRaises(TypeError):
             send_email_activation_account_token('domain', 'self.user', 'password')
 
-    def test_fuction_behavior_wrong_type_for_password_arg(self) -> None:
-        """Tests function behavior when type(password) != str"""
+    def test_wrong_type_password_arg(self) -> None:
+        """send_email_activation_account_token(domain: str, user: User, password: not str)"""
 
         with self.assertRaises(TypeError):
             send_email_activation_account_token('domain', self.user, 500)
 
-    def test_fuction_behavior_missing_args_scenario(self) -> None:
-        """Tests function behavior when missing args"""
+    def test_missing_args(self) -> None:
+        """send_email_activation_account_token(domain: str | None, user: User | None, password: str | None)"""
 
         params: list[dict[str, str | User]] = [
             {'domain': 'domain'},
@@ -343,30 +330,23 @@ class EmailActivationAccountTokenTestCase(TestCase):
                     send_email_activation_account_token(**scenario)
 
 
-class EmailActivationAccountDoneTestCase(TestCase):
-    def setUp(self) -> None:
-        self.user: User = User(
-            username='username',
-            password='password',
-            email='email@example.com',
-        )
-
-    def test_fuction_behavior_ideal_scenario(self) -> None:
-        """Tests function behavior when calling with expected arguments"""
+class EmailActivationAccountDoneTestCase(BaseMailTestCase):
+    def test_ideal(self) -> None:
+        """send_email_activate_account_completed(user_email: str)"""
 
         self.assertIsNone(send_email_activate_account_completed('email@example.com'))
         self.assertEqual(len(mail.outbox), 1)
         self.assertTrue(mail.outbox[-1].subject, 'Ativação de Conta | sWarden')
         self.assertTrue(mail.outbox[-1].to, ['email@example.com'])
 
-    def test_fuction_behavior_invalid_email_scenario(self) -> None:
-        """Tests function behavior when invalid user_email"""
+    def test_invalid_email(self) -> None:
+        """send_email_activate_account_completed(user_email: not str)"""
 
         with self.assertRaises(TypeError):
             send_email_activate_account_completed(4)
 
     def test_function_behavior_no_argument(self) -> None:
-        """Tests function behavior when missing arg user_email"""
+        """send_email_activate_account_completed(user_email: str | None)"""
 
         with self.assertRaises(TypeError):
             send_email_activate_account_completed()
