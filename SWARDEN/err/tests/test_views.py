@@ -4,7 +4,7 @@ from django.urls import reverse
 
 
 class Error403ViewTestCase(TestCase):
-    def test_handle403_view_template(self) -> None:
+    def test_GET_anonymous_user(self) -> None:
         """GET /erro/403"""
 
         res: HttpResponse = self.client.get(reverse('err:403'))
@@ -22,7 +22,7 @@ class Error403ViewTestCase(TestCase):
 
 
 class Error404ViewTestCase(TestCase):
-    def test_handle404_view_template(self) -> None:
+    def test_GET_anonymous_user(self) -> None:
         """GET /erro/404"""
 
         res: HttpResponse = self.client.get(reverse('err:404'))
@@ -40,7 +40,7 @@ class Error404ViewTestCase(TestCase):
 
 
 class Error500ViewTestCase(TestCase):
-    def test_handle500_view_template(self) -> None:
+    def test_GET_anonymous_user(self) -> None:
         """GET /erro/500"""
 
         res: HttpResponse = self.client.get(reverse('err:500'))
