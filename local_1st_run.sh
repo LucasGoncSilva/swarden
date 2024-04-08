@@ -19,10 +19,12 @@ environ['DJANGO_SETTINGS_MODULE'] = 'CORE.settings.dev'
 environ['EMAIL_HOST_USER'] = ''
 environ['EMAIL_HOST_PASSWORD'] = ''
 
+environ['CAPTCHA_TEST_MODE'] = 'True'
+
 
 system('black -S .')
 system('find -name "*.pyc" -type f -delete')
-system('rm -rf \`find -type d -name __pycache__\`')
+system('rm -rf `find -type d -name __pycache__`')
 
 
 def run_false():
@@ -57,7 +59,7 @@ def test():
 
 
 def cleardb():
-    system('rm -rf \`find -type d -name migrations -not -path "./env/*"\`')
+    system('rm -rf `find -type d -name migrations -not -path "./env/*"`')
     system('find -name "*.sqlite3" -type f -delete')
     exit(0)
 
