@@ -89,7 +89,7 @@ class LoginCredential(Model):
         self.password = xor(str(self.password), self.owner.password[21:])
         self.note = xor(str(self.note), self.owner.password[21:])
 
-        return super(LoginCredential, self).save(
+        return super().save(
             force_insert=False, force_update=False, using=None, update_fields=None
         )
 
@@ -263,7 +263,7 @@ class Card(Model):
         self.owners_name = xor(str(self.owners_name), self.owner.password[21:])
         self.note = xor(str(self.note), self.owner.password[21:])
 
-        return super(Card, self).save(
+        return super().save(
             force_insert=False, force_update=False, using=None, update_fields=None
         )
 
@@ -418,7 +418,7 @@ class SecurityNote(Model):
     ):
         self.content = xor(str(self.content), self.owner.password[21:])
 
-        return super(SecurityNote, self).save(
+        return super().save(
             force_insert=False, force_update=False, using=None, update_fields=None
         )
 
