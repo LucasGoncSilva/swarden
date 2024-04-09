@@ -1,5 +1,3 @@
-from django.db import DataError, IntegrityError
-from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
@@ -25,7 +23,6 @@ from utils import (
     send_email_activate_account_completed,
 )
 from account.models import User, ActivationAccountToken
-from err.views import handle500
 
 
 # Create your views here.

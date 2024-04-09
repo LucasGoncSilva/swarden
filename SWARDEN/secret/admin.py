@@ -1,13 +1,13 @@
 from typing import Any, Final
 
 from django.http import HttpRequest
-from django.contrib import admin
+from django.contrib.admin import ModelAdmin, register
 
 from secret.models import Card, LoginCredential, SecurityNote
 
 
 # Register your models here.
-class BasesWardenModelAdmin(admin.ModelAdmin):
+class BasesWardenModelAdmin(ModelAdmin):
     exclude = tuple()
     _exclude = tuple()
 
@@ -21,7 +21,7 @@ class BasesWardenModelAdmin(admin.ModelAdmin):
         return super().get_form(request, obj, **kwargs)
 
 
-@admin.register(Card)
+@register(Card)
 class CardAdmin(BasesWardenModelAdmin):
     prepopulated_fields: Final = {'slug': ('bank', 'name')}
     list_display: Final = ('pk', 'slug', 'created', 'updated')
@@ -37,7 +37,7 @@ class CardAdmin(BasesWardenModelAdmin):
     )
 
 
-@admin.register(LoginCredential)
+@register(LoginCredential)
 class LoginCredentialAdmin(BasesWardenModelAdmin):
     prepopulated_fields: Final = {'slug': ('service', 'name')}
     list_display: Final = ('pk', 'slug', 'created', 'updated')
@@ -51,7 +51,7 @@ class LoginCredentialAdmin(BasesWardenModelAdmin):
     )
 
 
-@admin.register(SecurityNote)
+@register(SecurityNote)
 class SecurityNoteAdmin(BasesWardenModelAdmin):
     prepopulated_fields: Final = {'slug': ('title',)}
     list_display: Final = ('pk', 'slug', 'created', 'updated')

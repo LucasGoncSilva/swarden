@@ -11,14 +11,14 @@ from secret.month.models import Month
 # Create your tests here.
 class HomeViewsTestCase(TestCase):
     def setUp(self) -> None:
-        test_user = User.objects.create_user(
+        user = User.objects.create_user(
             username='user',
             password='password',
-            email='user@example.com',
+            email='user@email.com',
         )
 
         Card.objects.create(
-            owner=test_user,
+            owner=user,
             name='Personal Main Card',
             card_type='deb',
             number='4002892240028922',
@@ -31,7 +31,7 @@ class HomeViewsTestCase(TestCase):
         )
 
         LoginCredential.objects.create(
-            owner=test_user,
+            owner=user,
             service='google--',
             name='Personal Main Account',
             slug='google--personal-main-account',
@@ -42,7 +42,7 @@ class HomeViewsTestCase(TestCase):
         )
 
         LoginCredential.objects.create(
-            owner=test_user,
+            owner=user,
             service='steam--',
             name='Little Fries',
             slug='steam--little-fries',
@@ -53,7 +53,7 @@ class HomeViewsTestCase(TestCase):
         )
 
         SecurityNote.objects.create(
-            owner=test_user,
+            owner=user,
             title='How to draw an apple',
             slug='how-to-draw-an-apple',
             content='Just draw an apple tree and erase the tree.',

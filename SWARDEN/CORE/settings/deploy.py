@@ -1,3 +1,5 @@
+from os import getenv
+
 from CORE.settings.base import *
 
 

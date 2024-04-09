@@ -20,7 +20,7 @@ class BaseMailTestCase(TestCase):
         self.user = User.objects.create_user(
             username='user',
             password='password',
-            email='email@example.com',
+            email='user@email.com',
         )
 
 
@@ -193,7 +193,7 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
         self.assertTemplateUsed(res, 'secret/list_view.html')
         self.assertEqual(len(mail.outbox), 2)
         self.assertEqual(mail.outbox[-1].subject, 'Exportação de Segredos | sWarden')
-        self.assertEqual(mail.outbox[-1].to, ['email@example.com'])
+        self.assertEqual(mail.outbox[-1].to, ['user@email.com'])
         self.assertEqual(
             mail.outbox[-1].body,
             'Aqui estão seus segredos armazenados em "Credenciais" no sWarden.\n\n\nEquipe sWarden',
@@ -235,7 +235,7 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
         self.assertTemplateUsed(res, 'secret/list_view.html')
         self.assertEqual(len(mail.outbox), 2)
         self.assertEqual(mail.outbox[-1].subject, 'Exportação de Segredos | sWarden')
-        self.assertEqual(mail.outbox[-1].to, ['email@example.com'])
+        self.assertEqual(mail.outbox[-1].to, ['user@email.com'])
         self.assertEqual(
             mail.outbox[-1].body,
             'Aqui estão seus segredos armazenados em "Cartões" no sWarden.\n\n\nEquipe sWarden',
@@ -271,7 +271,7 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
         self.assertTemplateUsed(res, 'secret/list_view.html')
         self.assertEqual(len(mail.outbox), 2)
         self.assertEqual(mail.outbox[-1].subject, 'Exportação de Segredos | sWarden')
-        self.assertEqual(mail.outbox[-1].to, ['email@example.com'])
+        self.assertEqual(mail.outbox[-1].to, ['user@email.com'])
         self.assertEqual(
             mail.outbox[-1].body,
             'Aqui estão seus segredos armazenados em "Anotações" no sWarden.\n\n\nEquipe sWarden',
@@ -287,7 +287,7 @@ class EmailActivationAccountTokenTestCase(BaseMailTestCase):
         )
         self.assertEqual(len(mail.outbox), 1)
         self.assertTrue(mail.outbox[-1].subject, 'Ativação de Conta | sWarden')
-        self.assertTrue(mail.outbox[-1].to, ['email@example.com'])
+        self.assertTrue(mail.outbox[-1].to, ['user@email.com'])
 
     def test_invalid_User(self) -> None:
         """send_email_activation_account_token(domain: str, user: User, password: str)"""
@@ -334,10 +334,10 @@ class EmailActivationAccountDoneTestCase(BaseMailTestCase):
     def test_ideal(self) -> None:
         """send_email_activate_account_completed(user_email: str)"""
 
-        self.assertIsNone(send_email_activate_account_completed('email@example.com'))
+        self.assertIsNone(send_email_activate_account_completed('user@email.com'))
         self.assertEqual(len(mail.outbox), 1)
         self.assertTrue(mail.outbox[-1].subject, 'Ativação de Conta | sWarden')
-        self.assertTrue(mail.outbox[-1].to, ['email@example.com'])
+        self.assertTrue(mail.outbox[-1].to, ['user@email.com'])
 
     def test_invalid_email(self) -> None:
         """send_email_activate_account_completed(user_email: not str)"""

@@ -14,9 +14,9 @@ from utils import xor, create_scenarios
 class CredentialTestCase(TestCase):
     def setUp(self) -> None:
         self.user = User.objects.create_user(
-            username='test_user',
-            password='testing_password',
-            email='test_user@example.com',
+            username='user',
+            password='password',
+            email='user@email.com',
         )
 
         # Object 1
@@ -358,9 +358,9 @@ class CredentialTestCase(TestCase):
 class CardTestCase(TestCase):
     def setUp(self) -> None:
         self.user = User.objects.create_user(
-            username='test_user',
-            password='testing_password',
-            email='test_user@example.com',
+            username='user',
+            password='password',
+            email='user@email.com',
         )
 
         # Object 1
@@ -737,9 +737,9 @@ class CardTestCase(TestCase):
 class SecurityNoteTestCase(TestCase):
     def setUp(self) -> None:
         self.user = User.objects.create_user(
-            username='test_user',
-            password='testing_password',
-            email='test_user@example.com',
+            username='user',
+            password='password',
+            email='user@email.com',
         )
 
         # Object 1

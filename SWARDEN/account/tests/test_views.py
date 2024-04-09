@@ -14,7 +14,7 @@ class BaseAccountTestCase(TestCase):
         User.objects.create_user(
             username='user',
             password='password',
-            email='email@example.com',
+            email='user@email.com',
         )
 
         self.REGISTER_URL: str = reverse('account:register')

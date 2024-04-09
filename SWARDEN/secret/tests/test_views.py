@@ -14,11 +14,11 @@ class SecretIndexViewTestCase(TestCase):
         User.objects.create_user(
             username='user',
             password='password',
-            email='test_user@example.com',
+            email='user@email.com',
         )
 
-    def test_index_view_behavior_for_not_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/" for not logged users"""
+    def test_GET_anonymous_user(self) -> None:
+        """GET /segredo/ | anonymous user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -37,11 +37,8 @@ class SecretIndexViewTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-    def test_index_view_behavior_for_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/" for logged users"""
-
-        self.assertTrue(get_user(self.client).is_anonymous)
-        self.assertFalse(get_user(self.client).is_authenticated)
+    def test_GET_authenticated_user(self) -> None:
+        """GET /segredo/ | authenticated user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -56,16 +53,17 @@ class SecretIndexViewTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_authenticated)
 
 
-class LoginCredentialViewsTestCase(TestCase):
+# LoginCredential CRUD View Testing
+class BaseLoginCredentialTestCase(TestCase):
     def setUp(self) -> None:
-        test_user = User.objects.create_user(
+        user = User.objects.create_user(
             username='user',
             password='password',
-            email='test_user@example.com',
+            email='user@email.com',
         )
 
         LoginCredential.objects.create(
-            owner=test_user,
+            owner=user,
             service='google--',
             name='Personal Main Account',
             slug='google--personal-main-account',
@@ -76,7 +74,7 @@ class LoginCredentialViewsTestCase(TestCase):
         )
 
         LoginCredential.objects.create(
-            owner=test_user,
+            owner=user,
             service='steam--',
             name='Little Fries',
             slug='steam--little-fries',
@@ -86,11 +84,14 @@ class LoginCredentialViewsTestCase(TestCase):
             password='-----',
         )
 
-    def test_credential_create_view_behavior_for_not_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/credenciais/nova" for not logged users"""
+
+class LoginCredentialCreateViewsTestCase(BaseLoginCredentialTestCase):
+    def test_GET_anonymous_user(self) -> None:
+        """GET /segredo/credenciais/nova | anonymous user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
+
         res: HttpResponse = self.client.get(reverse('secret:credential_create_view'))
 
         self.assertEqual(res.status_code, 302)
@@ -110,10 +111,8 @@ class LoginCredentialViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-    def test_credential_create_view_behavior_for_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/credenciais/nova" for logged users"""
-        self.assertTrue(get_user(self.client).is_anonymous)
-        self.assertFalse(get_user(self.client).is_authenticated)
+    def test_GET_authenticated_user(self) -> None:
+        """GET /segredo/credenciais/nova | authenticated user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -133,8 +132,10 @@ class LoginCredentialViewsTestCase(TestCase):
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_credential_list_view_behavior_for_not_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/credenciais/" for not logged users"""
+
+class LoginCredentialListViewTestCase(BaseLoginCredentialTestCase):
+    def test_GET_anonymous_user(self) -> None:
+        """GET /segredo/credenciais/ | anonymous user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -158,10 +159,8 @@ class LoginCredentialViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-    def test_credential_list_view_behavior_for_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/credenciais/" for logged users"""
-        self.assertTrue(get_user(self.client).is_anonymous)
-        self.assertFalse(get_user(self.client).is_authenticated)
+    def test_GET_authenticated_user(self) -> None:
+        """GET /segredo/credenciais/ | authenticated user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -181,8 +180,10 @@ class LoginCredentialViewsTestCase(TestCase):
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_credential_detail_view_behavior_for_not_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/credenciais/<slug:slug>" for not logged users"""
+
+class LoginCredentialDetailViewTestCase(BaseLoginCredentialTestCase):
+    def test_GET_anonymous_user(self) -> None:
+        """GET /segredo/credenciais/<slug:slug> | anonymous user"""
 
         res: HttpResponse = self.client.get(
             reverse(
@@ -215,10 +216,8 @@ class LoginCredentialViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-    def test_credential_detail_view_behavior_for_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/credenciais/<slug:slug>" for logged users"""
-        self.assertTrue(get_user(self.client).is_anonymous)
-        self.assertFalse(get_user(self.client).is_authenticated)
+    def test_GET_authenticated_user(self) -> None:
+        """GET /segredo/credenciais/<slug:slug> | authenticated user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -255,8 +254,10 @@ class LoginCredentialViewsTestCase(TestCase):
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_credential_update_view_behavior_for_not_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/credenciais/<slug:slug>/editar" for not logged users"""
+
+class LoginCredentialUpdateViewTestCase(BaseLoginCredentialTestCase):
+    def test_GET_anonymous_user(self) -> None:
+        """GET /segredo/credenciais/<slug:slug>/editar | anonymous user"""
 
         res: HttpResponse = self.client.get(
             reverse(
@@ -289,10 +290,8 @@ class LoginCredentialViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-    def test_credential_update_view_behavior_for_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/credenciais/<slug:slug>/editar" for logged users"""
-        self.assertTrue(get_user(self.client).is_anonymous)
-        self.assertFalse(get_user(self.client).is_authenticated)
+    def test_GET_authenticated_user(self) -> None:
+        """GET /segredo/credenciais/<slug:slug>/editar | authenticated user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -335,8 +334,10 @@ class LoginCredentialViewsTestCase(TestCase):
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_credential_delete_view_behavior_for_not_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/credenciais/<slug:slug>/deletar" for not logged users"""
+
+class LoginCredentialDeleteViewTestCase(BaseLoginCredentialTestCase):
+    def test_GET_anonymous_user(self) -> None:
+        """GET /segredo/credenciais/<slug:slug>/deletar | anonymous user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -372,11 +373,8 @@ class LoginCredentialViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-    def test_credential_delete_view_behavior_for_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/credenciais/<slug:slug>/deletar" for logged users"""
-
-        self.assertTrue(get_user(self.client).is_anonymous)
-        self.assertFalse(get_user(self.client).is_authenticated)
+    def test_GET_authenticated_user(self) -> None:
+        """GET /segredo/credenciais/<slug:slug>/deletar | authenticated user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -420,16 +418,17 @@ class LoginCredentialViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_authenticated)
 
 
-class CardViewsTestCase(TestCase):
+# Card CRUD View Testing
+class BaseCardTestCase(TestCase):
     def setUp(self) -> None:
-        test_user = User.objects.create_user(
+        user = User.objects.create_user(
             username='user',
             password='password',
-            email='test_user@example.com',
+            email='user@email.com',
         )
 
         Card.objects.create(
-            owner=test_user,
+            owner=user,
             name='Personal Main Card',
             card_type='deb',
             number='4002892240028922',
@@ -441,8 +440,10 @@ class CardViewsTestCase(TestCase):
             owners_name='TEST USER',
         )
 
-    def test_card_create_view_behavior_for_not_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/cartoes/novo" for not logged users"""
+
+class CardCreateViewsTestCase(BaseCardTestCase):
+    def test_GET_create_anonymous_user(self) -> None:
+        """GET /segredo/cartoes/novo | anonymous user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -464,11 +465,8 @@ class CardViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-    def test_card_create_view_behavior_for_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/cartoes/novo" for logged users"""
-
-        self.assertTrue(get_user(self.client).is_anonymous)
-        self.assertFalse(get_user(self.client).is_authenticated)
+    def test_GET_create_authenticated_user(self) -> None:
+        """GET /segredo/cartoes/novo | authenticated user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -488,8 +486,10 @@ class CardViewsTestCase(TestCase):
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_card_list_view_behavior_for_not_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/cartoes/" for not logged users"""
+
+class CardListViewTestCase(BaseCardTestCase):
+    def test_GET_list_anonymous_user(self) -> None:
+        """GET /segredo/cartoes/ | anonymous user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -510,11 +510,8 @@ class CardViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-    def test_card_list_view_behavior_for_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/cartoes/" for logged users"""
-
-        self.assertTrue(get_user(self.client).is_anonymous)
-        self.assertFalse(get_user(self.client).is_authenticated)
+    def test_GET_list_authenticated_user(self) -> None:
+        """GET /segredo/cartoes/ | authenticated user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -534,8 +531,10 @@ class CardViewsTestCase(TestCase):
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_card_detail_view_behavior_for_not_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/cartoes/<slug:slug>" for not logged users"""
+
+class CardDetailViewTestCase(BaseCardTestCase):
+    def test_GET_detail_anonymous_user(self) -> None:
+        """GET /segredo/cartoes/<slug:slug> | anonymous user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -568,11 +567,8 @@ class CardViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-    def test_card_detail_view_behavior_for_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/cartoes/<slug:slug>" for logged users"""
-
-        self.assertTrue(get_user(self.client).is_anonymous)
-        self.assertFalse(get_user(self.client).is_authenticated)
+    def test_GET_detail_authenticated_user(self) -> None:
+        """GET /segredo/cartoes/<slug:slug> | authenticated user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -605,8 +601,10 @@ class CardViewsTestCase(TestCase):
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_card_update_view_behavior_for_not_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/cartoes/<slug:slug>/editar" for not logged users"""
+
+class CardUpdateViewTestCase(BaseCardTestCase):
+    def test_GET_update_anonymous_user(self) -> None:
+        """GET /segredo/cartoes/<slug:slug>/editar | anonymous user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -639,11 +637,8 @@ class CardViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-    def test_card_update_view_behavior_for_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/cartoes/<slug:slug>/editar" for logged users"""
-
-        self.assertTrue(get_user(self.client).is_anonymous)
-        self.assertFalse(get_user(self.client).is_authenticated)
+    def test_GET_update_authenticated_user(self) -> None:
+        """GET /segredo/cartoes/<slug:slug>/editar | authenticated user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -682,8 +677,10 @@ class CardViewsTestCase(TestCase):
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_card_delete_view_behavior_for_not_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/cartoes/<slug:slug>/deletar" for not logged users"""
+
+class CardDeleteViewTestCase(BaseCardTestCase):
+    def test_GET_delete_anonymous_user(self) -> None:
+        """GET /segredo/cartoes/<slug:slug>/deletar | anonymous user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -716,11 +713,8 @@ class CardViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-    def test_card_delete_view_behavior_for_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/cartoes/<slug:slug>/deletar" for logged users"""
-
-        self.assertTrue(get_user(self.client).is_anonymous)
-        self.assertFalse(get_user(self.client).is_authenticated)
+    def test_GET_delete_authenticated_user(self) -> None:
+        """GET /segredo/cartoes/<slug:slug>/deletar | authenticated user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -760,23 +754,26 @@ class CardViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_authenticated)
 
 
-class SecurityNoteViewsTestCase(TestCase):
+# SecurityNote CRUD View Testing
+class BaseSecurityNoteTestCase(TestCase):
     def setUp(self) -> None:
-        test_user = User.objects.create_user(
+        user = User.objects.create_user(
             username='user',
             password='password',
-            email='test_user@example.com',
+            email='user@email.com',
         )
 
         SecurityNote.objects.create(
-            owner=test_user,
+            owner=user,
             title='How to draw an apple',
             slug='how-to-draw-an-apple',
             content='Just draw an apple tree and erase the tree.',
         )
 
-    def test_note_create_view_behavior_for_not_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/anotacoes/novo" for not logged users"""
+
+class SecurityNoteCreateViewTestCase(BaseSecurityNoteTestCase):
+    def test_GET_create_anonymous_user(self) -> None:
+        """GET /segredo/anotacoes/novo | anonymous user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -798,8 +795,8 @@ class SecurityNoteViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-    def test_note_create_view_behavior_for_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/anotacoes/novo" for logged users"""
+    def test_GET_create_authenticated_user(self) -> None:
+        """GET /segredo/anotacoes/novo | authenticated user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -819,8 +816,10 @@ class SecurityNoteViewsTestCase(TestCase):
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_note_list_view_behavior_for_not_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/anotacoes/" for not logged users"""
+
+class SecurityNoteListViewTestCase(BaseSecurityNoteTestCase):
+    def test_GET_list_anonymous_user(self) -> None:
+        """GET /segredo/anotacoes/ | anonymous user"""
 
         res: HttpResponse = self.client.get(reverse('secret:note_list_view'))
 
@@ -838,8 +837,8 @@ class SecurityNoteViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-    def test_note_list_view_behavior_for_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/anotacoes/" for logged users"""
+    def test_GET_list_authenticated_user(self) -> None:
+        """GET /segredo/anotacoes/ | authenticated user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -859,8 +858,10 @@ class SecurityNoteViewsTestCase(TestCase):
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_note_detail_view_behavior_for_not_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/anotacoes/<slug:slug>" for not logged users"""
+
+class SecurityNoteDetailViewTestCase(BaseSecurityNoteTestCase):
+    def test_GET_detail_anonymous_user(self) -> None:
+        """GET /segredo/anotacoes/<slug:slug> | anonymous user"""
 
         res: HttpResponse = self.client.get(
             reverse('secret:note_detail_view', kwargs={'slug': 'how-to-draw-an-apple'})
@@ -886,8 +887,8 @@ class SecurityNoteViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-    def test_note_detail_view_behavior_for_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/anotacoes/<slug:slug>" for logged users"""
+    def test_GET_detail_authenticated_user(self) -> None:
+        """GET /segredo/anotacoes/<slug:slug> | authenticated user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -918,8 +919,10 @@ class SecurityNoteViewsTestCase(TestCase):
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_note_update_view_behavior_for_not_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/anotacoes/<slug:slug>/editar" for not logged users"""
+
+class SecurityNoteUpdateViewTestCase(BaseSecurityNoteTestCase):
+    def test_GET_update_anonymous_user(self) -> None:
+        """GET /segredo/anotacoes/<slug:slug>/editar | anonymous user"""
 
         res: HttpResponse = self.client.get(
             reverse('secret:note_update_view', kwargs={'slug': 'how-to-draw-an-apple'})
@@ -945,8 +948,8 @@ class SecurityNoteViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-    def test_note_update_view_behavior_for_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/anotacoes/<slug:slug>/editar" for logged users"""
+    def test_GET_update_authenticated_user(self) -> None:
+        """GET /segredo/anotacoes/<slug:slug>/editar | authenticated user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -983,8 +986,10 @@ class SecurityNoteViewsTestCase(TestCase):
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-    def test_note_delete_view_behavior_for_not_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/anotacoes/<slug:slug>/deletar" for not logged users"""
+
+class SecurityNoteDeleteViewTestCase(BaseSecurityNoteTestCase):
+    def test_GET_delete_anonymous_user(self) -> None:
+        """GET /segredo/anotacoes/<slug:slug>/deletar | anonymous user"""
 
         res: HttpResponse = self.client.get(
             reverse('secret:note_delete_view', kwargs={'slug': 'how-to-draw-an-apple'})
@@ -1010,8 +1015,8 @@ class SecurityNoteViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-    def test_note_delete_view_behavior_for_logged_users(self) -> None:
-        """Tests view behavior at "/segredo/anotacoes/<slug:slug>/deletar" for logged users"""
+    def test_GET_delete_authenticated_user(self) -> None:
+        """GET /segredo/anotacoes/<slug:slug>/deletar | authenticated user"""
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)

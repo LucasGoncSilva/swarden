@@ -3,8 +3,6 @@ from itertools import compress, product
 from typing import Final, Any, Generator, Literal
 from hashlib import sha256
 
-from django.db import DataError, IntegrityError
-from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
@@ -82,19 +80,11 @@ def send_email_activation_account_token(domain: str, user: User, password: str) 
     token_hash = sha256(f'{user.username}{password}'.encode()).hexdigest()
     uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
 
-    try:
-        token: ActivationAccountToken = ActivationAccountToken.objects.create(
-            value=token_hash, used=False
-        )
+    token: ActivationAccountToken = ActivationAccountToken.objects.create(
+        value=token_hash, used=False
+    )
 
-        token.full_clean()
-        if not token.is_valid():
-            token.failed = True
-            raise ValidationError(
-                f'ActivationAccountToken(value={token.value}, used={token.used}, created={token.created}) is invalid.'
-            )
-    except (DataError, IntegrityError, ValidationError) as e:
-        raise e
+    token.full_clean()
 
     email: EmailMessage = EmailMessage(
         subject='Ativação de Conta | sWarden',

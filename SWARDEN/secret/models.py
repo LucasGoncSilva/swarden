@@ -157,7 +157,7 @@ class LoginCredential(Model):
         return False
 
     def all_fields_of_correct_types(self) -> bool:
-        if [
+        return [
             str(type(self.owner)),
             type(self.service),
             type(self.name),
@@ -175,9 +175,7 @@ class LoginCredential(Model):
             str,
             str,
             str,
-        ]:
-            return True
-        return False
+        ]
 
     def is_valid(self) -> bool:
         if (
@@ -356,7 +354,7 @@ class Card(Model):
         )
 
     def all_fields_of_correct_types(self) -> bool:
-        if [
+        return [
             str(type(self.owner)),
             type(self.name),
             type(self.card_type),
@@ -378,9 +376,7 @@ class Card(Model):
             str,
             str,
             str,
-        ]:
-            return True
-        return False
+        ]
 
     def is_valid(self) -> bool:
         if (
@@ -464,7 +460,7 @@ class SecurityNote(Model):
         )
 
     def all_fields_of_correct_types(self) -> bool:
-        if [
+        return [
             str(type(self.owner)),
             type(self.title),
             type(self.content),
@@ -474,9 +470,7 @@ class SecurityNote(Model):
             str,
             str,
             str,
-        ]:
-            return True
-        return False
+        ]
 
     def is_valid(self) -> bool:
         if (

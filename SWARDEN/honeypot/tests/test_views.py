@@ -12,7 +12,7 @@ class HoneypotViewsTestCase(TestCase):
         User.objects.create_user(
             username='user',
             password='password',
-            email='email@example.com',
+            email='user@email.com',
         )
 
     def test_GET_anonymous_user_no_argument(self) -> None:

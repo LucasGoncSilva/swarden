@@ -10,9 +10,9 @@ from utils import xor
 class XORTestCase(TestCase):
     def setUp(self) -> None:
         self.password = User.objects.create_user(
-            username='test_user',
+            username='user',
             password='testing_password',
-            email='test_user@example.com',
+            email='user@example.com',
         ).password
 
         self.q = queue.Queue()
@@ -43,10 +43,10 @@ class XORTestCase(TestCase):
                 self.q.put(encrypted_data)
                 self.q.put(decrypted_data)
 
-        threading.Thread(target=self.assert_xor_null_value_in_data, daemon=True).start()
+        threading.Thread(target=self.process_xor, daemon=True).start()
         self.q.join()
 
-    def assert_xor_null_value_in_data(self) -> None:
+    def process_xor(self) -> None:
         while True:
             data = self.q.get()
 
