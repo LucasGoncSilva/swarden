@@ -10,24 +10,14 @@ env:
   EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
 
 jobs:
-  soaktest:
+  loadtest:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
       - name: Install Docker Compose
         run: |
           sudo apt-get update
           sudo apt-get install -y docker-compose
-
-      - name: Build and Run Docker Compose
-        run: |
-          docker compose -f docker-compose-dev.yml up -d
-
-      - name: Checkout Repository
-        uses: actions/checkout@v3
 
       - name: Install Python and Pip
         uses: actions/setup-python@v3
@@ -39,16 +29,23 @@ jobs:
           pip install --upgrade pip
           pip install locust
 
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Build and Run Docker Compose
+        run: |
+          docker compose -f docker-compose-dev.yml up -d
+
       - name: Run Locust
         continue-on-error: true
         if: always()
         run: |
-          python -c "import time; time.sleep(10)"
+          python -c "import time; time.sleep(60)"
           locust --headless -f loadtests/soak_test.py -H http://localhost:8000 --processes -1 --csv report/cvs/soak/soak --html report/html/soak.html
 
       - name: Upload Locust Report
         if: always()
         uses: actions/upload-artifact@v3
         with:
-          name: locust-report
+          name: soaktest-result
           path: report/html/soak.html
