@@ -25,7 +25,7 @@ class SpikeTest(LoadTestShape):
         {"duration": '10s', "users": 1500, "spawn_rate": 140},
         {"duration": '5m', "users": 1500, "spawn_rate": 140},
         {"duration": '10s', "users": 100, "spawn_rate": 140},
-        {"duration": '5m', "users": 100, "spawn_rate": 10},
+        {"duration": '15m', "users": 100, "spawn_rate": 10},
         {"duration": '10s', "users": 0, "spawn_rate": 1},
     ]
 
