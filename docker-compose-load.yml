@@ -1,3 +1,6 @@
+# docker stop $(docker ps -a -q); docker rm $(docker ps -a -q); docker rmi $(docker images -a -q)
+# docker compose -f docker-compose-load.yml up
+
 services:
   web:
     build: .
@@ -37,7 +40,7 @@ services:
     healthcheck:
       test: pg_isready -U postgres
     deploy:
-    resources:
-      limits:
-        cpus: "0.5"
-        memory: "64.0MB"
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "64.0MB"
