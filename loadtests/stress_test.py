@@ -24,15 +24,15 @@ class WebsiteUser(FastHttpUser):
 
 class StressTest(LoadTestShape):
     stages = [
-        {"duration": '2m', "users": 100, "spawn_rate": 21 / 5},
-        {"duration": '5m', "users": 100, "spawn_rate": 21 / 5},
         {"duration": '2m', "users": 150, "spawn_rate": 21 / 5},
         {"duration": '5m', "users": 150, "spawn_rate": 21 / 5},
         {"duration": '2m', "users": 200, "spawn_rate": 21 / 5},
         {"duration": '5m', "users": 200, "spawn_rate": 21 / 5},
         {"duration": '2m', "users": 250, "spawn_rate": 21 / 5},
         {"duration": '5m', "users": 250, "spawn_rate": 21 / 5},
-        {"duration": '10m', "users": 0, "spawn_rate": 2 / 3},
+        {"duration": '2m', "users": 300, "spawn_rate": 21 / 5},
+        {"duration": '5m', "users": 300, "spawn_rate": 21 / 5},
+        {"duration": '10m', "users": 0, "spawn_rate": 5},
     ]
 
     def tick(self):

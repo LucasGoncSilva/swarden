@@ -24,9 +24,9 @@ class WebsiteUser(FastHttpUser):
 
 class SoakTest(LoadTestShape):
     stages = [
-        {"duration": '2m', "users": 200, "spawn_rate": 10 / 3},
-        {"duration": '5h40', "users": 200, "spawn_rate": 10 / 3},
-        {"duration": '2m', "users": 0, "spawn_rate": 10 / 3},
+        {"duration": '2m', "users": 250, "spawn_rate": 25 / 12},
+        {"duration": '5h40', "users": 250, "spawn_rate": 25 / 12},
+        {"duration": '2m', "users": 0, "spawn_rate": 25 / 12},
     ]
 
     def tick(self):
