@@ -3,9 +3,9 @@
 ![GitHub License](https://img.shields.io/github/license/LucasGoncSilva/swarden?labelColor=101010)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/LucasGoncSilva/swarden/django_unittest.yml?style=flat&labelColor=%23101010)
 
-<h4 align='justify'>Criado em Django como Framework MVC, sWarden funciona como um protótipo real de gerenciador de senhas e credenciais online. Este projeto introduz e apresenta conceitos básicos de segurança de forma prática e descritiva. <br>
+Criado em Django como Framework MVC, sWarden funciona como um protótipo real de gerenciador de senhas e credenciais online. Este projeto introduz e apresenta conceitos básicos de segurança de forma prática e descritiva. <br>
 Foram utilizadas tanto class-based views quanto function-based views, de modo que os diferentes paradigmas implementados pelo Framework sejam exemplificados de forma prática. <br>
-Agrega às medidas de segurança do Django uma lógica inicial do que seria um honeypot, mais de 40 casos de testes incluindo 4 testes de carga para atestar a integridade do sistema e criptografia nos dados armazenados em banco, tudo aplicável em Docker.</h4>
+Agrega às medidas de segurança do Django uma lógica inicial do que seria um honeypot, mais de 40 casos de testes incluindo 4 testes de carga para atestar a integridade do sistema e criptografia nos dados armazenados em banco, tudo aplicável em Docker.
 
 <br>
 <hr>
@@ -63,12 +63,11 @@ end
 
 User((User))
 
-User -- CreateView:POST ----> View
-View --> Model -- insert --> Cover --> Database
+User --> View
+View --> Model -- insert | update --> Cover --> Database
 Model -- select --> Database
 Database --> Uncover --> Model
-Model --> View --> Template
-Template -- ListView/DetailView --> User
+Model --> View --> Template --> User
 
 Cover --- Uncover
 
@@ -89,7 +88,7 @@ classDef Arch fill:#f0f0ff,color:#008,stroke:#6f6fff;
 <br>
 <hr>
 
-<h2 align='center'>Starting</h2>
+<h2 align='center'>Básico</h2>
 
 ### Buscar/iniciar Migrações (Atualizações) de Banco de Dados
 
@@ -107,7 +106,7 @@ classDef Arch fill:#f0f0ff,color:#008,stroke:#6f6fff;
 
 ``python3 manager.py populatedb``
 
-### Iniciar o servidor
+### Iniciar o Servidor
 
 ``python3 manager.py runserver``
 
@@ -274,10 +273,105 @@ class MyModelTestCase(TestCase):
                         instance.full_clean()
 
         # Not expecting raises
+        no_raise_kwargs: dict[str, dict[str, ...]] = {
+            'model1': {...},
+            'model2': {...},
+            ...
+        }
+
         for scenario in no_raise_kwargs.keys():
             with self.subTest(scenario=scenario):
                 instance: MyModel = MyModel(**no_raise_kwargs[scenario])
                 instance.full_clean()
+```
+
+### Escrevendo Testes de Views
+
+```py
+class BaseExampleTestCase(TestCase):
+    def setUp(self) -> None:
+        User.objects.create_user(
+            username='user',
+            password='password',
+            email='user@email.com',
+        )
+
+        self.CONSTANT: ... = ...
+        self.CONSTANT: ... = ...
+
+
+class Example[Create|List|Detail|Update|Delete]ViewTestCase(BaseExampleTestCase):
+    def test_GET_anonymous_user(self) -> None:
+        """GET /example/view | anonymous user"""
+
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        res: HttpResponse = self.client.get(reverse(ENDPOINT))
+
+        self.assertEqual(res.status_code, xxx)
+        self.assertRedirects(res, reverse(ENDPOINT))
+
+        res: HttpResponse = self.client.get(
+            reverse(ENDPOINT), follow=True
+        )
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTemplateUsed(res, TEMPLATE)
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+    def test_GET_authenticated_user(self) -> None:
+        """GET /example/view | authenticated user"""
+
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(self.client.login(username='user', password='password'))
+
+        res: HttpResponse = self.client.get(reverse(ENDPOINT))
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTemplateUsed(res, TEMPLATE)
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
+
+    def test_POST_anonymous_user(self) -> None:
+        """POST /example/view | anonymous user"""
+
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        res: HttpResponse = self.client.post(reverse(ENDPOINT), {DATA: HERE})
+
+        self.assertEqual(res.status_code, xxx)
+        self.assertRedirects(res, reverse(ENDPOINT))
+
+        res: HttpResponse = self.client.post(
+            reverse(ENDPOINT),
+            {DATA: HERE},
+            follow=True
+        )
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTemplateUsed(res, TEMPLATE)
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
+
+    def test_POST_authenticated_user(self) -> None:
+        """POST /example/view | authenticated user"""
+
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(self.client.login(username='user', password='password'))
+
+        res: HttpResponse = self.client.post(reverse(ENDPOINT))
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTemplateUsed(res, TEMPLATE)
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
 ```
 
 <br>
