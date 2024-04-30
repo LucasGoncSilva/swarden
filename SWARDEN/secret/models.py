@@ -1,5 +1,5 @@
 from uuid import uuid4
-from typing import Final
+from typing import Final, Self
 
 from django.db.models import (
     Model,
@@ -81,7 +81,7 @@ class LoginCredential(Model):
 
     def save(
         self, force_insert=False, force_update=False, using=None, update_fields=None
-    ):
+    ) -> None:
         self.thirdy_party_login_name = xor(
             str(self.thirdy_party_login_name), self.owner.password[21:]
         )
@@ -94,7 +94,7 @@ class LoginCredential(Model):
         )
 
     @classmethod
-    def from_db(cls, db, field_names, values):
+    def from_db(cls, db, field_names, values) -> Self:
         cred = super().from_db(db, field_names, values)
 
         cred.thirdy_party_login_name = xor(
@@ -253,7 +253,7 @@ class Card(Model):
 
     def save(
         self, force_insert=False, force_update=False, using=None, update_fields=None
-    ):
+    ) -> None:
         self.name = xor(str(self.name), self.owner.password[21:])
         self.card_type = xor(str(self.card_type), self.owner.password[21:])
         self.number = xor(str(self.number), self.owner.password[21:])
@@ -268,7 +268,7 @@ class Card(Model):
         )
 
     @classmethod
-    def from_db(cls, db, field_names, values):
+    def from_db(cls, db, field_names, values) -> Self:
         card = super().from_db(db, field_names, values)
 
         card.name = xor(str(card.name), card.owner.password[21:], encrypt=False)
@@ -415,7 +415,7 @@ class SecurityNote(Model):
 
     def save(
         self, force_insert=False, force_update=False, using=None, update_fields=None
-    ):
+    ) -> None:
         self.content = xor(str(self.content), self.owner.password[21:])
 
         return super().save(
@@ -423,7 +423,7 @@ class SecurityNote(Model):
         )
 
     @classmethod
-    def from_db(cls, db, field_names, values):
+    def from_db(cls, db, field_names, values) -> Self:
         note = super().from_db(db, field_names, values)
         note.content = xor(str(note.content), note.owner.password[21:], encrypt=False)
         return note

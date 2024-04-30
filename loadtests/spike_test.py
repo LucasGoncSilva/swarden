@@ -13,7 +13,7 @@ stats.MODERN_UI_PERCENTILES_TO_CHART = [0.5, 0.75, 0.80, 0.90, 0.95, 0.99]
 
 class UserTasks(TaskSet):
     @task
-    def get_root(self):
+    def get_root(self) -> None:
         self.client.get("/")
 
 
@@ -33,7 +33,7 @@ class SpikeTest(LoadTestShape):
         {"duration": '10s', "users": 0, "spawn_rate": 1},
     ]
 
-    def tick(self):
+    def tick(self) -> tuple | None:
         run_time = self.get_run_time()
 
         stages = handle_stages(self.stages.copy())

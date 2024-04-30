@@ -1,4 +1,4 @@
-def handle_duration(duration: str, total: int):
+def handle_duration(duration: str, total: int) -> list[int]:
     new_duration = 0
 
     if 's' in duration:
@@ -21,7 +21,7 @@ def handle_duration(duration: str, total: int):
     return [new_duration + total] * 2
 
 
-def handle_stages(stages):
+def handle_stages(stages) -> list[dict[str, int | float]]:
     output = []
     total = 0
 

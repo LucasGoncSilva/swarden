@@ -27,7 +27,7 @@ ACTIVATE_ACCOUNT_CONFIRM_DONE: Final = (
 
 
 def get_ip_address(r: HttpRequest) -> Any | None:
-    x_forwarded_for = r.META.get('HTTP_X_FORWARDED_FOR')
+    x_forwarded_for: Any | None = r.META.get('HTTP_X_FORWARDED_FOR')
     ip: Any | None = (
         x_forwarded_for.split(',')[0] if x_forwarded_for else r.META.get('REMOTE_ADDR')
     )
@@ -40,11 +40,11 @@ def xor(text: str, key: str, encrypt: bool = True) -> str:
         return text
 
     # Calculate the necessary key repetitions
-    key_repetitions = max(1, (len(text) + len(key) - 1) // len(key))
+    key_repetitions: int = max(1, (len(text) + len(key) - 1) // len(key))
 
     # Expand the key and secret key to match the text length
-    expanded_key = (key * key_repetitions)[: len(text)]
-    expanded_secret_key = (SK * key_repetitions)[: len(text)]
+    expanded_key: str = (key * key_repetitions)[:len(text)]
+    expanded_secret_key: str = (SK * key_repetitions)[:len(text)]
 
     # Create a generator for XORed values
     xor_key_generator: Generator = (
@@ -77,8 +77,8 @@ def send_email_activation_account_token(domain: str, user: User, password: str) 
 
     validate_email(user.email)
 
-    token_hash = sha256(f'{user.username}{password}'.encode()).hexdigest()
-    uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+    token_hash: str = sha256(f'{user.username}{password}'.encode()).hexdigest()
+    uidb64: str = urlsafe_base64_encode(force_bytes(user.pk))
 
     token: ActivationAccountToken = ActivationAccountToken.objects.create(
         value=token_hash, used=False
@@ -126,7 +126,7 @@ def send_email_exporting_secrets(
     email.send()
 
 
-def create_scenarios(params: list[dict[str, Any]]):
+def create_scenarios(params: list[dict[str, Any]]) -> Generator:
     for case in product([0, 1], repeat=len(params)):
         if all(case):
             break

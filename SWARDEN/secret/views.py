@@ -19,7 +19,7 @@ login_dec = login_required(login_url='/conta/entrar')
 login_dec_dispatch = method_decorator(login_dec, name='dispatch')
 
 
-def _list_view(r: HttpRequest, secret: Literal['credential', 'card', 'note']):
+def _list_view(r: HttpRequest, secret: Literal['credential', 'card', 'note']) -> dict[str, str | list] | None:
     dispatch: dict[Literal['credential', 'card', 'note'], dict[str, list | str]] = {
         'credential': {
             'object_list': r.user.credentials.all(),
@@ -49,7 +49,7 @@ def credential_list_view(r: HttpRequest) -> HttpResponse:
 
 @login_dec
 def credential_detail_view(r: HttpRequest, slug: str) -> HttpResponse:
-    credential = get_object_or_404(LoginCredential, owner=r.user, slug=slug)
+    credential: LoginCredential = get_object_or_404(LoginCredential, owner=r.user, slug=slug)
 
     return render(r, 'secret/Credential/detail_view.html', {'object': credential})
 
@@ -60,14 +60,13 @@ class CredentialCreateView(CreateView):
     template_name = 'secret/create_view.html'
     fields = '__all__'
 
-    def get_context_data(self, **kwargs: Any):
-        context = super().get_context_data(**kwargs)
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context: dict[str, Any] = super().get_context_data(**kwargs)
         context['action'] = 'Adição'
         context['model'] = 'Credencial'
-
         return context
 
-    def post(self, r: HttpRequest):
+    def post(self, r: HttpRequest) -> HttpResponse | HttpResponseRedirect:
         if not len(r.POST):
             error(r, EMPTY_POST_MSG)
             return HttpResponseRedirect(reverse('secret:credential_create_view'))
@@ -87,14 +86,13 @@ class CredentialUpdateView(UpdateView):
     template_name = 'secret/create_view.html'
     fields = '__all__'
 
-    def get_context_data(self, **kwargs: Any):
-        context = super().get_context_data(**kwargs)
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context: dict[str, Any] = super().get_context_data(**kwargs)
         context['action'] = 'Edição'
         context['model'] = 'Credencial'
-
         return context
 
-    def post(self, r: HttpRequest, *args: Any, **kwargs: Any):
+    def post(self, r: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         post_pk = r.POST.get('pk')
         filter = dict(owner=r.user, slug=r.POST.get('slug'))
 
@@ -111,8 +109,8 @@ class CredentialDeleteView(DeleteView):
     template_name = 'secret/delete_view.html'
     success_url = '/segredos/credenciais'
 
-    def get_context_data(self, **kwargs: Any):
-        context = super().get_context_data(**kwargs)
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context: dict[str, Any] = super().get_context_data(**kwargs)
         context['action'] = 'Exclusão'
         context['model'] = 'Credencial'
         return context
@@ -120,7 +118,7 @@ class CredentialDeleteView(DeleteView):
 
 # Cards views
 @login_dec
-def card_list_view(r) -> HttpResponse:
+def card_list_view(r: HttpRequest) -> HttpResponse:
     return render(
         r,
         'secret/list_view.html',
@@ -130,7 +128,7 @@ def card_list_view(r) -> HttpResponse:
 
 @login_dec
 def card_detail_view(r: HttpRequest, slug: str) -> HttpResponse:
-    card = get_object_or_404(Card, owner=r.user, slug=slug)
+    card: Card = get_object_or_404(Card, owner=r.user, slug=slug)
 
     return render(r, 'secret/Card/detail_view.html', {'object': card})
 
@@ -141,14 +139,13 @@ class CardCreateView(CreateView):
     template_name = 'secret/create_view.html'
     fields = '__all__'
 
-    def get_context_data(self, **kwargs: Any):
-        context = super().get_context_data(**kwargs)
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context: dict[str, Any] = super().get_context_data(**kwargs)
         context['action'] = 'Adição'
         context['model'] = 'Cartão'
-
         return context
 
-    def post(self, r: HttpRequest):
+    def post(self, r: HttpRequest) -> HttpResponse | HttpResponseRedirect:
         if not len(r.POST):
             error(r, EMPTY_POST_MSG)
             return HttpResponseRedirect(reverse('secret:card_create_view'))
@@ -166,14 +163,13 @@ class CardUpdateView(UpdateView):
     template_name = 'secret/create_view.html'
     fields = '__all__'
 
-    def get_context_data(self, **kwargs: Any):
-        context = super().get_context_data(**kwargs)
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context: dict[str, Any] = super().get_context_data(**kwargs)
         context['action'] = 'Edição'
         context['model'] = 'Cartão'
-
         return context
 
-    def post(self, r: HttpRequest, *args: Any, **kwargs: Any):
+    def post(self, r: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         post_pk = r.POST.get('pk')
         filter = dict(owner=r.user, slug=r.POST.get('slug'))
 
@@ -190,8 +186,8 @@ class CardDeleteView(DeleteView):
     template_name = 'secret/delete_view.html'
     success_url = '/segredos/cartoes'
 
-    def get_context_data(self, **kwargs: Any):
-        context = super().get_context_data(**kwargs)
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context: dict[str, Any] = super().get_context_data(**kwargs)
         context['action'] = 'Exclusão'
         context['model'] = 'Cartão'
         return context
@@ -199,7 +195,7 @@ class CardDeleteView(DeleteView):
 
 # Security Notes views
 @login_dec
-def note_list_view(r) -> HttpResponse:
+def note_list_view(r: HttpRequest) -> HttpResponse:
     return render(
         r,
         'secret/list_view.html',
@@ -209,7 +205,7 @@ def note_list_view(r) -> HttpResponse:
 
 @login_dec
 def note_detail_view(r: HttpRequest, slug: str) -> HttpResponse:
-    note = get_object_or_404(SecurityNote, owner=r.user, slug=slug)
+    note: SecurityNote = get_object_or_404(SecurityNote, owner=r.user, slug=slug)
 
     return render(r, 'secret/Note/detail_view.html', {'object': note})
 
@@ -220,14 +216,13 @@ class NoteCreateView(CreateView):
     template_name = 'secret/create_view.html'
     fields = '__all__'
 
-    def get_context_data(self, **kwargs: Any):
-        context = super().get_context_data(**kwargs)
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context: dict[str, Any] = super().get_context_data(**kwargs)
         context['action'] = 'Adição'
         context['model'] = 'Anotação'
-
         return context
 
-    def post(self, r: HttpRequest):
+    def post(self, r: HttpRequest) -> HttpResponse | HttpResponseRedirect:
         if not len(r.POST):
             error(r, EMPTY_POST_MSG)
             return HttpResponseRedirect(reverse('secret:note_create_view'))
@@ -245,14 +240,13 @@ class NoteUpdateView(UpdateView):
     template_name = 'secret/create_view.html'
     fields = '__all__'
 
-    def get_context_data(self, **kwargs: Any):
-        context = super().get_context_data(**kwargs)
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context: dict[str, Any] = super().get_context_data(**kwargs)
         context['action'] = 'Edição'
         context['model'] = 'Anotação'
-
         return context
 
-    def post(self, r: HttpRequest, *args: Any, **kwargs: Any):
+    def post(self, r: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         post_pk = r.POST.get('pk')
         filter = dict(owner=r.user, slug=r.POST.get('slug'))
 
@@ -269,8 +263,8 @@ class NoteDeleteView(DeleteView):
     template_name = 'secret/delete_view.html'
     success_url = '/segredos/anotacoes'
 
-    def get_context_data(self, **kwargs: Any):
-        context = super().get_context_data(**kwargs)
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context: dict[str, Any] = super().get_context_data(**kwargs)
         context['action'] = 'Exclusão'
         context['model'] = 'Anotação'
         return context

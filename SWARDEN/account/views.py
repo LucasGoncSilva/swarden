@@ -125,9 +125,7 @@ class LogInForm(Form):
     )
 
 
-def register_view(
-    r: HttpRequest,
-) -> HttpResponse | HttpResponseRedirect | HttpResponseServerError:
+def register_view(r: HttpRequest) -> HttpResponse | HttpResponseRedirect:
     if r.user.is_authenticated:
         return HttpResponseRedirect(reverse('home:index'))
 

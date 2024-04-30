@@ -31,4 +31,5 @@ def honeypot(r: HttpRequest, path: str | None = None) -> HttpResponse:
             'honeypot/authenticated.html',
             {'next': r.path, 'user': r.user.username},
         )
+
     return render(r, 'honeypot/loop.html', {'next': url})
