@@ -5,6 +5,7 @@ from django.contrib.auth import get_user
 
 from account.models import User
 from secret.models import Card, LoginCredential, SecurityNote
+from secret.views import EMPTY_POST_MSG, FEEDBACK_MSG
 from secret.month.models import Month
 
 
@@ -56,14 +57,14 @@ class SecretIndexViewTestCase(TestCase):
 # LoginCredential CRUD View Testing
 class BaseLoginCredentialTestCase(TestCase):
     def setUp(self) -> None:
-        user = User.objects.create_user(
+        self.user = User.objects.create_user(
             username='user',
             password='password',
             email='user@email.com',
         )
 
         LoginCredential.objects.create(
-            owner=user,
+            owner=self.user,
             service='google--',
             name='Personal Main Account',
             slug='google--personal-main-account',
@@ -74,7 +75,7 @@ class BaseLoginCredentialTestCase(TestCase):
         )
 
         LoginCredential.objects.create(
-            owner=user,
+            owner=self.user,
             service='steam--',
             name='Little Fries',
             slug='steam--little-fries',
@@ -127,6 +128,171 @@ class LoginCredentialCreateViewsTestCase(BaseLoginCredentialTestCase):
         self.assertIn('action', res.context.keys())
         self.assertEqual(res.context['action'], 'Adição')
 
+        self.assertIn('model', res.context.keys())
+        self.assertEqual(res.context['model'], 'Credencial')
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
+
+    def test_POST_anonymous_user_empty_form(self) -> None:
+        """POST /segredo/credenciais/nova | anonymous user | empty form"""
+
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        res: HttpResponse = self.client.post(
+            reverse('secret:credential_create_view'), {}
+        )
+
+        self.assertEqual(res.status_code, 302)
+        self.assertRedirects(
+            res,
+            reverse('account:login')
+            + '?next='
+            + reverse('secret:credential_create_view'),
+        )
+
+        res: HttpResponse = self.client.post(
+            reverse('secret:credential_create_view'),
+            {},
+            follow=True,
+        )
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTemplateUsed(res, 'account/login.html')
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+    def test_POST_authenticated_user_empty_form(self) -> None:
+        """POST /segredo/credenciais/nova | authenticated user | empty form"""
+
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(self.client.login(username='user', password='password'))
+
+        res: HttpResponse = self.client.post(
+            reverse('secret:credential_create_view'),
+            {},
+            follow=True,
+        )
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTemplateUsed(res, 'secret/create_view.html')
+        self.assertIn(EMPTY_POST_MSG, res.content.decode('utf-8'))
+
+        self.assertIn('action', res.context.keys())
+        self.assertEqual(res.context['action'], 'Adição')
+
+        self.assertIn('model', res.context.keys())
+        self.assertEqual(res.context['model'], 'Credencial')
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
+
+    def test_POST_anonymous_user_empty_form_existing_secret(self) -> None:
+        """POST /segredo/credenciais/nova | anonymous user | existent secret slug"""
+
+        cred_data: dict = {
+            'owner': self.user,
+            'service': 'google--',
+            'name': 'Personal Main Account',
+            'slug': 'google--personal-main-account',
+            'thirdy_party_login': False,
+            'thirdy_party_login_name': '-----',
+            'login': 'night_monkey123@gmail.com',
+            'password': 'ilovemenotyou',
+        }
+
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        res: HttpResponse = self.client.post(
+            reverse('secret:credential_create_view'), cred_data
+        )
+
+        self.assertEqual(res.status_code, 302)
+        self.assertRedirects(
+            res,
+            reverse('account:login')
+            + '?next='
+            + reverse('secret:credential_create_view'),
+        )
+
+        res: HttpResponse = self.client.post(
+            reverse('secret:credential_create_view'),
+            cred_data,
+            follow=True,
+        )
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTemplateUsed(res, 'account/login.html')
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+    def test_POST_authenticated_user_empty_form_existing_secret(self) -> None:
+        """POST /segredo/credenciais/nova | authenticated user | empty form"""
+
+        cred_data: dict = {
+            'owner': self.user,
+            'service': 'google--',
+            'name': 'Personal Main Account',
+            'slug': 'google--personal-main-account',
+            'thirdy_party_login': False,
+            'thirdy_party_login_name': '-----',
+            'login': 'night_monkey123@gmail.com',
+            'password': 'ilovemenotyou',
+        }
+
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(self.client.login(username='user', password='password'))
+
+        res: HttpResponse = self.client.post(
+            reverse('secret:credential_create_view'),
+            cred_data,
+        )
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTemplateUsed(res, 'secret/create_view.html')
+        self.assertIn(FEEDBACK_MSG, res.content.decode('utf-8'))
+
+        self.assertIn('action', res.context.keys())
+        self.assertEqual(res.context['action'], 'Adição')
+
+        self.assertIn('model', res.context.keys())
+        self.assertEqual(res.context['model'], 'Credencial')
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
+
+    def test_POST_authenticated_user_valid_form(self) -> None:
+        """POST /segredo/credenciais/nova | authenticated user | valid form"""
+
+        cred_data: dict = {
+            'owner': self.user,
+            'service': 'google--',
+            'name': 'Another Personal Main Account',
+            'slug': 'google--another-personal-main-account',
+            'thirdy_party_login': False,
+            'thirdy_party_login_name': '-----',
+            'login': 'night_monkey123@gmail.com',
+            'password': 'ilovemenotyou',
+        }
+
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(self.client.login(username='user', password='password'))
+
+        res: HttpResponse = self.client.post(
+            reverse('secret:credential_create_view'),
+            cred_data,
+            follow=True,
+        )
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTemplateUsed(res, 'secret/create_view.html')
+        self.assertIn('action', res.context.keys())
+        self.assertEqual(res.context['action'], 'Adição')
         self.assertIn('model', res.context.keys())
         self.assertEqual(res.context['model'], 'Credencial')
         self.assertFalse(get_user(self.client).is_anonymous)
@@ -421,14 +587,14 @@ class LoginCredentialDeleteViewTestCase(BaseLoginCredentialTestCase):
 # Card CRUD View Testing
 class BaseCardTestCase(TestCase):
     def setUp(self) -> None:
-        user = User.objects.create_user(
+        self.user = User.objects.create_user(
             username='user',
             password='password',
             email='user@email.com',
         )
 
         Card.objects.create(
-            owner=user,
+            owner=self.user,
             name='Personal Main Card',
             card_type='deb',
             number='4002892240028922',
@@ -481,6 +647,174 @@ class CardCreateViewsTestCase(BaseCardTestCase):
         self.assertIn('action', res.context.keys())
         self.assertEqual(res.context['action'], 'Adição')
 
+        self.assertIn('model', res.context.keys())
+        self.assertEqual(res.context['model'], 'Cartão')
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
+
+    def test_POST_anonymous_user_empty_form(self) -> None:
+        """POST /segredo/cartoes/novo | anonymous user | empty form"""
+
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        res: HttpResponse = self.client.post(reverse('secret:card_create_view'), {})
+
+        self.assertEqual(res.status_code, 302)
+        self.assertRedirects(
+            res,
+            reverse('account:login') + '?next=' + reverse('secret:card_create_view'),
+        )
+
+        res: HttpResponse = self.client.post(
+            reverse('secret:card_create_view'),
+            {},
+            follow=True,
+        )
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTemplateUsed(res, 'account/login.html')
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+    def test_POST_authenticated_user_empty_form(self) -> None:
+        """POST /segredo/cartoes/novo | authenticated user | empty form"""
+
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(self.client.login(username='user', password='password'))
+
+        res: HttpResponse = self.client.post(
+            reverse('secret:card_create_view'),
+            {},
+            follow=True,
+        )
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTemplateUsed(res, 'secret/create_view.html')
+        self.assertIn(EMPTY_POST_MSG, res.content.decode('utf-8'))
+
+        self.assertIn('action', res.context.keys())
+        self.assertEqual(res.context['action'], 'Adição')
+
+        self.assertIn('model', res.context.keys())
+        self.assertEqual(res.context['model'], 'Cartão')
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
+
+    def test_POST_anonymous_user_empty_form_existing_secret(self) -> None:
+        """GET /segredo/cartoes/novo | anonymous user | existent secret slug"""
+
+        card_data: dict = {
+            'owner': self.user,
+            'name': 'Personal Main Card',
+            'card_type': 'deb',
+            'number': '4002892240028922',
+            'expiration_0': '11',
+            'expiration_1': '2028',
+            'cvv': '113',
+            'bank': 'nubank--',
+            'brand': 'mastercard--',
+            'slug': 'nubank--personal-main-card',
+            'owners_name': 'TEST USER',
+        }
+
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        res: HttpResponse = self.client.post(
+            reverse('secret:card_create_view'), card_data
+        )
+
+        self.assertEqual(res.status_code, 302)
+        self.assertRedirects(
+            res,
+            reverse('account:login') + '?next=' + reverse('secret:card_create_view'),
+        )
+
+        res: HttpResponse = self.client.post(
+            reverse('secret:card_create_view'),
+            card_data,
+            follow=True,
+        )
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTemplateUsed(res, 'account/login.html')
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+    def test_POST_authenticated_user_empty_form_existing_secret(self) -> None:
+        """POST /segredo/cartoes/novo | authenticated user | empty form"""
+
+        card_data: dict = {
+            'owner': self.user,
+            'name': 'Personal Main Card',
+            'card_type': 'deb',
+            'number': '4002892240028922',
+            'expiration_0': '11',
+            'expiration_1': '2028',
+            'cvv': '113',
+            'bank': 'nubank--',
+            'brand': 'mastercard--',
+            'slug': 'nubank--personal-main-card',
+            'owners_name': 'TEST USER',
+        }
+
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(self.client.login(username='user', password='password'))
+
+        res: HttpResponse = self.client.post(
+            reverse('secret:card_create_view'),
+            card_data,
+        )
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTemplateUsed(res, 'secret/create_view.html')
+        self.assertIn(FEEDBACK_MSG, res.content.decode('utf-8'))
+
+        self.assertIn('action', res.context.keys())
+        self.assertEqual(res.context['action'], 'Adição')
+
+        self.assertIn('model', res.context.keys())
+        self.assertEqual(res.context['model'], 'Cartão')
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
+
+    def test_POST_authenticated_user_valid_form(self) -> None:
+        """POST /segredo/cartoes/novo | authenticated user | valid form"""
+
+        card_data: dict = {
+            'owner': self.user,
+            'name': 'Another Personal Main Card',
+            'card_type': 'deb',
+            'number': '4002892240028922',
+            'expiration_0': '11',
+            'expiration_1': '2028',
+            'cvv': '113',
+            'bank': 'nubank--',
+            'brand': 'mastercard--',
+            'slug': 'nubank--another-personal-main-card',
+            'owners_name': 'TEST USER',
+        }
+
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(self.client.login(username='user', password='password'))
+
+        res: HttpResponse = self.client.post(
+            reverse('secret:card_create_view'),
+            card_data,
+            follow=True,
+        )
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTemplateUsed(res, 'secret/create_view.html')
+        self.assertIn('action', res.context.keys())
+        self.assertEqual(res.context['action'], 'Adição')
         self.assertIn('model', res.context.keys())
         self.assertEqual(res.context['model'], 'Cartão')
         self.assertFalse(get_user(self.client).is_anonymous)
@@ -757,14 +1091,14 @@ class CardDeleteViewTestCase(BaseCardTestCase):
 # SecurityNote CRUD View Testing
 class BaseSecurityNoteTestCase(TestCase):
     def setUp(self) -> None:
-        user = User.objects.create_user(
+        self.user = User.objects.create_user(
             username='user',
             password='password',
             email='user@email.com',
         )
 
         SecurityNote.objects.create(
-            owner=user,
+            owner=self.user,
             title='How to draw an apple',
             slug='how-to-draw-an-apple',
             content='Just draw an apple tree and erase the tree.',
@@ -811,6 +1145,153 @@ class SecurityNoteCreateViewTestCase(BaseSecurityNoteTestCase):
         self.assertIn('action', res.context.keys())
         self.assertEqual(res.context['action'], 'Adição')
 
+        self.assertIn('model', res.context.keys())
+        self.assertEqual(res.context['model'], 'Anotação')
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
+
+    def test_POST_anonymous_user_empty_form(self) -> None:
+        """POST /segredo/anotacoes/novo | anonymous user | empty form"""
+
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        res: HttpResponse = self.client.post(reverse('secret:note_create_view'), {})
+
+        self.assertEqual(res.status_code, 302)
+        self.assertRedirects(
+            res,
+            reverse('account:login') + '?next=' + reverse('secret:note_create_view'),
+        )
+
+        res: HttpResponse = self.client.post(
+            reverse('secret:note_create_view'),
+            {},
+            follow=True,
+        )
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTemplateUsed(res, 'account/login.html')
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+    def test_POST_authenticated_user_empty_form(self) -> None:
+        """POST /segredo/anotacoes/novo | authenticated user | empty form"""
+
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(self.client.login(username='user', password='password'))
+
+        res: HttpResponse = self.client.post(
+            reverse('secret:note_create_view'),
+            {},
+            follow=True,
+        )
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTemplateUsed(res, 'secret/create_view.html')
+        self.assertIn(EMPTY_POST_MSG, res.content.decode('utf-8'))
+
+        self.assertIn('action', res.context.keys())
+        self.assertEqual(res.context['action'], 'Adição')
+
+        self.assertIn('model', res.context.keys())
+        self.assertEqual(res.context['model'], 'Anotação')
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
+
+    def test_POST_anonymous_user_empty_form_existing_secret(self) -> None:
+        """GET /segredo/anotacoes/novo | anonymous user | existent secret slug"""
+
+        note_data: dict = {
+            'owner': self.user,
+            'title': 'How to draw an apple',
+            'slug': 'how-to-draw-an-apple',
+            'content': 'Just draw an apple tree and erase the tree.',
+        }
+
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        res: HttpResponse = self.client.post(
+            reverse('secret:note_create_view'), note_data
+        )
+
+        self.assertEqual(res.status_code, 302)
+        self.assertRedirects(
+            res,
+            reverse('account:login') + '?next=' + reverse('secret:note_create_view'),
+        )
+
+        res: HttpResponse = self.client.post(
+            reverse('secret:note_create_view'),
+            note_data,
+            follow=True,
+        )
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTemplateUsed(res, 'account/login.html')
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+    def test_POST_authenticated_user_empty_form_existing_secret(self) -> None:
+        """POST /segredo/anotacoes/novo | authenticated user | empty form"""
+
+        note_data: dict = {
+            'owner': self.user,
+            'title': 'How to draw an apple',
+            'slug': 'how-to-draw-an-apple',
+            'content': 'Just draw an apple tree and erase the tree.',
+        }
+
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(self.client.login(username='user', password='password'))
+
+        res: HttpResponse = self.client.post(
+            reverse('secret:note_create_view'),
+            note_data,
+        )
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTemplateUsed(res, 'secret/create_view.html')
+        self.assertIn(FEEDBACK_MSG, res.content.decode('utf-8'))
+
+        self.assertIn('action', res.context.keys())
+        self.assertEqual(res.context['action'], 'Adição')
+
+        self.assertIn('model', res.context.keys())
+        self.assertEqual(res.context['model'], 'Anotação')
+        self.assertFalse(get_user(self.client).is_anonymous)
+        self.assertTrue(get_user(self.client).is_authenticated)
+
+    def test_POST_authenticated_user_valid_form(self) -> None:
+        """POST /segredo/anotacoes/novo | authenticated user | valid form"""
+
+        note_data: dict = {
+            'owner': self.user,
+            'title': 'How not to draw an apple',
+            'slug': 'how-not-to-draw-an-apple',
+            'content': 'Just not draw an apple tree and erase the tree.',
+        }
+
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
+
+        self.assertTrue(self.client.login(username='user', password='password'))
+
+        res: HttpResponse = self.client.post(
+            reverse('secret:note_create_view'),
+            note_data,
+            follow=True,
+        )
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTemplateUsed(res, 'secret/create_view.html')
+        self.assertIn('action', res.context.keys())
+        self.assertEqual(res.context['action'], 'Adição')
         self.assertIn('model', res.context.keys())
         self.assertEqual(res.context['model'], 'Anotação')
         self.assertFalse(get_user(self.client).is_anonymous)

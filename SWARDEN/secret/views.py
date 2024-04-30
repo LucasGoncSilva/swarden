@@ -3,14 +3,16 @@ from typing import Final, Literal, Any
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.decorators import login_required
 from django.contrib.messages import error
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, UpdateView, DeleteView
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 
 from secret.models import Card, LoginCredential, SecurityNote
 
 
 # Create your views here.
+EMPTY_POST_MSG: Final[str] = 'Preencha corretamente todos os campos solicitados'
 FEEDBACK_MSG: Final[str] = 'Slug já existente. Tente outro apelido ou título.'
 
 login_dec = login_required(login_url='/conta/entrar')
@@ -65,7 +67,11 @@ class CredentialCreateView(CreateView):
 
         return context
 
-    def post(self, r):
+    def post(self, r: HttpRequest):
+        if not len(r.POST):
+            error(r, EMPTY_POST_MSG)
+            return HttpResponseRedirect(reverse('secret:credential_create_view'))
+
         if LoginCredential.objects.filter(
             owner=r.user, slug=r.POST.get('slug')
         ).exists():
@@ -142,7 +148,11 @@ class CardCreateView(CreateView):
 
         return context
 
-    def post(self, r):
+    def post(self, r: HttpRequest):
+        if not len(r.POST):
+            error(r, EMPTY_POST_MSG)
+            return HttpResponseRedirect(reverse('secret:card_create_view'))
+
         if Card.objects.filter(owner=r.user, slug=r.POST.get('slug')).exists():
             error(r, FEEDBACK_MSG)
             return super().get(r)
@@ -217,7 +227,11 @@ class NoteCreateView(CreateView):
 
         return context
 
-    def post(self, r):
+    def post(self, r: HttpRequest):
+        if not len(r.POST):
+            error(r, EMPTY_POST_MSG)
+            return HttpResponseRedirect(reverse('secret:note_create_view'))
+
         if SecurityNote.objects.filter(owner=r.user, slug=r.POST.get('slug')).exists():
             error(r, FEEDBACK_MSG)
             return super().get(r)
