@@ -19,7 +19,9 @@ login_dec = login_required(login_url='/conta/entrar')
 login_dec_dispatch = method_decorator(login_dec, name='dispatch')
 
 
-def _list_view(r: HttpRequest, secret: Literal['credential', 'card', 'note']) -> dict[str, str | list] | None:
+def _list_view(
+    r: HttpRequest, secret: Literal['credential', 'card', 'note']
+) -> dict[str, str | list] | None:
     dispatch: dict[Literal['credential', 'card', 'note'], dict[str, list | str]] = {
         'credential': {
             'object_list': r.user.credentials.all(),
@@ -49,7 +51,9 @@ def credential_list_view(r: HttpRequest) -> HttpResponse:
 
 @login_dec
 def credential_detail_view(r: HttpRequest, slug: str) -> HttpResponse:
-    credential: LoginCredential = get_object_or_404(LoginCredential, owner=r.user, slug=slug)
+    credential: LoginCredential = get_object_or_404(
+        LoginCredential, owner=r.user, slug=slug
+    )
 
     return render(r, 'secret/Credential/detail_view.html', {'object': credential})
 

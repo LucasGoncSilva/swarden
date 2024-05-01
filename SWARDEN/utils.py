@@ -43,8 +43,8 @@ def xor(text: str, key: str, encrypt: bool = True) -> str:
     key_repetitions: int = max(1, (len(text) + len(key) - 1) // len(key))
 
     # Expand the key and secret key to match the text length
-    expanded_key: str = (key * key_repetitions)[:len(text)]
-    expanded_secret_key: str = (SK * key_repetitions)[:len(text)]
+    expanded_key: str = (key * key_repetitions)[: len(text)]
+    expanded_secret_key: str = (SK * key_repetitions)[: len(text)]
 
     # Create a generator for XORed values
     xor_key_generator: Generator = (

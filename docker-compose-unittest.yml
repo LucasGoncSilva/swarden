@@ -13,7 +13,7 @@ services:
       && python manage.py test
       && python manage.py populateuser
       && python manage.py populatesecret
-      && python manage.py runserver 0.0.0.0:8000"
+      && gunicorn CORE.wsgi:application --bind 0.0.0.0:8000"
     ports:
       - "8000:8000"
     environment:

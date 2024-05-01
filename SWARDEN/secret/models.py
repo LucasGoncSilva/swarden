@@ -1,5 +1,5 @@
 from uuid import uuid4
-from typing import Final, Self
+from typing import Final
 
 from django.db.models import (
     Model,
@@ -94,7 +94,7 @@ class LoginCredential(Model):
         )
 
     @classmethod
-    def from_db(cls, db, field_names, values) -> Self:
+    def from_db(cls, db, field_names, values):
         cred = super().from_db(db, field_names, values)
 
         cred.thirdy_party_login_name = xor(
@@ -268,7 +268,7 @@ class Card(Model):
         )
 
     @classmethod
-    def from_db(cls, db, field_names, values) -> Self:
+    def from_db(cls, db, field_names, values):
         card = super().from_db(db, field_names, values)
 
         card.name = xor(str(card.name), card.owner.password[21:], encrypt=False)
@@ -423,7 +423,7 @@ class SecurityNote(Model):
         )
 
     @classmethod
-    def from_db(cls, db, field_names, values) -> Self:
+    def from_db(cls, db, field_names, values):
         note = super().from_db(db, field_names, values)
         note.content = xor(str(note.content), note.owner.password[21:], encrypt=False)
         return note
