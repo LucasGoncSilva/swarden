@@ -1,5 +1,5 @@
 """
-locust --headless -f loadtests/spike_test.py -H http://localhost:8000 --processes -1 --csv report/cvs/spike/spike --html report/html/spike.html
+locust --headless -f loadtests/spike_test.py -H http://localhost:8000 --processes -1 --csv report/csv/spike/spike --html report/html/spike.html
 """
 
 from locust import FastHttpUser, LoadTestShape, TaskSet, constant, task, stats

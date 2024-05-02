@@ -1,5 +1,5 @@
 """
-locust --headless -f loadtests/soak_test.py -H http://localhost:8000 --processes -1 --csv report/cvs/soak/soak --html report/html/soak.html
+locust --headless -f loadtests/soak_test.py -H http://localhost:8000 --processes -1 --csv report/csv/soak/soak --html report/html/soak.html
 """
 
 from locust import FastHttpUser, LoadTestShape, TaskSet, constant, task, stats
