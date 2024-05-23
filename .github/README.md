@@ -3,14 +3,14 @@
 ![GitHub License](https://img.shields.io/github/license/LucasGoncSilva/swarden?labelColor=101010)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/LucasGoncSilva/swarden/django_unittest.yml?style=flat&labelColor=%23101010)
 
-Criado em Django como Framework MVC, sWarden funciona como um protótipo real de gerenciador de senhas e credenciais online. Este projeto introduz e apresenta conceitos básicos de segurança de forma prática e descritiva. <br>
-Foram utilizadas tanto class-based views quanto function-based views, de modo que os diferentes paradigmas implementados pelo Framework sejam exemplificados de forma prática. <br>
-Agrega às medidas de segurança do Django uma lógica inicial do que seria um honeypot, mais de 40 casos de testes incluindo 4 testes de carga para atestar a integridade do sistema e criptografia nos dados armazenados em banco, tudo aplicável em Docker.
+Criado em Django como Framework MVC, sWarden funciona como um protótipo real de gerenciador de senhas e credenciais online. Este projeto introduz e apresenta conceitos básicos de segurança de forma prática e descritiva.<br><br>
+Foram utilizadas tanto class-based views quanto function-based views, de modo que os diferentes paradigmas implementados pelo Framework sejam exemplificados de forma prática.<br><br>
+Agrega às medidas de segurança do Django uma lógica inicial do que seria um honeypot, mais de 140 casos de testes incluindo 4 testes de carga para atestar a integridade do sistema e criptografia nos dados armazenados em banco, tudo aplicável em Docker.
 
 <br>
 <hr>
 
-<h2 align='center'>Tecnologias Aplicadas:</h2>
+<h2 align='center'>Tecnologias Aplicadas</h2>
 
 ![HTML logo](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS logo](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
@@ -29,61 +29,49 @@ Agrega às medidas de segurança do Django uma lógica inicial do que seria um h
 <br>
 <hr>
 
-<h2 align='center'>Features</h2>
-
-- [x] CRUD dos diferentes tipos de segredos armazenados
-- [x] Salvar mais de uma conta por serviço (e.g. duas contas do Instagram)
-- [x] Exportar dados via e-mail (o mesmo utilizado para acesso ao sistema)
-- [ ] Usar Autenticação em Duas Etapas
-- [ ] Gerar senhas pseudo-aleatórias como sugestão da plataforma
-
-<br>
-<hr>
-
 <h2 align='center'>Arquitetura</h2>
 
 
 ```mermaid
 flowchart RL
 
+
 subgraph CLOUD
-    subgraph SYSTEM/APP
-        View((View)):::Arch
-        Template{Template}:::Arch
+    subgraph RENDER
+        LB(Gunicorn):::Arch
+        View{{View}}:::Arch
+        Template{{Template}}:::Arch
         Model{{Model}}:::Arch
     end
 
-    Cover[/"xor(..., encript=True)"/]
-    Uncover[/"xor(..., encript=False)"/]
-
-    subgraph DB-INSTANCE
+    subgraph SUPABASE
         Database[(Database)]:::Arch
     end
 end
 
 User((User))
 
-User --> View
-View --> Model -- insert | update --> Cover --> Database
+
+User --> LB --> View
+View --> Model -- insert | update -->  Database
 Model -- select --> Database
-Database --> Uncover --> Model
-Model --> View --> Template --> User
+Database --> Model
 
-Cover --- Uncover
+%% Below for spacing, DO NOT REMOVE
+Database ~~~ User
+%% Above for spacing, DO NOT REMOVE
 
-click Cover "https://github.com/LucasGoncSilva/swarden/blob/main/secret/encript_db.py"
-click Uncover "https://github.com/LucasGoncSilva/swarden/blob/main/secret/encript_db.py"
+Model --> View --> Template --> LB --> User
 
-style CLOUD fill:#f0f0ff,color:#4717f6;
-style SYSTEM/APP fill:#fff,color:#4717f6;
-style DB-INSTANCE fill:#fff,color:#4717f6;
-style User fill:#aaf,color:#fff,stroke:#008;
-style Cover fill:#afa,color:#070,stroke:#070;
-style Uncover fill:#afa,color:#070,stroke:#070;
 
-classDef Arch fill:#f0f0ff,color:#008,stroke:#6f6fff;
+style CLOUD fill:#1e1e1e,color:#00a86b;
+style RENDER fill:#262626,color:#00a86b;
+style SUPABASE fill:#262626,color:#00a86b;
+style User fill:#00755e,color:#efe,stroke:#efe;
+
+classDef Arch fill:#00755e,color:#efe,stroke:#efe;
 ```
-<h5 align='center'>sWarden's current CRUD architecture</h5>
+<h5 align='center'>Arquitetura atual do sWarden</h5>
 
 <br>
 <hr>
@@ -153,7 +141,8 @@ Aqui é onde você visualiza os detalhes do segredo escolhido, informação por 
 
 <h2 align='center'>To-Do List</h2>
 
-- [ ] Completar a lista de [FEATURES](https://github.com/LucasGoncSilva/swarden#features).
+- [ ] Usar Autenticação em Duas Etapas
+- [ ] Gerar senhas pseudo-aleatórias como sugestão da plataforma
 - [ ] Criar as páginas `/sobre` e `/serviços`.
 - [ ] Aplicar melhorias de feedback de caracteres nos campos de texto para cada segredo
 

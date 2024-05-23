@@ -25,11 +25,11 @@ class ActivationAccountToken(Model):
     id: Final[UUIDField] = UUIDField(
         default=uuid4, unique=True, primary_key=True, editable=False
     )
+    # TODO FK to User
     value: Final[CharField] = CharField(
         max_length=64, validators=[MinLengthValidator(64), MaxLengthValidator(64)]
     )
     used: BooleanField = BooleanField(default=False, verbose_name='Usado?')
-    failed: BooleanField = BooleanField(default=False, verbose_name='Falhou?')
     created: Final[DateTimeField] = DateTimeField(auto_now_add=True)
 
     class Meta:

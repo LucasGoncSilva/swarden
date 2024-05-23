@@ -5,16 +5,20 @@ from django.http import HttpRequest, HttpResponse
 # Create your views here.
 def index(r: HttpRequest) -> HttpResponse:
     if r.user.is_authenticated:
+        credentials = r.user.credentials.all()
+        cards = r.user.cards.all()
+        notes = r.user.notes.all()
+
         return render(
             r,
             'home/index.html',
             {
-                'credentials': r.user.credentials.all()[:4],
-                'cards': r.user.cards.all()[:4],
-                'notes': r.user.notes.all()[:4],
-                'credentials_count': r.user.credentials.all().count(),
-                'cards_count': r.user.cards.all().count(),
-                'notes_count': r.user.notes.all().count(),
+                'credentials': credentials[:4],
+                'cards': cards[:4],
+                'notes': notes[:4],
+                'credentials_count': credentials.count(),
+                'cards_count': cards.count(),
+                'notes_count': notes.count(),
             },
         )
 

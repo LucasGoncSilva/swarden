@@ -81,7 +81,8 @@ def send_email_activation_account_token(domain: str, user: User, password: str) 
     uidb64: str = urlsafe_base64_encode(force_bytes(user.pk))
 
     token: ActivationAccountToken = ActivationAccountToken.objects.create(
-        value=token_hash, used=False
+        value=token_hash,
+        used=False
     )
 
     token.full_clean()
