@@ -4,6 +4,7 @@ from uuid import uuid4
 
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinLengthValidator, MaxLengthValidator
+from django.db import models
 from django.db.models import (
     Model,
     CharField,
@@ -25,7 +26,7 @@ class ActivationAccountToken(Model):
     id: Final[UUIDField] = UUIDField(
         default=uuid4, unique=True, primary_key=True, editable=False
     )
-    # TODO FK to User
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     value: Final[CharField] = CharField(
         max_length=64, validators=[MinLengthValidator(64), MaxLengthValidator(64)]
     )

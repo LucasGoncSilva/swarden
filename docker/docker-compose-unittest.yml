@@ -28,15 +28,7 @@ services:
       - DATABASE_HOST=db
       - CAPTCHA_TEST_MODE=True
     depends_on:
-      db:
-        condition: service_healthy
-        restart: true
-    restart: on-failure
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: "64.0MB"
+      - db
 
   db:
     image: postgres
@@ -48,8 +40,3 @@ services:
       - "5432:5432"
     healthcheck:
       test: pg_isready -U postgres
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: "64.0MB"

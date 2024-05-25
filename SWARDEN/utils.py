@@ -67,22 +67,23 @@ def xor(text: str, key: str, encrypt: bool = True) -> str:
     return ''.join(transformed_chars)
 
 
-def send_email_activation_account_token(domain: str, user: User, password: str) -> None:
+def send_email_activation_account_token(domain: str, new_user: User, password: str) -> None:
     if (
         not isinstance(domain, str)
-        or not isinstance(user, User)
+        or not isinstance(new_user, User)
         or not isinstance(password, str)
     ):
-        raise TypeError(f'{domain}, {user} and {password} are invalid arguments')
+        raise TypeError(f'{domain}, {new_user} and {password} are invalid arguments')
 
-    validate_email(user.email)
+    validate_email(new_user.email)
 
-    token_hash: str = sha256(f'{user.username}{password}'.encode()).hexdigest()
-    uidb64: str = urlsafe_base64_encode(force_bytes(user.pk))
+    token_hash: str = sha256(f'{new_user.username}{password}'.encode()).hexdigest()
+    uidb64: str = urlsafe_base64_encode(force_bytes(new_user.pk))
 
     token: ActivationAccountToken = ActivationAccountToken.objects.create(
         value=token_hash,
-        used=False
+        user=new_user,
+        used=False,
     )
 
     token.full_clean()
@@ -93,7 +94,7 @@ def send_email_activation_account_token(domain: str, user: User, password: str) 
             domain=domain, uidb64=uidb64, token=token_hash
         ),
         from_email=settings.EMAIL_HOST_USER,
-        to=[str(user.email)],
+        to=[str(new_user.email)],
     )
     email.send()
 

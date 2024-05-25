@@ -6,30 +6,36 @@ from django.core.exceptions import ValidationError
 from django.db.transaction import atomic
 from django.test import TestCase
 
-from account.models import ActivationAccountToken
+from account.models import ActivationAccountToken, User
 
 
 class ActivationAccountTokenTestCase(TestCase):
     def setUp(self) -> None:
         filterwarnings("ignore", category=RuntimeWarning)
 
-        self.token1 = ActivationAccountToken.objects.create(value='x' * 64, used=False)
+        self.user = User.objects.create_user(
+            username='user',
+            password='password',
+            email='user@email.com',
+        )
 
-        self.token2 = ActivationAccountToken.objects.create(value='x' * 64, used=True)
+        self.token1 = ActivationAccountToken.objects.create(value='x' * 64, user=self.user, used=False)
+
+        self.token2 = ActivationAccountToken.objects.create(value='x' * 64, user=self.user, used=True)
 
         self.token3 = ActivationAccountToken.objects.create(
-            value='x' * 64, used=False, created=None
+            value='x' * 64, user=self.user, used=False, created=None
         )
 
         try:
             with atomic():
                 self.token4 = ActivationAccountToken.objects.create(
-                    value='x' * 65, used=False
+                    value='x' * 65, user=self.user, used=False
                 )
         except DataError:
-            self.token4 = ActivationAccountToken.objects.create(value=int, used=False)
+            self.token4 = ActivationAccountToken.objects.create(value=int, user=self.user, used=False)
 
-        self.token5 = ActivationAccountToken.objects.create(value='x' * 63, used=False)
+        self.token5 = ActivationAccountToken.objects.create(value='x' * 63, user=self.user, used=False)
 
     def test_token_instance_validity(self) -> None:
         """Tests token instance of correct class"""
@@ -111,6 +117,7 @@ class ActivationAccountTokenTestCase(TestCase):
             'token5': {'value': 'x' * 64, 'used': None},
             'token6': {'value': 'x' * 64, 'used': 'foo'},
             'token7': {'value': 'x' * 64, 'used': 2},
+            'token8': {'value': 'x' * 64},
         }
 
         for scenario in raise_kwargs.keys():
@@ -122,10 +129,10 @@ class ActivationAccountTokenTestCase(TestCase):
 
         # Not expecting raises
         no_raise_kwargs: dict[str, dict[str, str | bool | datetime]] = {
-            'token1': {'value': 'x' * 64},
-            'token2': {'value': 'x' * 64, 'used': False},
-            'token3': {'value': 'x' * 64, 'used': True},
-            'token4': {'value': 'x' * 64, 'created': datetime(2004, 5, 25)},
+            'token1': {'value': 'x' * 64, 'user': self.user},
+            'token2': {'value': 'x' * 64, 'user': self.user, 'used': False},
+            'token3': {'value': 'x' * 64, 'user': self.user, 'used': True},
+            'token4': {'value': 'x' * 64, 'user': self.user, 'created': datetime(2004, 5, 25)},
         }
 
         for scenario in no_raise_kwargs.keys():

@@ -231,11 +231,14 @@ class ActivateAccountViewTestCase(BaseAccountTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-        user_pk: str = User.objects.first().pk
-        uidb64_pk = urlsafe_base64_encode(force_bytes(user_pk))
+        user: User | None = User.objects.first()
+        if user is None:
+            raise TypeError(f'Expected "user" to be type User, found None')
+
+        uidb64_pk = urlsafe_base64_encode(force_bytes(user.pk))
 
         token: ActivationAccountToken = ActivationAccountToken.objects.create(
-            value='x' * 64, used=False
+            value='x' * 64, user=user, used=False,
         )
 
         res: HttpResponse = self.client.get(
@@ -255,11 +258,14 @@ class ActivateAccountViewTestCase(BaseAccountTestCase):
 
         self.assertTrue(self.client.login(username='user', password='password'))
 
-        user_pk: str = User.objects.first().pk
-        uidb64_pk = urlsafe_base64_encode(force_bytes(user_pk))
+        user: User | None = User.objects.first()
+        if user is None:
+            raise TypeError(f'Expected "user" to be type User, found None')
+
+        uidb64_pk = urlsafe_base64_encode(force_bytes(user.pk))
 
         token: ActivationAccountToken = ActivationAccountToken.objects.create(
-            value='x' * 64, used=False
+            value='x' * 64, user=user, used=False,
         )
 
         res: HttpResponse = self.client.get(
