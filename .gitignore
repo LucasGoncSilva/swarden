@@ -145,3 +145,6 @@ staticfiles/
 # Reports
 /report/**/*.html
 /report/**/**.csv
+
+# DB Documentation
+schema.dbml

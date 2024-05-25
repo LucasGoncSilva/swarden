@@ -1,0 +1,76 @@
+Table User { 
+  ID integer [pk, unique, not null, increment, note: 'ID da tabela']
+  first_name varchar(150) [not null, note: 'Nome do usuário']
+  last_name varchar(150) [not null, note: 'Sobrenome do usuário']
+  email varchar(120) [unique, not null, note: 'Email de acesso do usuário']
+  password varchar(32) [not null, note: 'Hash SHA256 da senha inserida pelo usuário']
+
+  Note: 'Usuários do sistema'
+}
+
+Table ActivationAccountToken {
+  ID uuid [pk, unique, not null, note: 'ID da tabela']
+  user integer [not null, note: 'Referência externa a um usuário da tabela User']
+  value varchar(64) [not null, note: 'Valor do token de ativação de conta']
+  used bool [default: false, not null, note: 'Define se o token já foi utilizado']
+  created timestamp [not null, default: `now()`, note: 'Data de criação']
+
+  Note: 'Tokens de ativação de usuários do sistema'
+}
+
+
+Table LoginCredential {
+  ID uuid [pk, unique, not null, note: 'ID da tabela']
+  owner integer [not null, note: 'Referência externa a um usuário da tabela User']
+  service varchar(64) [not null, note: 'Nome do serviço, pre-definido pelo Back-end']
+  name varchar(40) [not null, note: 'Apelido da credencial em questão']
+  thirdy_party_login bool [not null, note: 'Define se o serviço utiliza de login de terceiros']
+  thirdy_party_login_name varchar(40) [not null, default: '-----', note: 'Nome do login de terceiro, caso utilizado']
+  login varchar(200) [not null, default: '-----', note: 'Username/e-mail da credencial']
+  password varchar(200) [not null, default: '-----', note: 'Senha da credencial']
+  note varchar(128) [note: 'Anotação']
+  slug varchar(128) [not null, note: 'Slug identificador human-readable']
+  created timestamp [not null, default: `now()`, note: 'Data de criação']
+  updated timestamp [not null, note: 'Data da última edição']
+
+  Note: 'Credenciais de acessos para serviços como Gmail, Amazon Prime, GitHub, ...'
+}
+
+Table Card {
+  ID uuid [pk, unique, not null, note: 'ID da tabela']
+  owner integer [not null, note: 'Referência externa a um usuário da tabela User']
+  name varchar(40) [not null, note: 'Apelido do cartão em questão']
+  card_type varchar(4) [not null, note: 'Tipo do cartão, pre-definido pelo Back-end']
+  number varchar(19) [not null, note: 'Número do cartão: 1111 2222 3333 4444']
+  expiration date [not null, note: 'Data de expiração']
+  cvv varchar(4) [not null, note: 'Código de segurança']
+  bank varchar(64) [not null, note: 'Nome do banco, pre-definido pelo Back-end']
+  brand varchar(64) [not null, note: 'Bandeira do cartão, pre-definida pelo Back-end']
+  owners_name varchar(64) [not null, note: 'Nome do titular, assim como no cartão']
+  note varchar(128) [note: 'Anotação']
+  slug varchar(128) [not null, note: 'Slug identificador human-readable']
+  created timestamp [not null, default: `now()`, note: 'Data de criação']
+  updated timestamp [not null, note: 'Data da última edição']
+
+  Note: 'Cartões (débido, crédito, ...)'
+}
+
+Table SecurityNote {
+  ID uuid [pk, unique, not null, note: 'ID da tabela']
+  owner integer [not null, note: 'Referência externa a um usuário da tabela User']
+  title varchar(40) [not null, note: 'Título da nota']
+  content varchar(300) [not null, note: 'Conteúdo da nota']
+  slug varchar(128) [not null, note: 'Slug identificador human-readable']
+  created timestamp [not null, default: `now()`, note: 'Data de criação']
+  updated timestamp [not null, note: 'Data da última edição']
+
+  Note: 'Notas e anotações de seguranças'
+}
+
+
+// REFERENCIES
+
+Ref ActivationAccountToken_User: ActivationAccountToken.user > User.ID
+Ref LoginCredential_User: LoginCredential.owner > User.ID
+Ref Card_User: Card.owner > User.ID
+Ref SecurityNote_User: SecurityNote.owner > User.ID
