@@ -11,9 +11,8 @@ services:
     command: >
       bash -c "
       python manage.py collectstatic --noinput
-      && python manage.py makemigrations
       && python manage.py migrate
-      && gunicorn CORE.wsgi:application --bind 0.0.0.0:8000"
+      && granian --interface wsgi CORE.wsgi:application"
     ports:
       - "8000:8000"
     environment:

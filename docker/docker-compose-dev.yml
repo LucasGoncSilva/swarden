@@ -12,7 +12,6 @@ services:
       bash -c "
       pip install tqdm tblib
       && python manage.py collectstatic --noinput
-      && python manage.py makemigrations
       && python manage.py migrate
       && python manage.py populateuser
       && python manage.py populatesecret
