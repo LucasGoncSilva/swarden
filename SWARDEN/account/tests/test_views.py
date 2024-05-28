@@ -238,7 +238,9 @@ class ActivateAccountViewTestCase(BaseAccountTestCase):
         uidb64_pk = urlsafe_base64_encode(force_bytes(user.pk))
 
         token: ActivationAccountToken = ActivationAccountToken.objects.create(
-            value='x' * 64, user=user, used=False,
+            value='x' * 64,
+            user=user,
+            used=False,
         )
 
         res: HttpResponse = self.client.get(
@@ -265,7 +267,9 @@ class ActivateAccountViewTestCase(BaseAccountTestCase):
         uidb64_pk = urlsafe_base64_encode(force_bytes(user.pk))
 
         token: ActivationAccountToken = ActivationAccountToken.objects.create(
-            value='x' * 64, user=user, used=False,
+            value='x' * 64,
+            user=user,
+            used=False,
         )
 
         res: HttpResponse = self.client.get(

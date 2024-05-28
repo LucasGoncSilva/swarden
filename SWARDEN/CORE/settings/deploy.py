@@ -1,24 +1,19 @@
 from os import getenv
 
+import dj_database_url
+
 from CORE.settings.base import *
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': getenv('DATABASE_NAME'),
-        'USER': getenv('DATABASE_USER'),
-        'PASSWORD': getenv('DATABASE_PASSWORD'),
-        'HOST': getenv('DATABASE_HOST'),
-        'PORT': '5432',
-    }
-}
+DATABASES = {"default": dj_database_url.parse(str(getenv("DATABASE_URL")))}
 
-DEBUG = bool(getenv('DEBUG'))
-SECRET_KEY = getenv('SECRET_KEY')
-ALLOWED_HOSTS = list(str(getenv('ALLOWED_HOSTS')))
+DEBUG: bool = False
+SECRET_KEY: str | None = getenv('SECRET_KEY')
+ALLOWED_HOSTS: list[str] = list(
+    map(lambda url: url.strip(), str(getenv('ALLOWED_HOSTS')).split(','))
+)
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND: str = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST_USER: str | None = getenv('SWARDEN_EMAIL_DOMAIN')
 EMAIL_HOST_PASSWORD: str | None = getenv('SWARDEN_EMAIL_PASSWORD')
 

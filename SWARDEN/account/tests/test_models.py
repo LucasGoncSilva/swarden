@@ -19,9 +19,13 @@ class ActivationAccountTokenTestCase(TestCase):
             email='user@email.com',
         )
 
-        self.token1 = ActivationAccountToken.objects.create(value='x' * 64, user=self.user, used=False)
+        self.token1 = ActivationAccountToken.objects.create(
+            value='x' * 64, user=self.user, used=False
+        )
 
-        self.token2 = ActivationAccountToken.objects.create(value='x' * 64, user=self.user, used=True)
+        self.token2 = ActivationAccountToken.objects.create(
+            value='x' * 64, user=self.user, used=True
+        )
 
         self.token3 = ActivationAccountToken.objects.create(
             value='x' * 64, user=self.user, used=False, created=None
@@ -33,9 +37,13 @@ class ActivationAccountTokenTestCase(TestCase):
                     value='x' * 65, user=self.user, used=False
                 )
         except DataError:
-            self.token4 = ActivationAccountToken.objects.create(value=int, user=self.user, used=False)
+            self.token4 = ActivationAccountToken.objects.create(
+                value=int, user=self.user, used=False
+            )
 
-        self.token5 = ActivationAccountToken.objects.create(value='x' * 63, user=self.user, used=False)
+        self.token5 = ActivationAccountToken.objects.create(
+            value='x' * 63, user=self.user, used=False
+        )
 
     def test_token_instance_validity(self) -> None:
         """Tests token instance of correct class"""
@@ -132,7 +140,11 @@ class ActivationAccountTokenTestCase(TestCase):
             'token1': {'value': 'x' * 64, 'user': self.user},
             'token2': {'value': 'x' * 64, 'user': self.user, 'used': False},
             'token3': {'value': 'x' * 64, 'user': self.user, 'used': True},
-            'token4': {'value': 'x' * 64, 'user': self.user, 'created': datetime(2004, 5, 25)},
+            'token4': {
+                'value': 'x' * 64,
+                'user': self.user,
+                'created': datetime(2004, 5, 25),
+            },
         }
 
         for scenario in no_raise_kwargs.keys():

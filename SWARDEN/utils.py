@@ -67,7 +67,9 @@ def xor(text: str, key: str, encrypt: bool = True) -> str:
     return ''.join(transformed_chars)
 
 
-def send_email_activation_account_token(domain: str, new_user: User, password: str) -> None:
+def send_email_activation_account_token(
+    domain: str, new_user: User, password: str
+) -> None:
     if (
         not isinstance(domain, str)
         or not isinstance(new_user, User)
