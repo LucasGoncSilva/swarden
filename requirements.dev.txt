@@ -6,3 +6,4 @@ pyflakes
 black
 tblib
 coverage
+django-extensions
