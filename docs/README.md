@@ -34,6 +34,8 @@ Agrega às medidas de segurança do Django uma lógica inicial do que seria um h
 
 ## Arquitetura
 
+A arquitetura pode ser detalhada de forma geral em dois níveis: web e database. As mecânicas são abstraídas a um nível geral, evitando detalhes profundos que confundam à agregar, apresentando uma visão comportamental em escala "macro" seguindo o fluxo de dados sem focar no "micro", como cada ação de cada função. Acompanhe abaixo o fluxo de informações na Web, seguido da estruturação e arquitetura o Banco de Dados (Para mais detalhes sobre o Banco de Dados acesse [https://dbdocs.io/lucasgoncsilva04/SWARDEN](https://dbdocs.io/lucasgoncsilva04/SWARDEN)):
+
 ### Web
 
 ![Arquitetura de Funcionamento do Projeto](./web/web_architecture.svg)
@@ -42,11 +44,23 @@ Agrega às medidas de segurança do Django uma lógica inicial do que seria um h
 
 ![Arquitetura do Banco de Dados](./db/db_schema.svg)
 
-Para mais detalhes sobre o Banco de Dados acesse [https://dbdocs.io/lucasgoncsilva04/SWARDEN](https://dbdocs.io/lucasgoncsilva04/SWARDEN)
-
 <br>
 
 ## Básico
+
+Antes de iniciar com o desenvolvimento e os comandos, é importante definir as variáveis de ambiente no seu ambiente de desenvolvimento. Abaixo a listagem de quais definir:
+
+| Variável                      | Caráter    | Responsabilidade
+| :---                          | :---       | :---
+| `DJANGO_SETTINGS_MODULE: str` | `required` | Definir o módulo de configurações a ser utilizado. Valor recomendado `CORE.settings.dev`
+| `CAPTCHA_TEST_MODE: bool`     | `optional` | Permitir o bypass do captcha nas telas de acesso. Default `False`
+| `DATABASE_NAME: str`          | `optional` | Definir o nome de acesso do Banco de Dados. Default `postgres`
+| `DATABASE_USER: str`          | `optional` | Definir o usuário de acesso do Banco de Dados. Default `postgres`
+| `DATABASE_PASSWORD: str`      | `optional` | Definir a senha de acesso do Banco de Dados. Default `postgres`
+| `DATABASE_HOST: str`          | `optional` | Definir o host de acesso do Banco de Dados. Default `localhost`
+| `DEBUG: bool`                 | `optional` | Definir traceback e informações de debug em páginas browser. Default `True`
+| `SECRET_KEY: str`             | `optional` | Definir chave de criptografia e segurança do projeto. Default `cw%t5...ba^m3)`
+| `ALLOWED_HOSTS: list[str]`    | `optional` | Definir lista de endereços URL válidos para execução do projeto. Default `['*']`
 
 ### Buscar/iniciar Migrações (Atualizações) de Banco de Dados
 
@@ -82,10 +96,10 @@ Para iniciar, caso não tenha uma conta, crie uma acessando `/conta/registrar` o
 
 Após acessar, a todo momento haverá uma barra de navegação no topo das páginas. Você pode utilizá-la para navegar entre os módulos do sistema e realizar algumas ações como:
 
-* Criar e visualizar suas credenciais de login
-* Criar e visualizar seus dados de cartões
-* Criar e visualizar suas anotações seguras
-* Sair do sistema
+- Criar e visualizar suas credenciais de login
+- Criar e visualizar seus dados de cartões
+- Criar e visualizar suas anotações seguras
+- Sair do sistema
 
 #### Página Principal
 

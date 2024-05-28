@@ -233,7 +233,7 @@ class ActivateAccountViewTestCase(BaseAccountTestCase):
 
         user: User | None = User.objects.first()
         if user is None:
-            raise TypeError(f'Expected "user" to be type User, found None')
+            raise TypeError('Expected "user" to be type User, found None')
 
         uidb64_pk = urlsafe_base64_encode(force_bytes(user.pk))
 
@@ -262,7 +262,7 @@ class ActivateAccountViewTestCase(BaseAccountTestCase):
 
         user: User | None = User.objects.first()
         if user is None:
-            raise TypeError(f'Expected "user" to be type User, found None')
+            raise TypeError('Expected "user" to be type User, found None')
 
         uidb64_pk = urlsafe_base64_encode(force_bytes(user.pk))
 

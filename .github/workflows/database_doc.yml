@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 env:
-  SECRET_KEY: ${{ secrets.DBDOCS_TOKEN }}
+  DBDOCS_TOKEN: ${{ secrets.DBDOCS_TOKEN }}
 
 jobs:
   doc:

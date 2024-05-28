@@ -11,7 +11,6 @@ from django.http import (
     HttpResponse,
     HttpResponseRedirect,
     Http404,
-    HttpResponseServerError,
 )
 from django.forms import Form, CharField, TextInput, EmailField, PasswordInput
 from django.contrib.messages import success, error
