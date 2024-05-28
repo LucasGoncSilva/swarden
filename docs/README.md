@@ -1,16 +1,20 @@
-<h1 align='center'>SWARDEN</h1>
+<h1 align="center">
+  <img src="./logo.svg" height="300" width="300" alt="Logo VMAP" /><br>
+  VMAP
+</h1>
 
 ![GitHub License](https://img.shields.io/github/license/LucasGoncSilva/swarden?labelColor=101010)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/LucasGoncSilva/swarden/django_unittest.yml?style=flat&labelColor=%23101010)
 
-Criado em Django como Framework MVC, sWarden funciona como um protótipo real de gerenciador de senhas e credenciais online. Este projeto introduz e apresenta conceitos básicos de segurança de forma prática e descritiva.<br><br>
-Foram utilizadas tanto class-based views quanto function-based views, de modo que os diferentes paradigmas implementados pelo Framework sejam exemplificados de forma prática.<br><br>
+Criado em Django como Framework MVC, sWarden funciona como um protótipo real de gerenciador de senhas e credenciais online. Este projeto introduz e apresenta conceitos básicos de segurança de forma prática e descritiva.
+<br><br>
+Foram utilizadas tanto class-based views quanto function-based views, de modo que os diferentes paradigmas implementados pelo Framework sejam exemplificados de forma prática.
+<br><br>
 Agrega às medidas de segurança do Django uma lógica inicial do que seria um honeypot, mais de 140 casos de testes incluindo 4 testes de carga para atestar a integridade do sistema e criptografia nos dados armazenados em banco, tudo aplicável em Docker.
 
 <br>
-<hr>
 
-<h2 align='center'>Tecnologias Aplicadas</h2>
+## Stack
 
 ![HTML logo](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS logo](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
@@ -27,81 +31,46 @@ Agrega às medidas de segurança do Django uma lógica inicial do que seria um h
 ![Supabase Logo](https://img.shields.io/badge/Supabase-181818?style=for-the-badge&logo=supabase&logoColor=3ecf8e)
 
 <br>
-<hr>
 
-<h2 align='center'>Arquitetura</h2>
+## Arquitetura
 
+### Web
 
-```mermaid
-flowchart RL
+![Arquitetura de Funcionamento do Projeto](./web/web_architecture.svg)
 
+### DB
 
-subgraph CLOUD
-    subgraph RENDER
-        LB(Gunicorn):::Arch
-        View{{View}}:::Arch
-        Template{{Template}}:::Arch
-        Model{{Model}}:::Arch
-    end
+![Arquitetura do Banco de Dados](./db/db_schema.svg)
 
-    subgraph SUPABASE
-        Database[(Database)]:::Arch
-    end
-end
-
-User((User))
-
-
-User --> LB --> View
-View --> Model -- insert | update -->  Database
-Model -- select --> Database
-Database --> Model
-
-%% Below for spacing, DO NOT REMOVE
-Database ~~~ User
-%% Above for spacing, DO NOT REMOVE
-
-Model --> View --> Template --> LB --> User
-
-
-style CLOUD fill:#1e1e1e,color:#00a86b;
-style RENDER fill:#262626,color:#00a86b;
-style SUPABASE fill:#262626,color:#00a86b;
-style User fill:#00755e,color:#efe,stroke:#efe;
-
-classDef Arch fill:#00755e,color:#efe,stroke:#efe;
-```
-<h5 align='center'>Arquitetura atual do sWarden</h5>
+Para mais detalhes sobre o Banco de Dados acesse [https://dbdocs.io/lucasgoncsilva04/SWARDEN](https://dbdocs.io/lucasgoncsilva04/SWARDEN)
 
 <br>
-<hr>
 
-<h2 align='center'>Básico</h2>
+## Básico
 
 ### Buscar/iniciar Migrações (Atualizações) de Banco de Dados
 
-``python3 manager.py makemigrations``
+`python3 manager.py makemigrations`
 
 ### Atualizar Estrutura do Banco de Dados com Novas Migrações
 
-``python3 manager.py migrate``
+`python3 manager.py migrate`
 
 ### Iniciar Testes Automatizados
 
-``python3 manager.py test``
+`python3 manager.py test`
 
 ### Popular Banco de Dados para Execução Local
 
-``python3 manager.py populatedb``
+`python3 manager.py populatedb`
 
 ### Iniciar o Servidor
 
-``python3 manager.py runserver``
+`python3 manager.py runserver`
 
 <br>
-<hr>
 
-<h2 align='center'>Utilizando</h2>
+## Utilizando
 
 ### Criando uma Conta
 
@@ -137,9 +106,8 @@ Esta página apresenta todos os segredos criados, um tipo por vez. Clickando em 
 Aqui é onde você visualiza os detalhes do segredo escolhido, informação por informação. Junto a isso, há três botões no topo da tela: azul (editar este segredo), vermelho (apagar este segredo) e cinza (adicionar um novo segredo).
 
 <br>
-<hr>
 
-<h2 align='center'>To-Do List</h2>
+## To-Do List
 
 - [ ] Usar Autenticação em Duas Etapas
 - [ ] Gerar senhas pseudo-aleatórias como sugestão da plataforma
@@ -147,9 +115,8 @@ Aqui é onde você visualiza os detalhes do segredo escolhido, informação por 
 - [ ] Aplicar melhorias de feedback de caracteres nos campos de texto para cada segredo
 
 <br>
-<hr>
 
-<h2 align='center'>Contrib</h2>
+## Contrib
 
 ### Escrevendo Testes de Models
 
@@ -364,8 +331,7 @@ class Example[Create|List|Detail|Update|Delete]ViewTestCase(BaseExampleTestCase)
 ```
 
 <br>
-<hr>
 
-<h2 align='center'>Licença</h2>
+## Licença
 
 This project is under [MPLv2 - Mozilla Public License Version 2.0](https://choosealicense.com/licenses/mpl-2.0/). Permissions of this weak copyleft license are conditioned on making available source code of licensed files and modifications of those files under the same license (or in certain cases, one of the GNU licenses). Copyright and license notices must be preserved. Contributors provide an express grant of patent rights. However, a larger work using the licensed work may be distributed under different terms and without source code for files added in the larger work.
