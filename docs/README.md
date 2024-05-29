@@ -212,7 +212,7 @@ class MyModelTestCase(TestCase):
         """Tests model correct integrity and validation with raised exceptions"""
 
         # Expecting raises
-        params: list[dict[str, User | str]] = [
+        params: list[dict[str, MyModel | str]] = [
             {'field': 'value'},
             {'field': 'value'},
             {'field': 'value'},
