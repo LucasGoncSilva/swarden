@@ -1,6 +1,6 @@
 <h1 align="center">
-  <img src="./logo.svg" height="300" width="300" alt="Logo VMAP" /><br>
-  VMAP
+  <img src="./logo.svg" height="300" width="300" alt="Logo SWARDEN" /><br>
+  SWARDEN
 </h1>
 
 ![GitHub License](https://img.shields.io/github/license/LucasGoncSilva/swarden?labelColor=101010)
@@ -52,15 +52,15 @@ Antes de iniciar com o desenvolvimento e os comandos, é importante definir as v
 
 | Variável                      | Caráter    | Responsabilidade
 | :---                          | :---       | :---
-| `DJANGO_SETTINGS_MODULE: str` | `required` | Definir o módulo de configurações a ser utilizado. Valor recomendado `CORE.settings.dev`
-| `CAPTCHA_TEST_MODE: bool`     | `optional` | Permitir o bypass do captcha nas telas de acesso. Default `False`
-| `DATABASE_NAME: str`          | `optional` | Definir o nome de acesso do Banco de Dados. Default `postgres`
-| `DATABASE_USER: str`          | `optional` | Definir o usuário de acesso do Banco de Dados. Default `postgres`
-| `DATABASE_PASSWORD: str`      | `optional` | Definir a senha de acesso do Banco de Dados. Default `postgres`
-| `DATABASE_HOST: str`          | `optional` | Definir o host de acesso do Banco de Dados. Default `localhost`
-| `DEBUG: bool`                 | `optional` | Definir traceback e informações de debug em páginas browser. Default `True`
-| `SECRET_KEY: str`             | `optional` | Definir chave de criptografia e segurança do projeto. Default `cw%t5...ba^m3)`
-| `ALLOWED_HOSTS: list[str]`    | `optional` | Definir lista de endereços URL válidos para execução do projeto. Default `['*']`
+| `DJANGO_SETTINGS_MODULE`      | `str - required` | Definir o módulo de configurações a ser utilizado.<br>Valor recomendado `CORE.settings.dev`
+| `CAPTCHA_TEST_MODE`           | `bool - optional` | Permitir o bypass do captcha nas telas de acesso.<br>Default `False`
+| `DATABASE_NAME`               | `str - optional` | Definir o nome de acesso do Banco de Dados.<br>Default `postgres`
+| `DATABASE_USER`               | `str - optional` | Definir o usuário de acesso do Banco de Dados.<br>Default `postgres`
+| `DATABASE_PASSWORD`           | `str - optional` | Definir a senha de acesso do Banco de Dados.<br>Default `postgres`
+| `DATABASE_HOST`               | `str - optional` | Definir o host de acesso do Banco de Dados.<br>Default `localhost`
+| `DEBUG`                       | `bool - optional` | Definir traceback e informações de debug em páginas browser.<br>Default `True`
+| `SECRET_KEY`                  | `str - optional` | Definir chave de criptografia e segurança do projeto.<br>Default `cw%t5...ba^m3)`
+| `ALLOWED_HOSTS`               | `list[str] - optional` | Definir lista de endereços URL válidos para execução do projeto.<br>Default `['*']`
 
 ### Buscar/iniciar Migrações (Atualizações) de Banco de Dados
 
@@ -76,7 +76,9 @@ Antes de iniciar com o desenvolvimento e os comandos, é importante definir as v
 
 ### Popular Banco de Dados para Execução Local
 
-`python3 manager.py populatedb`
+`python3 manager.py populateuser` para usuários
+
+`python3 manager.py populatesecret` para segredos - após executar o comando anterior
 
 ### Iniciar o Servidor
 
