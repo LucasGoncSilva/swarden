@@ -27,71 +27,71 @@ from account.models import User, ActivationAccountToken
 # Create your views here.
 class RegisterForm(Form):
     username: CharField = CharField(
-        label='',
+        label="",
         max_length=50,
         required=True,
         widget=TextInput(
             attrs={
-                'placeholder': 'Username (nome de usuário)*',
-                'class': 'py-2',
-                'style': 'text-align: center;',
-                'autofocus': 'autofocus',
+                "placeholder": "Username (nome de usuário)*",
+                "class": "py-2",
+                "style": "text-align: center;",
+                "autofocus": "autofocus",
             }
         ),
-        help_text='50 caracteres ou menos. Letras, números e @/./+/-/_ apenas.',
+        help_text="50 caracteres ou menos. Letras, números e @/./+/-/_ apenas.",
     )
     first_name: CharField = CharField(
-        label='',
+        label="",
         required=True,
         widget=TextInput(
             attrs={
-                'placeholder': 'Nome*',
-                'class': 'mt-3 py-2',
-                'style': 'text-align: center;',
+                "placeholder": "Nome*",
+                "class": "mt-3 py-2",
+                "style": "text-align: center;",
             }
         ),
     )
     last_name: CharField = CharField(
-        label='',
+        label="",
         required=True,
         widget=TextInput(
             attrs={
-                'placeholder': 'Sobrenome*',
-                'class': 'py-2',
-                'style': 'text-align: center;',
+                "placeholder": "Sobrenome*",
+                "class": "py-2",
+                "style": "text-align: center;",
             }
         ),
     )
     email: EmailField = EmailField(
-        label='',
+        label="",
         required=True,
         widget=TextInput(
             attrs={
-                'placeholder': 'Email*',
-                'class': 'mt-3 py-2',
-                'style': 'text-align: center;',
+                "placeholder": "Email*",
+                "class": "mt-3 py-2",
+                "style": "text-align: center;",
             }
         ),
     )
     password: CharField = CharField(
-        label='',
+        label="",
         required=True,
         widget=PasswordInput(
             attrs={
-                'placeholder': 'Senha*',
-                'class': 'mt-3 py-2',
-                'style': 'text-align: center;',
+                "placeholder": "Senha*",
+                "class": "mt-3 py-2",
+                "style": "text-align: center;",
             }
         ),
     )
     password2: CharField = CharField(
-        label='',
+        label="",
         required=True,
         widget=PasswordInput(
             attrs={
-                'placeholder': 'Confirmação de senha*',
-                'class': 'mb-5 py-2',
-                'style': 'text-align: center;',
+                "placeholder": "Confirmação de senha*",
+                "class": "mb-5 py-2",
+                "style": "text-align: center;",
             }
         ),
     )
@@ -100,25 +100,25 @@ class RegisterForm(Form):
 
 class LogInForm(Form):
     username: CharField = CharField(
-        label='',
+        label="",
         required=True,
         widget=TextInput(
             attrs={
-                'placeholder': 'Username*',
-                'class': 'py-2',
-                'style': 'text-align: center;',
-                'autofocus': 'autofocus',
+                "placeholder": "Username*",
+                "class": "py-2",
+                "style": "text-align: center;",
+                "autofocus": "autofocus",
             }
         ),
     )
     password: CharField = CharField(
-        label='',
+        label="",
         required=True,
         widget=PasswordInput(
             attrs={
-                'placeholder': 'Pass*',
-                'class': 'mt-3 py-2',
-                'style': 'text-align: center;',
+                "placeholder": "Pass*",
+                "class": "mt-3 py-2",
+                "style": "text-align: center;",
             }
         ),
     )
@@ -126,26 +126,26 @@ class LogInForm(Form):
 
 def register_view(r: HttpRequest) -> HttpResponse | HttpResponseRedirect:
     if r.user.is_authenticated:
-        return HttpResponseRedirect(reverse('home:index'))
+        return HttpResponseRedirect(reverse("home:index"))
 
-    elif r.method != 'POST':
+    elif r.method != "POST":
         form: Form = RegisterForm()
-        return render(r, 'account/register.html', {'form': form})
+        return render(r, "account/register.html", {"form": form})
 
     form: Form = RegisterForm(r.POST)
 
     if not form.is_valid():
-        return render(r, 'account/register.html', {'form': form})
+        return render(r, "account/register.html", {"form": form})
 
-    password: str | None = form.cleaned_data.get('password')
-    password2: str | None = form.cleaned_data.get('password2')
+    password: str | None = form.cleaned_data.get("password")
+    password2: str | None = form.cleaned_data.get("password2")
 
     if not password or not password2 or password != password2:
-        error(r, 'Senhas não compatíveis')
-        return render(r, 'account/register.html', {'form': form})
+        error(r, "Senhas não compatíveis")
+        return render(r, "account/register.html", {"form": form})
 
-    username: str | None = form.cleaned_data.get('username')
-    email: str | None = form.cleaned_data.get('email')
+    username: str | None = form.cleaned_data.get("username")
+    email: str | None = form.cleaned_data.get("email")
 
     if (
         User.objects.filter(username=username).exists()
@@ -153,11 +153,11 @@ def register_view(r: HttpRequest) -> HttpResponse | HttpResponseRedirect:
         or username is None
         or email is None
     ):
-        error(r, 'Username e/ou e-mail indisponível')
-        return render(r, 'account/register.html', {'form': form})
+        error(r, "Username e/ou e-mail indisponível")
+        return render(r, "account/register.html", {"form": form})
 
-    first_name: str | None = form.cleaned_data.get('first_name')
-    last_name: str | None = form.cleaned_data.get('last_name')
+    first_name: str | None = form.cleaned_data.get("first_name")
+    last_name: str | None = form.cleaned_data.get("last_name")
 
     user: User = User.objects.create_user(
         username=username,
@@ -170,19 +170,19 @@ def register_view(r: HttpRequest) -> HttpResponse | HttpResponseRedirect:
 
     send_email_activation_account_token(r.get_host(), user, password)
 
-    success(r, 'Conta criada. Acesse seu e-mail para ativar sua conta.')
-    return HttpResponseRedirect(reverse('account:login'))
+    success(r, "Conta criada. Acesse seu e-mail para ativar sua conta.")
+    return HttpResponseRedirect(reverse("account:login"))
 
 
 def activate_account_missing_parameter(
     r: HttpRequest, uidb64: str | None = None
 ) -> HttpResponseRedirect:
-    return HttpResponseRedirect(reverse('home:index'))
+    return HttpResponseRedirect(reverse("home:index"))
 
 
 def activate_account(r: HttpRequest, uidb64: str, token: str) -> HttpResponseRedirect:
     if r.user.is_authenticated:
-        return HttpResponseRedirect(reverse('home:index'))
+        return HttpResponseRedirect(reverse("home:index"))
 
     user: User | None = None
 
@@ -207,38 +207,38 @@ def activate_account(r: HttpRequest, uidb64: str, token: str) -> HttpResponseRed
 
     send_email_activate_account_completed(str(user.email))
 
-    return HttpResponseRedirect(reverse('home:index'))
+    return HttpResponseRedirect(reverse("home:index"))
 
 
 def login_view(r: HttpRequest) -> HttpResponse | HttpResponseRedirect:
     if r.user.is_authenticated:
-        return HttpResponseRedirect(reverse('home:index'))
+        return HttpResponseRedirect(reverse("home:index"))
 
-    elif r.method != 'POST':
-        return render(r, 'account/login.html', {'form': LogInForm()})
+    elif r.method != "POST":
+        return render(r, "account/login.html", {"form": LogInForm()})
 
     form: Form = LogInForm(r.POST)
 
     if not form.is_valid():
-        return render(r, 'account/login.html', {'form': form})
+        return render(r, "account/login.html", {"form": form})
 
-    username: str = str(form.cleaned_data.get('username')).strip()
-    password: str = str(form.cleaned_data.get('password')).strip()
+    username: str = str(form.cleaned_data.get("username")).strip()
+    password: str = str(form.cleaned_data.get("password")).strip()
 
     user: AbstractBaseUser | None = authenticate(username=username, password=password)
 
     if user is None:
-        error(r, 'Username e/ou senha inválida')
-        return render(r, 'account/login.html', {'form': form})
+        error(r, "Username e/ou senha inválida")
+        return render(r, "account/login.html", {"form": form})
 
     login(r, user)
-    return HttpResponseRedirect(reverse('home:index'))
+    return HttpResponseRedirect(reverse("home:index"))
 
 
-@login_required(login_url='/conta/entrar')
+@login_required(login_url="/conta/entrar")
 def logout_view(r: HttpRequest) -> HttpResponse | HttpResponseRedirect:
-    if r.method == 'POST':
+    if r.method == "POST":
         logout(r)
-        return HttpResponseRedirect(reverse('account:login'))
+        return HttpResponseRedirect(reverse("account:login"))
 
-    return render(r, 'account/logout.html')
+    return render(r, "account/logout.html")

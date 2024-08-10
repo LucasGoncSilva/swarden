@@ -11,15 +11,15 @@ def index(r: HttpRequest) -> HttpResponse:
 
         return render(
             r,
-            'home/index.html',
+            "home/index.html",
             {
-                'credentials': credentials[:4],
-                'cards': cards[:4],
-                'notes': notes[:4],
-                'credentials_count': credentials.count(),
-                'cards_count': cards.count(),
-                'notes_count': notes.count(),
+                "credentials": credentials[:4],
+                "cards": cards[:4],
+                "notes": notes[:4],
+                "credentials_count": credentials.count(),
+                "cards_count": cards.count(),
+                "notes_count": notes.count(),
             },
         )
 
-    return render(r, 'home/landing.html')
+    return render(r, "home/landing.html")

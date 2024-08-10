@@ -14,27 +14,27 @@ class ActivationAccountTokenTestCase(TestCase):
         filterwarnings("ignore", category=RuntimeWarning)
 
         self.user = User.objects.create_user(
-            username='user',
-            password='password',
-            email='user@email.com',
+            username="user",
+            password="password",
+            email="user@email.com",
         )
 
         self.token1 = ActivationAccountToken.objects.create(
-            value='x' * 64, user=self.user, used=False
+            value="x" * 64, user=self.user, used=False
         )
 
         self.token2 = ActivationAccountToken.objects.create(
-            value='x' * 64, user=self.user, used=True
+            value="x" * 64, user=self.user, used=True
         )
 
         self.token3 = ActivationAccountToken.objects.create(
-            value='x' * 64, user=self.user, used=False, created=None
+            value="x" * 64, user=self.user, used=False, created=None
         )
 
         try:
             with atomic():
                 self.token4 = ActivationAccountToken.objects.create(
-                    value='x' * 65, user=self.user, used=False
+                    value="x" * 65, user=self.user, used=False
                 )
         except DataError:
             self.token4 = ActivationAccountToken.objects.create(
@@ -42,7 +42,7 @@ class ActivationAccountTokenTestCase(TestCase):
             )
 
         self.token5 = ActivationAccountToken.objects.create(
-            value='x' * 63, user=self.user, used=False
+            value="x" * 63, user=self.user, used=False
         )
 
     def test_token_instance_validity(self) -> None:
@@ -59,7 +59,7 @@ class ActivationAccountTokenTestCase(TestCase):
             pk=self.token1.pk
         )
 
-        self.assertEqual(token1.__str__(), 'x' * 64)
+        self.assertEqual(token1.__str__(), "x" * 64)
 
     def test_token_key_value_assertion(self) -> None:
         """Tests token correct attribuition of value"""
@@ -68,7 +68,7 @@ class ActivationAccountTokenTestCase(TestCase):
             pk=self.token1.pk
         )
 
-        self.assertEqual(token1.value, 'x' * 64)
+        self.assertEqual(token1.value, "x" * 64)
         self.assertFalse(token1.used)
         self.assertIsInstance(token1.created, datetime)
 
@@ -93,11 +93,11 @@ class ActivationAccountTokenTestCase(TestCase):
         """Tests token update integrity and validation"""
 
         ActivationAccountToken.objects.filter(pk=self.token4.pk).update(
-            value='x' * 64, created='2009-6-5'
+            value="x" * 64, created="2009-6-5"
         )
 
         ActivationAccountToken.objects.filter(pk=self.token5.pk).update(
-            value='x' * 64, used=True
+            value="x" * 64, used=True
         )
 
         for token in ActivationAccountToken.objects.all():
@@ -118,14 +118,14 @@ class ActivationAccountTokenTestCase(TestCase):
 
         # Expecting raises
         raise_kwargs: dict[str, dict[str, str | bool | int | None]] = {
-            'token1': {'value': 'x' * 63},
-            'token2': {'value': 'x' * 65},
-            'token3': {'used': True},
-            'token4': {'used': False},
-            'token5': {'value': 'x' * 64, 'used': None},
-            'token6': {'value': 'x' * 64, 'used': 'foo'},
-            'token7': {'value': 'x' * 64, 'used': 2},
-            'token8': {'value': 'x' * 64},
+            "token1": {"value": "x" * 63},
+            "token2": {"value": "x" * 65},
+            "token3": {"used": True},
+            "token4": {"used": False},
+            "token5": {"value": "x" * 64, "used": None},
+            "token6": {"value": "x" * 64, "used": "foo"},
+            "token7": {"value": "x" * 64, "used": 2},
+            "token8": {"value": "x" * 64},
         }
 
         for scenario in raise_kwargs.keys():
@@ -137,13 +137,13 @@ class ActivationAccountTokenTestCase(TestCase):
 
         # Not expecting raises
         no_raise_kwargs: dict[str, dict[str, str | bool | datetime]] = {
-            'token1': {'value': 'x' * 64, 'user': self.user},
-            'token2': {'value': 'x' * 64, 'user': self.user, 'used': False},
-            'token3': {'value': 'x' * 64, 'user': self.user, 'used': True},
-            'token4': {
-                'value': 'x' * 64,
-                'user': self.user,
-                'created': datetime(2004, 5, 25),
+            "token1": {"value": "x" * 64, "user": self.user},
+            "token2": {"value": "x" * 64, "user": self.user, "used": False},
+            "token3": {"value": "x" * 64, "user": self.user, "used": True},
+            "token4": {
+                "value": "x" * 64,
+                "user": self.user,
+                "created": datetime(2004, 5, 25),
             },
         }
 

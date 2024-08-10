@@ -5,8 +5,8 @@ from django.urls import path, URLPattern
 from general.views import index
 
 
-app_name: Final[str] = 'general'
+app_name: Final[str] = "general"
 
 urlpatterns: list[URLPattern] = [
-    path('', index, name='index'),
+    path("", index, name="index"),
 ]

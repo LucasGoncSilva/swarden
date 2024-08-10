@@ -15,12 +15,12 @@ class Command(BaseCommand):
         self.populate_credentials()
 
     def populate_cards(self) -> None:
-        print('\nPopulating secret.Card')
+        print("\nPopulating secret.Card")
 
-        with open('./secret/management/commands/populate_card.txt', 'r') as sample:
-            f = [i.strip().split('::') for i in sample.readlines()]
+        with open("./secret/management/commands/populate_card.txt", "r") as sample:
+            f = [i.strip().split("::") for i in sample.readlines()]
 
-        for i in tqdm(f, desc='Cards', bar_format='{l_bar}{bar:100}{r_bar}{bar:-10b}'):
+        for i in tqdm(f, desc="Cards", bar_format="{l_bar}{bar:100}{r_bar}{bar:-10b}"):
             (
                 owner,
                 name,
@@ -36,7 +36,7 @@ class Command(BaseCommand):
 
             owner = User.objects.get(pk=owner)
 
-            y, m = expiration.split('-')
+            y, m = expiration.split("-")
             expiration = Month(int(y), int(m))
 
             Card.objects.create(
@@ -54,12 +54,12 @@ class Command(BaseCommand):
             )
 
     def populate_notes(self) -> None:
-        print('\nPopulating secret.SecurityNote')
+        print("\nPopulating secret.SecurityNote")
 
-        with open('./secret/management/commands/populate_note.txt', 'r') as sample:
-            f = [i.strip().split('::') for i in sample.readlines()]
+        with open("./secret/management/commands/populate_note.txt", "r") as sample:
+            f = [i.strip().split("::") for i in sample.readlines()]
 
-        for i in tqdm(f, desc='Notes', bar_format='{l_bar}{bar:100}{r_bar}{bar:-10b}'):
+        for i in tqdm(f, desc="Notes", bar_format="{l_bar}{bar:100}{r_bar}{bar:-10b}"):
             owner, title, content = i
 
             owner = User.objects.get(pk=owner)
@@ -68,18 +68,18 @@ class Command(BaseCommand):
                 owner=owner,
                 title=title,
                 content=content,
-                slug=title.replace(' ', '-').lower(),
+                slug=title.replace(" ", "-").lower(),
             )
 
     def populate_credentials(self) -> None:
-        print('\nPopulating secret.LoginCredential')
+        print("\nPopulating secret.LoginCredential")
 
         with open(
-            './secret/management/commands/populate_credential.txt', 'r'
+            "./secret/management/commands/populate_credential.txt", "r"
         ) as sample:
-            f = [i.strip().split('::') for i in sample.readlines()]
+            f = [i.strip().split("::") for i in sample.readlines()]
 
-        for i in tqdm(f, desc='Notes', bar_format='{l_bar}{bar:100}{r_bar}{bar:-10b}'):
+        for i in tqdm(f, desc="Notes", bar_format="{l_bar}{bar:100}{r_bar}{bar:-10b}"):
             (
                 owner,
                 service,

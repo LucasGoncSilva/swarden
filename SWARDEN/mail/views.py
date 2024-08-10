@@ -17,22 +17,22 @@ from utils import (
 
 
 # Create your views here.
-@login_required(login_url='/conta/entrar')
+@login_required(login_url="/conta/entrar")
 def export_secrets_no_argument(r: HttpRequest):
-    return HttpResponseRedirect(reverse('home:index'))
+    return HttpResponseRedirect(reverse("home:index"))
 
 
-@login_required(login_url='/conta/entrar')
+@login_required(login_url="/conta/entrar")
 def export_secrets(
-    r: HttpRequest, secret_type: Literal['Credenciais', 'Cartões', 'Anotações']
+    r: HttpRequest, secret_type: Literal["Credenciais", "Cartões", "Anotações"]
 ) -> HttpResponseRedirect:
-    CREDENTIALS: Final[str] = 'Credenciais'
-    CARDS: Final[str] = 'Cartões'
-    SECURITY_NOTES: Final[str] = 'Anotações'
+    CREDENTIALS: Final[str] = "Credenciais"
+    CARDS: Final[str] = "Cartões"
+    SECURITY_NOTES: Final[str] = "Anotações"
 
     if secret_type not in [CREDENTIALS, CARDS, SECURITY_NOTES]:
-        warning(r, 'Impossível exportar segredos do tipo informado.')
-        return HttpResponseRedirect(reverse('home:index'))
+        warning(r, "Impossível exportar segredos do tipo informado.")
+        return HttpResponseRedirect(reverse("home:index"))
 
     dispatch_models: dict[
         str, Type[LoginCredential] | Type[Card] | Type[SecurityNote]
@@ -41,9 +41,9 @@ def export_secrets(
     query: QuerySet = dispatch_models[secret_type].objects.filter(owner=r.user)
 
     dispatch_redirect: dict[str, str] = {
-        CREDENTIALS: 'secret:credential_list_view',
-        CARDS: 'secret:card_list_view',
-        SECURITY_NOTES: 'secret:note_list_view',
+        CREDENTIALS: "secret:credential_list_view",
+        CARDS: "secret:card_list_view",
+        SECURITY_NOTES: "secret:note_list_view",
     }
 
     if not query.exists():
@@ -51,11 +51,11 @@ def export_secrets(
         return HttpResponseRedirect(reverse(dispatch_redirect[secret_type]))
 
     csvfile: StringIO = StringIO()
-    csvwriter = writer(csvfile, delimiter='¬', doublequote=True)
+    csvwriter = writer(csvfile, delimiter="¬", doublequote=True)
 
     if secret_type == CREDENTIALS:
         csvwriter.writerow(
-            ['Serviço', 'Apelido', 'Login 3rd', 'Apelido Login 3rd', 'Login', 'Senha']
+            ["Serviço", "Apelido", "Login 3rd", "Apelido Login 3rd", "Login", "Senha"]
         )
 
         for i in query:
@@ -73,14 +73,14 @@ def export_secrets(
     elif secret_type == CARDS:
         csvwriter.writerow(
             [
-                'Apelido',
-                'Tipo',
-                'Número',
-                'Expiração',
-                'CVV',
-                'Banco',
-                'Bandeira',
-                'Titular',
+                "Apelido",
+                "Tipo",
+                "Número",
+                "Expiração",
+                "CVV",
+                "Banco",
+                "Bandeira",
+                "Titular",
             ]
         )
 
@@ -99,7 +99,7 @@ def export_secrets(
             )
 
     elif secret_type == SECURITY_NOTES:
-        csvwriter.writerow(['Título', 'Conteúdo'])
+        csvwriter.writerow(["Título", "Conteúdo"])
 
         for i in query:
             csvwriter.writerow([i.title, i.content])

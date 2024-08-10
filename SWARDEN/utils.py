@@ -14,22 +14,18 @@ from account.models import User, ActivationAccountToken
 
 
 SK: str = settings.SECRET_KEY
-NO_DATA_TO_EXPORT: Final = 'Não há dados para exportação.'
-SUCCESS_DATA_EXPORTING: Final = 'Dados exportados com sucesso.'
+NO_DATA_TO_EXPORT: Final = "Não há dados para exportação."
+SUCCESS_DATA_EXPORTING: Final = "Dados exportados com sucesso."
 
-ACTIVATE_ACCOUNT_TOKEN_SEND: Final = (
-    """Sua conta foi criada com sucesso, contudo, você deve ativá-la. Para fazer isso, clique no link abaixo:\n\n\n{domain}/conta/ativar/{uidb64}/{token}\n\n\nEquipe sWarden"""
-)
+ACTIVATE_ACCOUNT_TOKEN_SEND: Final = """Sua conta foi criada com sucesso, contudo, você deve ativá-la. Para fazer isso, clique no link abaixo:\n\n\n{domain}/conta/ativar/{uidb64}/{token}\n\n\nEquipe sWarden"""
 
-ACTIVATE_ACCOUNT_CONFIRM_DONE: Final = (
-    """A partir de agora a sua conta está ativa e você pode utilizar dos recursos do sistema para armazenar seus dados sensíveis.\n\n\nEquipe sWarden"""
-)
+ACTIVATE_ACCOUNT_CONFIRM_DONE: Final = """A partir de agora a sua conta está ativa e você pode utilizar dos recursos do sistema para armazenar seus dados sensíveis.\n\n\nEquipe sWarden"""
 
 
 def get_ip_address(r: HttpRequest) -> Any | None:
-    x_forwarded_for: Any | None = r.META.get('HTTP_X_FORWARDED_FOR')
+    x_forwarded_for: Any | None = r.META.get("HTTP_X_FORWARDED_FOR")
     ip: Any | None = (
-        x_forwarded_for.split(',')[0] if x_forwarded_for else r.META.get('REMOTE_ADDR')
+        x_forwarded_for.split(",")[0] if x_forwarded_for else r.META.get("REMOTE_ADDR")
     )
 
     return ip
@@ -64,7 +60,7 @@ def xor(text: str, key: str, encrypt: bool = True) -> str:
             for text_char, xor_key_val in zip(text, xor_key_generator)
         ]
 
-    return ''.join(transformed_chars)
+    return "".join(transformed_chars)
 
 
 def send_email_activation_account_token(
@@ -75,11 +71,11 @@ def send_email_activation_account_token(
         or not isinstance(new_user, User)
         or not isinstance(password, str)
     ):
-        raise TypeError(f'{domain}, {new_user} and {password} are invalid arguments')
+        raise TypeError(f"{domain}, {new_user} and {password} are invalid arguments")
 
     validate_email(new_user.email)
 
-    token_hash: str = sha256(f'{new_user.username}{password}'.encode()).hexdigest()
+    token_hash: str = sha256(f"{new_user.username}{password}".encode()).hexdigest()
     uidb64: str = urlsafe_base64_encode(force_bytes(new_user.pk))
 
     token: ActivationAccountToken = ActivationAccountToken.objects.create(
@@ -91,7 +87,7 @@ def send_email_activation_account_token(
     token.full_clean()
 
     email: EmailMessage = EmailMessage(
-        subject='Ativação de Conta | sWarden',
+        subject="Ativação de Conta | sWarden",
         body=ACTIVATE_ACCOUNT_TOKEN_SEND.format(
             domain=domain, uidb64=uidb64, token=token_hash
         ),
@@ -105,7 +101,7 @@ def send_email_activate_account_completed(user_email: str) -> None:
     validate_email(user_email)
 
     email: EmailMessage = EmailMessage(
-        subject='Ativação de Conta | sWarden',
+        subject="Ativação de Conta | sWarden",
         body=ACTIVATE_ACCOUNT_CONFIRM_DONE,
         from_email=settings.EMAIL_HOST_USER,
         to=[user_email],
@@ -114,19 +110,19 @@ def send_email_activate_account_completed(user_email: str) -> None:
 
 
 def send_email_exporting_secrets(
-    secret_type: Literal['Credenciais', 'Cartões', 'Anotações'],
+    secret_type: Literal["Credenciais", "Cartões", "Anotações"],
     csvfile: StringIO,
     user_email: str,
 ) -> None:
     validate_email(user_email)
 
     email: EmailMessage = EmailMessage(
-        subject='Exportação de Segredos | sWarden',
+        subject="Exportação de Segredos | sWarden",
         body=f'Aqui estão seus segredos armazenados em "{secret_type}" no sWarden.\n\n\nEquipe sWarden',
         from_email=settings.EMAIL_HOST_USER,
         to=[user_email],
     )
-    email.attach('anotacoes.csv', csvfile.getvalue(), 'text/csv')
+    email.attach("anotacoes.csv", csvfile.getvalue(), "text/csv")
     email.send()
 
 

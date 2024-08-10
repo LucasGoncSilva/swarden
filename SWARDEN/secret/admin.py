@@ -23,36 +23,36 @@ class BasesWardenModelAdmin(ModelAdmin):
 
 @register(Card)
 class CardAdmin(BasesWardenModelAdmin):
-    prepopulated_fields: Final = {'slug': ('bank', 'name')}
-    list_display: Final = ('pk', 'slug', 'created', 'updated')
+    prepopulated_fields: Final = {"slug": ("bank", "name")}
+    list_display: Final = ("pk", "slug", "created", "updated")
     _exclude: Final = (
-        'owner',
-        'card_type',
-        'number',
-        'expiration',
-        'cvv',
-        'brand',
-        'owners_name',
-        'note',
+        "owner",
+        "card_type",
+        "number",
+        "expiration",
+        "cvv",
+        "brand",
+        "owners_name",
+        "note",
     )
 
 
 @register(LoginCredential)
 class LoginCredentialAdmin(BasesWardenModelAdmin):
-    prepopulated_fields: Final = {'slug': ('service', 'name')}
-    list_display: Final = ('pk', 'slug', 'created', 'updated')
+    prepopulated_fields: Final = {"slug": ("service", "name")}
+    list_display: Final = ("pk", "slug", "created", "updated")
     _exclude: Final = (
-        'owner',
-        'thirdy_party_login',
-        'thirdy_party_login_name',
-        'login',
-        'password',
-        'note',
+        "owner",
+        "thirdy_party_login",
+        "thirdy_party_login_name",
+        "login",
+        "password",
+        "note",
     )
 
 
 @register(SecurityNote)
 class SecurityNoteAdmin(BasesWardenModelAdmin):
-    prepopulated_fields: Final = {'slug': ('title',)}
-    list_display: Final = ('pk', 'slug', 'created', 'updated')
-    _exclude: Final = ('owner', 'content')
+    prepopulated_fields: Final = {"slug": ("title",)}
+    list_display: Final = ("pk", "slug", "created", "updated")
+    _exclude: Final = ("owner", "content")

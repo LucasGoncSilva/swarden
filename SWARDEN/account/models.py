@@ -30,15 +30,15 @@ class ActivationAccountToken(Model):
     value: Final[CharField] = CharField(
         max_length=64, validators=[MinLengthValidator(64), MaxLengthValidator(64)]
     )
-    used: BooleanField = BooleanField(default=False, verbose_name='Usado?')
+    used: BooleanField = BooleanField(default=False, verbose_name="Usado?")
     created: Final[DateTimeField] = DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = 'Token de Ativação'
-        verbose_name_plural = 'Tokens de Ativação'
+        verbose_name = "Token de Ativação"
+        verbose_name_plural = "Tokens de Ativação"
 
     def __str__(self) -> str:
-        return f'{self.value}'
+        return f"{self.value}"
 
     def is_valid(self) -> bool:
         if (
