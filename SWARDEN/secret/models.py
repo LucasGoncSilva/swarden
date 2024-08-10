@@ -146,10 +146,10 @@ class LoginCredential(Model):
             and self.password
         ):
             if (
-                self.thirdy_party_login == True
+                self.thirdy_party_login
                 and self.thirdy_party_login_name != '-----'
             ) or (
-                self.thirdy_party_login != True
+                not self.thirdy_party_login
                 and self.login != '-----'
                 and self.password != '-----'
             ):
