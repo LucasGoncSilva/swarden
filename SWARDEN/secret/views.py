@@ -1,15 +1,14 @@
-from typing import Final, Literal, Any
+from typing import Any, Final, Literal
 
-from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.decorators import login_required
 from django.contrib.messages import error
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
-from django.views.generic import CreateView, UpdateView, DeleteView
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.views.generic import CreateView, DeleteView, UpdateView
 
 from secret.models import Card, LoginCredential, SecurityNote
-
 
 # Create your views here.
 EMPTY_POST_MSG: Final[str] = "Preencha corretamente todos os campos solicitados"

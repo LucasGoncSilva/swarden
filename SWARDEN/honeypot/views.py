@@ -1,9 +1,10 @@
 from typing import Any
-from django.shortcuts import render
-from django.http import HttpRequest, HttpResponse
 
-from utils import get_ip_address
+from django.http import HttpRequest, HttpResponse
+from django.shortcuts import render
+
 from honeypot.models import Attempt
+from utils import get_ip_address
 
 
 # Create your views here.

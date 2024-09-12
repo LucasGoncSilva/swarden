@@ -7,12 +7,10 @@
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/LucasGoncSilva/swarden/django_unittest.yml?style=flat&labelColor=%23101010)
 
 Criado em Django como Framework MVC, sWarden funciona como um protótipo real de gerenciador de senhas e credenciais online. Este projeto introduz e apresenta conceitos básicos de segurança de forma prática e descritiva.
-<br><br>
-Foram utilizadas tanto class-based views quanto function-based views, de modo que os diferentes paradigmas implementados pelo Framework sejam exemplificados de forma prática.
-<br><br>
-Agrega às medidas de segurança do Django uma lógica inicial do que seria um honeypot, mais de 140 casos de testes incluindo 4 testes de carga para atestar a integridade do sistema e criptografia nos dados armazenados em banco, tudo aplicável em Docker.
 
-<br>
+Foram utilizadas tanto class-based views quanto function-based views, de modo que os diferentes paradigmas implementados pelo Framework sejam exemplificados de forma prática.
+
+Agrega às medidas de segurança do Django uma lógica inicial do que seria um honeypot, mais de 140 casos de testes incluindo 4 testes de carga para atestar a integridade do sistema e criptografia nos dados armazenados em banco, tudo aplicável em Docker.
 
 ## Stack
 
@@ -30,37 +28,76 @@ Agrega às medidas de segurança do Django uma lógica inicial do que seria um h
 ![Render logo](https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=000&color=fff)
 ![Supabase Logo](https://img.shields.io/badge/Supabase-181818?style=for-the-badge&logo=supabase&logoColor=3ecf8e)
 
-<br>
-
 ## Arquitetura
 
 A arquitetura pode ser detalhada de forma geral em dois níveis: web e database. As mecânicas são abstraídas a um nível geral, evitando detalhes profundos que confundam à agregar, apresentando uma visão comportamental em escala "macro" seguindo o fluxo de dados sem focar no "micro", como cada ação de cada função. Acompanhe abaixo o fluxo de informações na Web, seguido da estruturação e arquitetura o Banco de Dados (Para mais detalhes sobre o Banco de Dados acesse [https://dbdocs.io/lucasgoncsilva04/SWARDEN](https://dbdocs.io/lucasgoncsilva04/SWARDEN)):
 
 ### Web
 
-![Arquitetura de Funcionamento do Projeto](./web/web_architecture.svg)
+<!-- ![Arquitetura de Funcionamento do Projeto](./web/arch.svg) -->
+
+```mermaid
+flowchart LR
+
+
+User((User)) 
+
+subgraph CLOUD
+    subgraph RENDER
+        LB(Load Balancer):::Arch
+        Dispatcher[Req. Dispatcher]:::Arch
+        Template{{Template}}:::Arch
+        View{View}:::Arch
+        Model{{Model}}:::Arch
+    end
+
+    subgraph SUPABASE
+        Database[(Database)]
+    end
+end
+
+
+Template ~~~ Model
+
+User --> LB --> Dispatcher --> View --> Model
+
+Model -->|Insert / Update| Database
+Model -->|Select| Database
+
+Database --> Model --> View --> Template --> Dispatcher --> LB --> User
+
+
+style CLOUD fill:#1117,color:#44b78b,stroke:#ccc;
+style RENDER fill:#1117,color:#44b78b,stroke:#ccc;
+style SUPABASE fill:#1117,color:#44b78b,stroke:#ccc;
+style User fill:#fff,color:#0c4b33,stroke:#0c4b33;
+style Database fill:#dfd,color:#0c4b33,stroke:#0c4b33;
+
+classDef Arch fill:#0c4b33,color:#efe,stroke:#efe;
+
+linkStyle 1,2,3,4,5,6 stroke:#0f0,color:#efe
+linkStyle 7,8,9,10,11,12 stroke:#fff,color:#efe
+```
 
 ### DB
 
 ![Arquitetura do Banco de Dados](./db/db_schema.svg)
 
-<br>
-
 ## Básico
 
 Antes de iniciar com o desenvolvimento e os comandos, é importante definir as variáveis de ambiente no seu ambiente de desenvolvimento. Abaixo a listagem de quais definir:
 
-| Variável                      | Caráter    | Responsabilidade
-| :---                          | :---       | :---
-| `DJANGO_SETTINGS_MODULE`      | `str - required` | Definir o módulo de configurações a ser utilizado.<br>Valor recomendado `CORE.settings.dev`
-| `CAPTCHA_TEST_MODE`           | `bool - optional` | Permitir o bypass do captcha nas telas de acesso.<br>Default `False`
-| `DATABASE_NAME`               | `str - optional` | Definir o nome de acesso do Banco de Dados.<br>Default `postgres`
-| `DATABASE_USER`               | `str - optional` | Definir o usuário de acesso do Banco de Dados.<br>Default `postgres`
-| `DATABASE_PASSWORD`           | `str - optional` | Definir a senha de acesso do Banco de Dados.<br>Default `postgres`
-| `DATABASE_HOST`               | `str - optional` | Definir o host de acesso do Banco de Dados.<br>Default `localhost`
-| `DEBUG`                       | `bool - optional` | Definir traceback e informações de debug em páginas browser.<br>Default `True`
-| `SECRET_KEY`                  | `str - optional` | Definir chave de criptografia e segurança do projeto.<br>Default `cw%t5...ba^m3)`
-| `ALLOWED_HOSTS`               | `list[str] - optional` | Definir lista de endereços URL válidos para execução do projeto.<br>Default `['*']`
+| Variável                 | Caráter                | Responsabilidade                                                                            |
+| :----------------------- | :--------------------- | :------------------------------------------------------------------------------------------ |
+| `DJANGO_SETTINGS_MODULE` | `str - required`       | Definir o módulo de configurações a ser utilizado.<br>Valor recomendado `CORE.settings.dev` |
+| `CAPTCHA_TEST_MODE`      | `bool - optional`      | Permitir o bypass do captcha nas telas de acesso.<br>Default `False`                        |
+| `DATABASE_NAME`          | `str - optional`       | Definir o nome de acesso do Banco de Dados.<br>Default `postgres`                           |
+| `DATABASE_USER`          | `str - optional`       | Definir o usuário de acesso do Banco de Dados.<br>Default `postgres`                        |
+| `DATABASE_PASSWORD`      | `str - optional`       | Definir a senha de acesso do Banco de Dados.<br>Default `postgres`                          |
+| `DATABASE_HOST`          | `str - optional`       | Definir o host de acesso do Banco de Dados.<br>Default `localhost`                          |
+| `DEBUG`                  | `bool - optional`      | Definir traceback e informações de debug em páginas browser.<br>Default `True`              |
+| `SECRET_KEY`             | `str - optional`       | Definir chave de criptografia e segurança do projeto.<br>Default `cw%t5...ba^m3)`           |
+| `ALLOWED_HOSTS`          | `list[str] - optional` | Definir lista de endereços URL válidos para execução do projeto.<br>Default `['*']`         |
 
 ### Buscar/iniciar Migrações (Atualizações) de Banco de Dados
 
@@ -83,8 +120,6 @@ Antes de iniciar com o desenvolvimento e os comandos, é importante definir as v
 ### Iniciar o Servidor
 
 `python3 manager.py runserver`
-
-<br>
 
 ## Utilizando
 
@@ -121,16 +156,12 @@ Esta página apresenta todos os segredos criados, um tipo por vez. Clickando em 
 
 Aqui é onde você visualiza os detalhes do segredo escolhido, informação por informação. Junto a isso, há três botões no topo da tela: azul (editar este segredo), vermelho (apagar este segredo) e cinza (adicionar um novo segredo).
 
-<br>
-
 ## To-Do List
 
 - [ ] Usar Autenticação em Duas Etapas
 - [ ] Gerar senhas pseudo-aleatórias como sugestão da plataforma
 - [ ] Criar as páginas `/sobre` e `/serviços`.
 - [ ] Aplicar melhorias de feedback de caracteres nos campos de texto para cada segredo
-
-<br>
 
 ## Contrib
 
@@ -345,8 +376,6 @@ class Example[Create|List|Detail|Update|Delete]ViewTestCase(BaseExampleTestCase)
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 ```
-
-<br>
 
 ## Licença
 

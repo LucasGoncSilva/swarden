@@ -1,6 +1,6 @@
+from django.contrib.auth import get_user
 from django.http import HttpResponse
 from django.test import TestCase
-from django.contrib.auth import get_user
 from django.urls import reverse
 
 from account.models import User

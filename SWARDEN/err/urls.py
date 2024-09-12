@@ -1,9 +1,8 @@
 from typing import Final
 
-from django.urls import path, URLPattern
+from django.urls import URLPattern, path
 
 from err.views import handle403, handle404, handle500
-
 
 app_name: Final[str] = "err"
 

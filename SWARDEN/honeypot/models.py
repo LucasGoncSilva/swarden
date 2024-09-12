@@ -2,8 +2,8 @@ from datetime import datetime
 from typing import Final
 from uuid import uuid4
 
-from django.db.models import Model, CharField, DateTimeField, UUIDField
 from django.core.validators import MaxLengthValidator
+from django.db.models import CharField, DateTimeField, Model, UUIDField
 
 
 # Create your models here.

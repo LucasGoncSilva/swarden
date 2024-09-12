@@ -1,17 +1,17 @@
-from django.http import HttpResponse
-from django.test import TestCase
+from django.contrib.auth import get_user
 from django.core import mail
 from django.core.exceptions import ValidationError
-from django.contrib.auth import get_user
+from django.http import HttpResponse
+from django.test import TestCase
 from django.urls import reverse
 
 from account.models import User
-from secret.models import LoginCredential, Card, SecurityNote
+from secret.models import Card, LoginCredential, SecurityNote
 from secret.month.models import Month
 from utils import (
     create_scenarios,
-    send_email_activation_account_token,
     send_email_activate_account_completed,
+    send_email_activation_account_token,
 )
 
 

@@ -148,3 +148,6 @@ staticfiles/
 
 # DB Documentation
 schema.dbml
+
+# Formatter
+.ruff_cache

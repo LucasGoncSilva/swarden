@@ -1,17 +1,16 @@
+from hashlib import sha256
 from io import StringIO
 from itertools import compress, product
-from typing import Final, Any, Generator, Literal
-from hashlib import sha256
+from typing import Any, Final, Generator, Literal
 
+from django.conf import settings
+from django.core.mail import EmailMessage
 from django.core.validators import validate_email
+from django.http import HttpRequest
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
-from django.http import HttpRequest
-from django.core.mail import EmailMessage
-from django.conf import settings
 
-from account.models import User, ActivationAccountToken
-
+from account.models import ActivationAccountToken, User
 
 SK: str = settings.SECRET_KEY
 NO_DATA_TO_EXPORT: Final = "Não há dados para exportação."

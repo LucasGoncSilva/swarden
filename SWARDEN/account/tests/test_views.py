@@ -1,11 +1,11 @@
+from django.contrib.auth import get_user
 from django.http import HttpResponse
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.auth import get_user
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
-from account.models import User, ActivationAccountToken
+from account.models import ActivationAccountToken, User
 
 
 # Create your tests here.

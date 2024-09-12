@@ -1,7 +1,7 @@
 from typing import Any, Final
 
-from django.http import HttpRequest
 from django.contrib.admin import ModelAdmin, register
+from django.http import HttpRequest
 
 from secret.models import Card, LoginCredential, SecurityNote
 

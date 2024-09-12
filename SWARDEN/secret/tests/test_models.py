@@ -1,13 +1,13 @@
-from django.test import TestCase
-from django.db.transaction import atomic
-from django.db import DataError
 from django.core.exceptions import ValidationError
+from django.db import DataError
+from django.db.transaction import atomic
+from django.test import TestCase
 from django.urls import reverse
 
 from account.models import User
 from secret.models import Card, LoginCredential, SecurityNote
 from secret.month.models import Month
-from utils import xor, create_scenarios
+from utils import create_scenarios, xor
 
 
 # Create your tests here.

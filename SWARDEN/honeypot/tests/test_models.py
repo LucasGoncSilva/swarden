@@ -1,9 +1,9 @@
-from warnings import filterwarnings
 from datetime import datetime
+from warnings import filterwarnings
 
-from django.test import TestCase
-from django.db.transaction import atomic
 from django.core.exceptions import ValidationError
+from django.db.transaction import atomic
+from django.test import TestCase
 
 from honeypot.models import Attempt
 

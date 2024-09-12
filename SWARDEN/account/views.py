@@ -1,27 +1,25 @@
-from django.shortcuts import get_object_or_404
-from django.utils.encoding import force_str
-from django.utils.http import urlsafe_base64_decode
-from django.urls import reverse
-from django.shortcuts import render
+from captcha.fields import CaptchaField
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.messages import error, success
+from django.forms import CharField, EmailField, Form, PasswordInput, TextInput
 from django.http import (
+    Http404,
     HttpRequest,
     HttpResponse,
     HttpResponseRedirect,
-    Http404,
 )
-from django.forms import Form, CharField, TextInput, EmailField, PasswordInput
-from django.contrib.messages import success, error
+from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
+from django.utils.encoding import force_str
+from django.utils.http import urlsafe_base64_decode
 
-from captcha.fields import CaptchaField
-
+from account.models import ActivationAccountToken, User
 from utils import (
-    send_email_activation_account_token,
     send_email_activate_account_completed,
+    send_email_activation_account_token,
 )
-from account.models import User, ActivationAccountToken
 
 
 # Create your views here.

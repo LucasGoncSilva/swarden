@@ -1,9 +1,8 @@
 from typing import Final
 
-from django.urls import path, re_path, URLPattern
+from django.urls import URLPattern, path, re_path
 
 from honeypot.views import honeypot
-
 
 app_name: Final[str] = "honeypot"
 

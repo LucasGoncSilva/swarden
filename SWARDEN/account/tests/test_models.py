@@ -1,8 +1,8 @@
-from warnings import filterwarnings
 from datetime import datetime
+from warnings import filterwarnings
 
-from django.db import DataError
 from django.core.exceptions import ValidationError
+from django.db import DataError
 from django.db.transaction import atomic
 from django.test import TestCase
 

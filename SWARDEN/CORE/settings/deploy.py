@@ -6,7 +6,6 @@ import dj_database_url
 
 from CORE.settings.base import *
 
-
 DATABASES = {"default": dj_database_url.parse(str(getenv("DATABASE_URL")))}
 
 DEBUG: bool = False

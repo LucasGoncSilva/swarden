@@ -3,14 +3,14 @@ from typing import Final
 from uuid import uuid4
 
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import MinLengthValidator, MaxLengthValidator
+from django.core.validators import MaxLengthValidator, MinLengthValidator
 from django.db import models
 from django.db.models import (
-    Model,
-    CharField,
-    EmailField,
     BooleanField,
+    CharField,
     DateTimeField,
+    EmailField,
+    Model,
     UUIDField,
 )
 

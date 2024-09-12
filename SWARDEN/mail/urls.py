@@ -1,9 +1,8 @@
 from typing import Final
 
-from django.urls import path, URLPattern
+from django.urls import URLPattern, path
 
 from mail.views import export_secrets, export_secrets_no_argument
-
 
 app_name: Final[str] = "mail"
 

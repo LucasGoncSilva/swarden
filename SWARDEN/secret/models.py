@@ -1,25 +1,25 @@
-from uuid import uuid4
 from typing import Final
+from uuid import uuid4
 
+from django.core.validators import MaxLengthValidator, MinLengthValidator
 from django.db.models import (
-    Model,
-    UUIDField,
-    ForeignKey,
-    CharField,
-    BooleanField,
-    TextField,
-    SlugField,
-    DateTimeField,
     CASCADE,
+    BooleanField,
+    CharField,
+    DateTimeField,
+    ForeignKey,
+    Model,
+    SlugField,
+    TextField,
+    UUIDField,
 )
 from django.template.defaultfilters import slugify
 from django.urls import reverse
-from django.core.validators import MinLengthValidator, MaxLengthValidator
 
 from account.models import User
+from secret.choices import cards_banks, cards_brands, cards_types, credentials_services
 from secret.month.models import MonthField
 from utils import xor
-from secret.choices import cards_banks, cards_brands, cards_types, credentials_services
 
 
 # Create your models here.

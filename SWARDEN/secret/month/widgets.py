@@ -1,12 +1,8 @@
-"""
-Select widget for MonthField. Copied and modified from
-https://docs.djangoproject.com/en/1.8/ref/forms/widgets/#base-widget-classes
-"""
-
 from datetime import date
+
 from django.forms import widgets
-from django.utils.dates import MONTHS
 from django.templatetags.static import static
+from django.utils.dates import MONTHS
 
 from .util import string_type
 

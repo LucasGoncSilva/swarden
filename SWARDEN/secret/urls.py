@@ -1,3 +1,5 @@
+# ruff: noqa
+
 from typing import Final
 
 from django.urls import path, URLPattern

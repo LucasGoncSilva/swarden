@@ -3,8 +3,8 @@ from typing import Final
 from django.contrib import admin
 from django.contrib.auth import admin as auth_admin
 
-from account.models import User, ActivationAccountToken
 from account.forms import UserChangeForm, UserCreationForm
+from account.models import ActivationAccountToken, User
 
 
 # Register your models here.
