@@ -8,8 +8,8 @@ from secret.models import Card, LoginCredential, SecurityNote
 
 # Register your models here.
 class BasesWardenModelAdmin(ModelAdmin):
-    exclude = tuple()
-    _exclude = tuple()
+    exclude: tuple = tuple()
+    _exclude: tuple = tuple()
 
     def has_change_permission(self, r: HttpRequest, obj=None) -> bool:
         return False if not r.user.is_superuser else True

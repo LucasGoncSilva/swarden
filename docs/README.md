@@ -40,7 +40,7 @@ A arquitetura pode ser detalhada de forma geral em dois níveis: web e database.
 flowchart LR
 
 
-User((User)) 
+User((User))
 
 subgraph CLOUD
     subgraph RENDER
@@ -87,17 +87,17 @@ linkStyle 7,8,9,10,11,12 stroke:#fff,color:#efe
 
 Antes de iniciar com o desenvolvimento e os comandos, é importante definir as variáveis de ambiente no seu ambiente de desenvolvimento. Abaixo a listagem de quais definir:
 
-| Variável                 | Caráter                | Responsabilidade                                                                            |
-| :----------------------- | :--------------------- | :------------------------------------------------------------------------------------------ |
-| `DJANGO_SETTINGS_MODULE` | `str - required`       | Definir o módulo de configurações a ser utilizado.<br>Valor recomendado `CORE.settings.dev` |
-| `CAPTCHA_TEST_MODE`      | `bool - optional`      | Permitir o bypass do captcha nas telas de acesso.<br>Default `False`                        |
-| `DATABASE_NAME`          | `str - optional`       | Definir o nome de acesso do Banco de Dados.<br>Default `postgres`                           |
-| `DATABASE_USER`          | `str - optional`       | Definir o usuário de acesso do Banco de Dados.<br>Default `postgres`                        |
-| `DATABASE_PASSWORD`      | `str - optional`       | Definir a senha de acesso do Banco de Dados.<br>Default `postgres`                          |
-| `DATABASE_HOST`          | `str - optional`       | Definir o host de acesso do Banco de Dados.<br>Default `localhost`                          |
-| `DEBUG`                  | `bool - optional`      | Definir traceback e informações de debug em páginas browser.<br>Default `True`              |
-| `SECRET_KEY`             | `str - optional`       | Definir chave de criptografia e segurança do projeto.<br>Default `cw%t5...ba^m3)`           |
-| `ALLOWED_HOSTS`          | `list[str] - optional` | Definir lista de endereços URL válidos para execução do projeto.<br>Default `['*']`         |
+| Variável                 | Caráter                | Responsabilidade                                                                    |
+| :----------------------- | :--------------------- | :---------------------------------------------------------------------------------- |
+| `DJANGO_SETTINGS_MODULE` | `str - optional`       | Definir o módulo de configurações a ser utilizado.<br>Default `CORE.settings.dev`   |
+| `CAPTCHA_TEST_MODE`      | `bool - optional`      | Permitir o bypass do captcha nas telas de acesso.<br>Default `True`                 |
+| `DATABASE_NAME`          | `str - optional`       | Definir o nome de acesso do Banco de Dados.<br>Default `postgres`                   |
+| `DATABASE_USER`          | `str - optional`       | Definir o usuário de acesso do Banco de Dados.<br>Default `postgres`                |
+| `DATABASE_PASSWORD`      | `str - optional`       | Definir a senha de acesso do Banco de Dados.<br>Default `postgres`                  |
+| `DATABASE_HOST`          | `str - optional`       | Definir o host de acesso do Banco de Dados.<br>Default `localhost`                  |
+| `DEBUG`                  | `bool - optional`      | Definir traceback e informações de debug em páginas browser.<br>Default `True`      |
+| `SECRET_KEY`             | `str - optional`       | Definir chave de criptografia e segurança do projeto.<br>Default `cw%t5...ba^m3)`   |
+| `ALLOWED_HOSTS`          | `list[str] - optional` | Definir lista de endereços URL válidos para execução do projeto.<br>Default `['*']` |
 
 ### Buscar/iniciar Migrações (Atualizações) de Banco de Dados
 
@@ -109,7 +109,11 @@ Antes de iniciar com o desenvolvimento e os comandos, é importante definir as v
 
 ### Iniciar Testes Automatizados
 
-`python3 manager.py test`
+`python3 manager.py test [--parallel N]`
+
+### Iniciar Testes Automatizados c/ Cobertura
+
+`python3 manager.py testwithcoverage`
 
 ### Popular Banco de Dados para Execução Local
 

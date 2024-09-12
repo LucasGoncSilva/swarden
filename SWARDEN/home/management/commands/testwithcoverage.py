@@ -21,9 +21,11 @@ class Command(BaseCommand):
             "*/CORE/*,",
         ]
 
-        app: Literal['.'] | str = options["app"]
+        app: Literal["."] | str = options["app"]
 
-        system(f'coverage run --source=\'{app}\' --omit=\'{",".join(omit_list)}\' manage.py test {app}')
-        system('coverage html')
+        system(
+            f'coverage run --source=\'{app}\' --omit=\'{",".join(omit_list)}\' manage.py test {app}'
+        )
+        system("coverage html")
 
-        self.stdout.write(self.style.SUCCESS('Coverage done + HTML file generated.'))
+        self.stdout.write(self.style.SUCCESS("Coverage done + HTML file generated."))
