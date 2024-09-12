@@ -8,13 +8,13 @@ services:
     command: >
       bash -c "
       python manage.py collectstatic --noinput
+      && pip install django-extensions
       && python manage.py makemigrations
       && python manage.py migrate
       && gunicorn CORE.wsgi:application --bind 0.0.0.0:8000"
     ports:
       - "8000:8000"
     environment:
-      - DJANGO_SETTINGS_MODULE=CORE.settings.dev
       - DATABASE_NAME=postgres
       - DATABASE_USER=postgres
       - DATABASE_PASSWORD=postgres
