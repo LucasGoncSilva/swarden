@@ -34,7 +34,7 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
 
         res: HttpResponse = self.client.get(reverse("mail:export_secrets_no_argument"))
 
-        # Successredirect check
+        # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
             res,
@@ -65,7 +65,7 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
 
         res: HttpResponse = self.client.get(reverse("mail:export_secrets_no_argument"))
 
-        # Successredirect check
+        # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(res, reverse("home:index"))
 
@@ -76,7 +76,6 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
         # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "home/index.html")
-
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
@@ -92,7 +91,7 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
             reverse("mail:export_secrets", args=["invalid"])
         )
 
-        # Successredirect check
+        # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
             res,
@@ -125,7 +124,7 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
             reverse("mail:export_secrets", args=["invalid"])
         )
 
-        # Successredirect check
+        # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(res, reverse("home:index"))
 
@@ -170,7 +169,6 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
 
                 self.assertEqual(res.status_code, 200)
                 self.assertTemplateUsed(res, "secret/list_view.html")
-
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
@@ -199,7 +197,7 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
             reverse("mail:export_secrets", args=["Credenciais"])
         )
 
-        # Successredirect check
+        # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(res, reverse("secret:credential_list_view"))
 
@@ -215,7 +213,7 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
         self.assertEqual(mail.outbox[-1].to, ["user@email.com"])
         self.assertEqual(
             mail.outbox[-1].body,
-            "Aqui estão seus segredos armazenados em 'Credenciais' no sWarden.\n\n\nEquipe sWarden",
+            'Aqui estão seus segredos armazenados em "Credenciais" no sWarden.\n\n\nEquipe sWarden',
         )
 
     def test_GET_authenticated_user_card(self) -> None:
@@ -244,7 +242,7 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
             reverse("mail:export_secrets", args=["Cartões"])
         )
 
-        # Successredirect check
+        # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(res, reverse("secret:card_list_view"))
 
@@ -260,7 +258,7 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
         self.assertEqual(mail.outbox[-1].to, ["user@email.com"])
         self.assertEqual(
             mail.outbox[-1].body,
-            "Aqui estão seus segredos armazenados em 'Cartões' no sWarden.\n\n\nEquipe sWarden",
+            'Aqui estão seus segredos armazenados em "Cartões" no sWarden.\n\n\nEquipe sWarden',
         )
 
     def test_GET_authenticated_user_note(self) -> None:
@@ -283,7 +281,7 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
             reverse("mail:export_secrets", args=["Anotações"])
         )
 
-        # Successredirect check
+        # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(res, reverse("secret:note_list_view"))
 
@@ -299,7 +297,7 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
         self.assertEqual(mail.outbox[-1].to, ["user@email.com"])
         self.assertEqual(
             mail.outbox[-1].body,
-            "Aqui estão seus segredos armazenados em 'Anotações' no sWarden.\n\n\nEquipe sWarden",
+            'Aqui estão seus segredos armazenados em "Anotações" no sWarden.\n\n\nEquipe sWarden',
         )
 
 

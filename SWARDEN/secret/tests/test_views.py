@@ -27,7 +27,7 @@ class SecretIndexViewTestCase(TestCase):
 
         res: HttpResponse = self.client.get(reverse("secret:index"))
 
-        # Successredirect check
+        # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
             res, reverse("account:login") + "?next=" + reverse("secret:index")
@@ -107,7 +107,7 @@ class LoginCredentialCreateViewsTestCase(BaseLoginCredentialTestCase):
 
         res: HttpResponse = self.client.get(reverse("secret:credential_create_view"))
 
-        # Successredirect check
+        # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
             res,
@@ -160,7 +160,7 @@ class LoginCredentialCreateViewsTestCase(BaseLoginCredentialTestCase):
             reverse("secret:credential_create_view"), {}
         )
 
-        # Successredirect check
+        # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
             res,
@@ -230,7 +230,7 @@ class LoginCredentialCreateViewsTestCase(BaseLoginCredentialTestCase):
             reverse("secret:credential_create_view"), cred_data
         )
 
-        # Successredirect check
+        # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
             res,
@@ -335,7 +335,7 @@ class LoginCredentialListViewTestCase(BaseLoginCredentialTestCase):
 
         res: HttpResponse = self.client.get(reverse("secret:credential_list_view"))
 
-        # Successredirect check
+        # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
             res,
@@ -389,7 +389,7 @@ class LoginCredentialDetailViewTestCase(BaseLoginCredentialTestCase):
             )
         )
 
-        # Successredirect check
+        # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
             res,
@@ -469,7 +469,7 @@ class LoginCredentialUpdateViewTestCase(BaseLoginCredentialTestCase):
             )
         )
 
-        # Successredirect check
+        # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
             res,
@@ -557,7 +557,7 @@ class LoginCredentialDeleteViewTestCase(BaseLoginCredentialTestCase):
             )
         )
 
-        # Successredirect check
+        # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
             res,
@@ -667,7 +667,7 @@ class CardCreateViewsTestCase(BaseCardTestCase):
 
         res: HttpResponse = self.client.get(reverse("secret:card_create_view"))
 
-        # Successredirect check
+        # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
             res,
@@ -716,7 +716,7 @@ class CardCreateViewsTestCase(BaseCardTestCase):
 
         res: HttpResponse = self.client.post(reverse("secret:card_create_view"), {})
 
-        # Successredirect check
+        # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
             res,
@@ -787,7 +787,7 @@ class CardCreateViewsTestCase(BaseCardTestCase):
             reverse("secret:card_create_view"), card_data
         )
 
-        # Successredirect check
+        # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
             res,
@@ -896,7 +896,7 @@ class CardListViewTestCase(BaseCardTestCase):
 
         res: HttpResponse = self.client.get(reverse("secret:card_list_view"))
 
-        # Successredirect check
+        # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
             res, reverse("account:login") + "?next=" + reverse("secret:card_list_view")
@@ -950,7 +950,7 @@ class CardDetailViewTestCase(BaseCardTestCase):
             )
         )
 
-        # Successredirect check
+        # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
             res,
@@ -1027,7 +1027,7 @@ class CardUpdateViewTestCase(BaseCardTestCase):
             )
         )
 
-        # Successredirect check
+        # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
             res,
@@ -1108,7 +1108,7 @@ class CardDeleteViewTestCase(BaseCardTestCase):
             )
         )
 
-        # Successredirect check
+        # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
             res,
@@ -1206,7 +1206,7 @@ class SecurityNoteCreateViewTestCase(BaseSecurityNoteTestCase):
 
         res: HttpResponse = self.client.get(reverse("secret:note_create_view"))
 
-        # Successredirect check
+        # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
             res,
@@ -1255,7 +1255,7 @@ class SecurityNoteCreateViewTestCase(BaseSecurityNoteTestCase):
 
         res: HttpResponse = self.client.post(reverse("secret:note_create_view"), {})
 
-        # Successredirect check
+        # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
             res,
@@ -1319,7 +1319,7 @@ class SecurityNoteCreateViewTestCase(BaseSecurityNoteTestCase):
             reverse("secret:note_create_view"), note_data
         )
 
-        # Successredirect check
+        # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
             res,
@@ -1410,7 +1410,7 @@ class SecurityNoteListViewTestCase(BaseSecurityNoteTestCase):
 
         res: HttpResponse = self.client.get(reverse("secret:note_list_view"))
 
-        # Successredirect check
+        # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
             res, reverse("account:login") + "?next=" + reverse("secret:note_list_view")
@@ -1458,7 +1458,7 @@ class SecurityNoteDetailViewTestCase(BaseSecurityNoteTestCase):
             reverse("secret:note_detail_view", kwargs={"slug": "how-to-draw-an-apple"})
         )
 
-        # Successredirect check
+        # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
             res,
@@ -1525,7 +1525,7 @@ class SecurityNoteUpdateViewTestCase(BaseSecurityNoteTestCase):
             reverse("secret:note_update_view", kwargs={"slug": "how-to-draw-an-apple"})
         )
 
-        # Successredirect check
+        # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
             res,
@@ -1596,7 +1596,7 @@ class SecurityNoteDeleteViewTestCase(BaseSecurityNoteTestCase):
             reverse("secret:note_delete_view", kwargs={"slug": "how-to-draw-an-apple"})
         )
 
-        # Successredirect check
+        # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
             res,

@@ -1,4 +1,4 @@
-from typing import Final
+from typing import Final, cast
 
 from captcha.fields import CaptchaField
 from django.contrib.auth import authenticate, login, logout
@@ -156,12 +156,8 @@ def register_view(r: HttpRequest) -> HttpResponse | HttpResponseRedirect:
         error(r, "Username e/ou e-mail indisponível")
         return render(r, "account/register.html", {"form": form})
 
-    first_name: str | None = form.cleaned_data.get("first_name")
-    last_name: str | None = form.cleaned_data.get("last_name")
-
-    if first_name is None or last_name is None:
-        error(r, "Nome e Sobrenome não podem ser campos vazios.")
-        return render(r, "account/register.html", {"form": form})
+    first_name: str = cast(str, form.cleaned_data.get("first_name"))
+    last_name: str = cast(str, form.cleaned_data.get("last_name"))
 
     user: User = User.objects.create_user(
         username=username,
