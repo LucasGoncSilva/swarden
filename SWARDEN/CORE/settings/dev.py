@@ -5,7 +5,7 @@ from os import getenv
 from CORE.settings.base import *
 
 # docker run --name psql_swarden -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=postgres -d postgres
-DATABASES = {
+DATABASES: dict[str, dict[str, str | Path]] = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": getenv("DATABASE_NAME", "postgres"),
@@ -19,6 +19,6 @@ DATABASES = {
 INSTALLED_APPS += ["django_extensions"]
 
 DEBUG = bool(getenv("DEBUG", DEBUG))
-SECRET_KEY = getenv("SECRET_KEY", SECRET_KEY)
-ALLOWED_HOSTS = list(str(getenv("ALLOWED_HOSTS", ALLOWED_HOSTS)))
-CAPTCHA_TEST_MODE = bool(getenv("CAPTCHA_TEST_MODE", True))
+SECRET_KEY: str = getenv("SECRET_KEY", SECRET_KEY)
+ALLOWED_HOSTS: list[str] = list(str(getenv("ALLOWED_HOSTS", ALLOWED_HOSTS)))
+CAPTCHA_TEST_MODE: bool = bool(getenv("CAPTCHA_TEST_MODE", True))

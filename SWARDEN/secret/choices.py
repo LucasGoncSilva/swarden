@@ -101,9 +101,9 @@ services: list[tuple[str, str]] = (
 )
 
 
-cards_banks = sorted(set(banks), key=lambda x: x[1])
-cards_brands = sorted(set(brands), key=lambda x: x[1])
-credentials_services = sorted(set(services), key=lambda x: x[1])
+cards_banks: list[tuple[str, str]] = sorted(set(banks), key=lambda x: x[1])
+cards_brands: list[tuple[str, str]] = sorted(set(brands), key=lambda x: x[1])
+credentials_services: list[tuple[str, str]] = sorted(set(services), key=lambda x: x[1])
 
 cards_banks.insert(0, ("nao-listado--", "NÃO LISTADO"))
 cards_brands.insert(0, ("nao-listado--", "NÃO LISTADO"))

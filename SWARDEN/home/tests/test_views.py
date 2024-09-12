@@ -11,7 +11,7 @@ from secret.month.models import Month
 # Create your tests here.
 class HomeViewsTestCase(TestCase):
     def setUp(self) -> None:
-        user = User.objects.create_user(
+        user: User = User.objects.create_user(
             username="user",
             password="password",
             email="user@email.com",
@@ -62,19 +62,23 @@ class HomeViewsTestCase(TestCase):
     def test_GET_anonymous_user(self):
         """GET / | anonymous user"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
         res: HttpResponse = self.client.get(reverse("home:index"))
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "home/landing.html")
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_GET_authenticated_user(self):
         """GET / | authenticated user"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
@@ -82,16 +86,15 @@ class HomeViewsTestCase(TestCase):
 
         res: HttpResponse = self.client.get(reverse("home:index"))
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "home/index.html")
-
         self.assertIn("cards", res.context.keys())
         self.assertIn("credentials", res.context.keys())
         self.assertIn("notes", res.context.keys())
-
         self.assertEqual(len(res.context["cards"]), 1)
         self.assertEqual(len(res.context["credentials"]), 2)
         self.assertEqual(len(res.context["notes"]), 1)
-
+        # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)

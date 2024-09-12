@@ -194,7 +194,7 @@ class MyModelTestCase(TestCase):
     def test_model_special_str_method_return(self) -> None:
         """Tests model return value of __str__ method"""
 
-        model = MyModel.objects.get(pk=self.model.pk)
+        model: MyModel = MyModel.objects.get(pk=self.model.pk)
 
         self.assertEqual(model.__str__(), ...)
 
@@ -311,6 +311,7 @@ class Example[Create|List|Detail|Update|Delete]ViewTestCase(BaseExampleTestCase)
     def test_GET_anonymous_user(self) -> None:
         """GET /example/view | anonymous user"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
@@ -323,14 +324,17 @@ class Example[Create|List|Detail|Update|Delete]ViewTestCase(BaseExampleTestCase)
             reverse(ENDPOINT), follow=True
         )
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, TEMPLATE)
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_GET_authenticated_user(self) -> None:
         """GET /example/view | authenticated user"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
@@ -338,14 +342,17 @@ class Example[Create|List|Detail|Update|Delete]ViewTestCase(BaseExampleTestCase)
 
         res: HttpResponse = self.client.get(reverse(ENDPOINT))
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, TEMPLATE)
+        # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
     def test_POST_anonymous_user(self) -> None:
         """POST /example/view | anonymous user"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
@@ -360,14 +367,17 @@ class Example[Create|List|Detail|Update|Delete]ViewTestCase(BaseExampleTestCase)
             follow=True
         )
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, TEMPLATE)
+        # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
     def test_POST_authenticated_user(self) -> None:
         """POST /example/view | authenticated user"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
@@ -375,8 +385,10 @@ class Example[Create|List|Detail|Update|Delete]ViewTestCase(BaseExampleTestCase)
 
         res: HttpResponse = self.client.post(reverse(ENDPOINT))
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, TEMPLATE)
+        # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 ```

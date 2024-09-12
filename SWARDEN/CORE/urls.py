@@ -1,3 +1,5 @@
+from typing import Final
+
 from django.contrib import admin
 from django.contrib.auth.views import (
     PasswordResetCompleteView,
@@ -47,6 +49,6 @@ urlpatterns: list[URLResolver | URLPattern] = [
 ]
 
 
-handler403 = "err.views.handle403"
-handler404 = "err.views.handle404"
-handler500 = "err.views.handle500"
+handler403: Final[str] = "err.views.handle403"
+handler404: Final[str] = "err.views.handle404"
+handler500: Final[str] = "err.views.handle500"

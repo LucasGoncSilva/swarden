@@ -69,9 +69,9 @@ class LoginCredential(Model):
     updated: Final[DateTimeField] = DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ["-created"]
-        verbose_name = "Credencial"
-        verbose_name_plural = "Credenciais"
+        ordering: Final[list[str]] = ["-created"]
+        verbose_name: Final[str] = "Credencial"
+        verbose_name_plural: Final[str] = "Credenciais"
 
     def __str__(self) -> str:
         return f"{str(self.owner.username)} | {self.service} | {self.name}"
@@ -95,7 +95,7 @@ class LoginCredential(Model):
 
     @classmethod
     def from_db(cls, db, field_names, values):
-        cred = super().from_db(db, field_names, values)
+        cred: LoginCredential = super().from_db(db, field_names, values)
 
         cred.thirdy_party_login_name = xor(
             str(cred.thirdy_party_login_name), cred.owner.password[21:], encrypt=False
@@ -107,7 +107,7 @@ class LoginCredential(Model):
         return cred
 
     def expected_max_length(self, var: str) -> int:
-        max_length = {
+        max_length: Final[dict[str, int]] = {
             "service": 64,
             "name": 40,
             "slug": 128,
@@ -124,7 +124,7 @@ class LoginCredential(Model):
         return len(value) <= self.expected_max_length(var)
 
     def all_fields_of_right_length(self) -> bool:
-        vars = [
+        vars: Final[list[str]] = [
             "service",
             "name",
             "slug",
@@ -240,9 +240,9 @@ class Card(Model):
     updated: Final[DateTimeField] = DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ["-created"]
-        verbose_name = "Cartão"
-        verbose_name_plural = "Cartões"
+        ordering: Final[list[str]] = ["-created"]
+        verbose_name: Final[str] = "Cartão"
+        verbose_name_plural: Final[str] = "Cartões"
 
     def __str__(self) -> str:
         return f"{str(self.owner.username)} | {self.card_type} | {self.name}"
@@ -268,7 +268,7 @@ class Card(Model):
 
     @classmethod
     def from_db(cls, db, field_names, values):
-        card = super().from_db(db, field_names, values)
+        card: Card = super().from_db(db, field_names, values)
 
         card.name = xor(str(card.name), card.owner.password[21:], encrypt=False)
         card.card_type = xor(
@@ -286,7 +286,7 @@ class Card(Model):
         return card
 
     def expected_max_length(self, var: str) -> int:
-        max_length = {
+        max_length: Final[dict[str, int]] = {
             "name": 40,
             "card_type": 16,
             "number": 19,
@@ -301,7 +301,7 @@ class Card(Model):
         return max_length[var]
 
     def expected_min_length(self, var: str) -> int:
-        min_length = {
+        min_length: Final[dict[str, int]] = {
             "number": 12,
             "cvv": 3,
         }
@@ -324,7 +324,7 @@ class Card(Model):
         return len(value) <= self.expected_max_length(var)
 
     def all_fields_of_right_length(self) -> bool:
-        vars = [
+        vars: Final[list[str]] = [
             "name",
             "card_type",
             "number",
@@ -423,12 +423,12 @@ class SecurityNote(Model):
 
     @classmethod
     def from_db(cls, db, field_names, values):
-        note = super().from_db(db, field_names, values)
+        note: SecurityNote = super().from_db(db, field_names, values)
         note.content = xor(str(note.content), note.owner.password[21:], encrypt=False)
         return note
 
     def expected_max_length(self, var: str) -> int:
-        max_length = {
+        max_length: Final[dict[str, int]] = {
             "title": 40,
             "content": 300,
             "slug": 50,
@@ -442,7 +442,7 @@ class SecurityNote(Model):
         return len(value) <= self.expected_max_length(var)
 
     def all_fields_of_right_length(self) -> bool:
-        vars = [
+        vars: Final[list[str]] = [
             "title",
             "content",
             "slug",
@@ -481,6 +481,6 @@ class SecurityNote(Model):
         return False
 
     class Meta:
-        ordering = ["-created"]
-        verbose_name = "Nota de Segurança"
-        verbose_name_plural = "Notas de Segurança"
+        ordering: Final[list[str]] = ["-created"]
+        verbose_name: Final[str] = "Nota de Segurança"
+        verbose_name_plural: Final[str] = "Notas de Segurança"

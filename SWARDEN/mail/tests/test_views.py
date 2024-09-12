@@ -17,7 +17,7 @@ from utils import (
 
 class BaseMailTestCase(TestCase):
     def setUp(self) -> None:
-        self.user = User.objects.create_user(
+        self.user: User = User.objects.create_user(
             username="user",
             password="password",
             email="user@email.com",
@@ -28,11 +28,13 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
     def test_GET_anonymous_user_no_argument(self) -> None:
         """GET /enviar-email/exportar-segredos/ | anonymous user"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
         res: HttpResponse = self.client.get(reverse("mail:export_secrets_no_argument"))
 
+        # Successredirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
             res,
@@ -45,6 +47,7 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
             reverse("mail:export_secrets_no_argument"), follow=True
         )
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "account/login.html")
 
@@ -54,13 +57,15 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
     def test_GET_authenticated_user_no_argument(self) -> None:
         """GET /enviar-email/exportar-segredos/ | authenticated user"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
-
+        # Confirm user login
         self.assertTrue(self.client.login(username="user", password="password"))
 
         res: HttpResponse = self.client.get(reverse("mail:export_secrets_no_argument"))
 
+        # Successredirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(res, reverse("home:index"))
 
@@ -68,15 +73,18 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
             reverse("mail:export_secrets_no_argument"), follow=True
         )
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "home/index.html")
 
+        # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
     def test_GET_anonymous_user_invalid_secret(self) -> None:
         """GET /enviar-email/exportar-segredos/<Any> | anonymous user"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
@@ -84,6 +92,7 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
             reverse("mail:export_secrets", args=["invalid"])
         )
 
+        # Successredirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
             res,
@@ -96,6 +105,7 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
             reverse("mail:export_secrets", args=["invalid"]), follow=True
         )
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "account/login.html")
 
@@ -105,15 +115,17 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
     def test_GET_authenticated_user_invalid_secret(self) -> None:
         """GET /enviar-email/exportar-segredos/<Any> | authenticated user"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
-
+        # Confirm user login
         self.assertTrue(self.client.login(username="user", password="password"))
 
         res: HttpResponse = self.client.get(
             reverse("mail:export_secrets", args=["invalid"])
         )
 
+        # Successredirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(res, reverse("home:index"))
 
@@ -121,17 +133,20 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
             reverse("mail:export_secrets", args=["invalid"]), follow=True
         )
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "home/index.html")
+        # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
     def test_GET_authenticated_user_no_secret(self) -> None:
         """GET /enviar-email/exportar-segredos/<Credenciais | Cartões | Anotações> | authenticated user | no secret"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
-
+        # Confirm user login
         self.assertTrue(self.client.login(username="user", password="password"))
 
         secrets: list[tuple[str, str]] = [
@@ -156,15 +171,17 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
                 self.assertEqual(res.status_code, 200)
                 self.assertTemplateUsed(res, "secret/list_view.html")
 
+        # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
     def test_GET_authenticated_user_credential(self) -> None:
         """GET /enviar-email/exportar-segredos/Credenciais | authenticated user"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
-
+        # Confirm user login
         self.assertTrue(self.client.login(username="user", password="password"))
 
         LoginCredential.objects.create(
@@ -182,6 +199,7 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
             reverse("mail:export_secrets", args=["Credenciais"])
         )
 
+        # Successredirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(res, reverse("secret:credential_list_view"))
 
@@ -189,6 +207,7 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
             reverse("mail:export_secrets", args=["Credenciais"]), follow=True
         )
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "secret/list_view.html")
         self.assertEqual(len(mail.outbox), 2)
@@ -196,15 +215,16 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
         self.assertEqual(mail.outbox[-1].to, ["user@email.com"])
         self.assertEqual(
             mail.outbox[-1].body,
-            'Aqui estão seus segredos armazenados em "Credenciais" no sWarden.\n\n\nEquipe sWarden',
+            "Aqui estão seus segredos armazenados em 'Credenciais' no sWarden.\n\n\nEquipe sWarden",
         )
 
     def test_GET_authenticated_user_card(self) -> None:
         """GET /enviar-email/exportar-segredos/Cartões | authenticated user"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
-
+        # Confirm user login
         self.assertTrue(self.client.login(username="user", password="password"))
 
         Card.objects.create(
@@ -224,6 +244,7 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
             reverse("mail:export_secrets", args=["Cartões"])
         )
 
+        # Successredirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(res, reverse("secret:card_list_view"))
 
@@ -231,6 +252,7 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
             reverse("mail:export_secrets", args=["Cartões"]), follow=True
         )
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "secret/list_view.html")
         self.assertEqual(len(mail.outbox), 2)
@@ -238,15 +260,16 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
         self.assertEqual(mail.outbox[-1].to, ["user@email.com"])
         self.assertEqual(
             mail.outbox[-1].body,
-            'Aqui estão seus segredos armazenados em "Cartões" no sWarden.\n\n\nEquipe sWarden',
+            "Aqui estão seus segredos armazenados em 'Cartões' no sWarden.\n\n\nEquipe sWarden",
         )
 
     def test_GET_authenticated_user_note(self) -> None:
         """GET /enviar-email/exportar-segredos/Anotações | authenticated user"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
-
+        # Confirm user login
         self.assertTrue(self.client.login(username="user", password="password"))
 
         SecurityNote.objects.create(
@@ -260,6 +283,7 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
             reverse("mail:export_secrets", args=["Anotações"])
         )
 
+        # Successredirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(res, reverse("secret:note_list_view"))
 
@@ -267,6 +291,7 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
             reverse("mail:export_secrets", args=["Anotações"]), follow=True
         )
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "secret/list_view.html")
         self.assertEqual(len(mail.outbox), 2)
@@ -274,7 +299,7 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
         self.assertEqual(mail.outbox[-1].to, ["user@email.com"])
         self.assertEqual(
             mail.outbox[-1].body,
-            'Aqui estão seus segredos armazenados em "Anotações" no sWarden.\n\n\nEquipe sWarden',
+            "Aqui estão seus segredos armazenados em 'Anotações' no sWarden.\n\n\nEquipe sWarden",
         )
 
 

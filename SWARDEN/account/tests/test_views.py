@@ -26,19 +26,23 @@ class RegisterViewTestCase(BaseAccountTestCase):
     def test_GET_anonymous_user(self) -> None:
         """GET /conta/registrar | anonymous user"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
         res: HttpResponse = self.client.get(self.REGISTER_URL)
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "account/register.html")
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_POST_anonymous_user_invalid_form(self) -> None:
         """POST /conta/registrar | anonymous user | invalid form"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
@@ -46,14 +50,17 @@ class RegisterViewTestCase(BaseAccountTestCase):
             self.REGISTER_URL, {"captcha_0": "dummy-value", "captcha_1": "PASSED"}
         )
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "account/register.html")
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_POST_anonymous_user_different_passwords(self) -> None:
         """POST /conta/registrar | anonymous user | different passwords"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
@@ -70,14 +77,17 @@ class RegisterViewTestCase(BaseAccountTestCase):
 
         res: HttpResponse = self.client.post(self.REGISTER_URL, post_data)
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "account/register.html")
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_POST_anonymous_user_existing_register(self) -> None:
         """POST /conta/registrar | anonymous user | register already exists"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
@@ -94,14 +104,17 @@ class RegisterViewTestCase(BaseAccountTestCase):
 
         res: HttpResponse = self.client.post(self.REGISTER_URL, post_data)
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "account/register.html")
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_POST_anonymous_user_valid_form(self) -> None:
         """POST /conta/registrar | anonymous user | valid form"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
@@ -118,29 +131,35 @@ class RegisterViewTestCase(BaseAccountTestCase):
 
         res: HttpResponse = self.client.post(self.REGISTER_URL, post_data, follow=True)
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "account/login.html")
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_GET_authenticated_user(self) -> None:
         """GET /conta/registrar | authenticated user"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
-
+        # Confirm user login
         self.assertTrue(self.client.login(username="user", password="password"))
 
+        # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
         res: HttpResponse = self.client.get(self.REGISTER_URL)
 
+        # Successredirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(res, reverse("home:index"))
 
         res: HttpResponse = self.client.get(self.REGISTER_URL, follow=True)
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "home/index.html")
 
@@ -149,11 +168,13 @@ class ActivateAccountViewTestCase(BaseAccountTestCase):
     def test_GET_anonymous_user_no_parameter(self) -> None:
         """GET /conta/ativar/ | anonymous user"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
         res: HttpResponse = self.client.get(reverse("account:activate_no_parameter"))
 
+        # Successredirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(res, reverse("home:index"))
 
@@ -161,6 +182,7 @@ class ActivateAccountViewTestCase(BaseAccountTestCase):
             reverse("account:activate_no_parameter"), follow=True
         )
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "home/landing.html")
 
@@ -170,6 +192,7 @@ class ActivateAccountViewTestCase(BaseAccountTestCase):
     def test_GET_anonymous_user_missing_token(self) -> None:
         """GET /conta/ativar/<Any> | anonymous user"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
@@ -177,6 +200,7 @@ class ActivateAccountViewTestCase(BaseAccountTestCase):
             reverse("account:activate_no_token", args=["404"])
         )
 
+        # Successredirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(res, reverse("home:index"))
 
@@ -184,6 +208,7 @@ class ActivateAccountViewTestCase(BaseAccountTestCase):
             reverse("account:activate_no_token", args=["404"]), follow=True
         )
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "home/landing.html")
 
@@ -193,6 +218,7 @@ class ActivateAccountViewTestCase(BaseAccountTestCase):
     def test_GET_anonymous_user_invalid_uidb64(self) -> None:
         """GET /conta/ativar/<uidb64>/<token> | anonymous user | invalid uidb64"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
@@ -200,6 +226,7 @@ class ActivateAccountViewTestCase(BaseAccountTestCase):
             reverse("account:activate", args=["404", "x" * 64])
         )
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "err/error_template.html")
 
@@ -209,6 +236,7 @@ class ActivateAccountViewTestCase(BaseAccountTestCase):
     def test_GET_anonymous_user_inexistent_token(self) -> None:
         """GET /conta/ativar/<uidb64>/<token> | anonymous user | inexistent token"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
@@ -219,6 +247,7 @@ class ActivateAccountViewTestCase(BaseAccountTestCase):
             reverse("account:activate", args=[uidb64_pk, "x" * 64])
         )
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "err/error_template.html")
 
@@ -228,12 +257,13 @@ class ActivateAccountViewTestCase(BaseAccountTestCase):
     def test_GET_anonymous_user(self) -> None:
         """GET /conta/ativar/<uidb64>/<token> | anonymous user"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
         user: User | None = User.objects.first()
         if user is None:
-            raise TypeError('Expected "user" to be type User, found None')
+            raise TypeError("Expected 'user' to be type User, found None")
 
         uidb64_pk = urlsafe_base64_encode(force_bytes(user.pk))
 
@@ -247,22 +277,25 @@ class ActivateAccountViewTestCase(BaseAccountTestCase):
             reverse("account:activate", args=[uidb64_pk, token.value]), follow=True
         )
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "home/index.html")
+        # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
     def test_GET_authenticated_user(self) -> None:
         """GET /conta/ativar/<uidb64>/<token> | authenticated user"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
-
+        # Confirm user login
         self.assertTrue(self.client.login(username="user", password="password"))
 
         user: User | None = User.objects.first()
         if user is None:
-            raise TypeError('Expected "user" to be type User, found None')
+            raise TypeError("Expected 'user' to be type User, found None")
 
         uidb64_pk = urlsafe_base64_encode(force_bytes(user.pk))
 
@@ -276,8 +309,10 @@ class ActivateAccountViewTestCase(BaseAccountTestCase):
             reverse("account:activate", args=[uidb64_pk, token.value]), follow=True
         )
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "home/index.html")
+        # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
@@ -286,11 +321,13 @@ class LoginViewTestCase(BaseAccountTestCase):
     def test_GET_anonymous_user(self) -> None:
         """GET /conta/entrar | anonymous user"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
         res: HttpResponse = self.client.get(self.LOGIN_URL)
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "account/login.html")
 
@@ -300,17 +337,20 @@ class LoginViewTestCase(BaseAccountTestCase):
             follow=True,
         )
 
+        # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
     def test_GET_anonymous_user_invalid_form(self) -> None:
         """GET /conta/entrar | anonymous user | invalid form"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
         res: HttpResponse = self.client.get(self.LOGIN_URL)
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "account/login.html")
 
@@ -320,19 +360,23 @@ class LoginViewTestCase(BaseAccountTestCase):
             follow=True,
         )
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "account/login.html")
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_GET_anonymous_user_user_is_None(self) -> None:
         """GET /conta/entrar | anonymous user | user is None"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
         res: HttpResponse = self.client.get(self.LOGIN_URL)
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "account/login.html")
 
@@ -346,29 +390,35 @@ class LoginViewTestCase(BaseAccountTestCase):
             follow=True,
         )
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "account/login.html")
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_GET_authenticated_user(self) -> None:
         """GET /conta/entrar | authenticated user"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
-
+        # Confirm user login
         self.assertTrue(self.client.login(username="user", password="password"))
 
+        # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
         res: HttpResponse = self.client.get(self.LOGIN_URL)
 
+        # Successredirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(res, reverse("home:index"))
 
         res: HttpResponse = self.client.get(self.LOGIN_URL, follow=True)
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "home/index.html")
 
@@ -377,47 +427,57 @@ class LogoutViewTestCase(BaseAccountTestCase):
     def test_GET_anonymous_user(self) -> None:
         """GET /conta/sair | anonymous user"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
         res: HttpResponse = self.client.get(self.LOGOUT_URL)
 
+        # Successredirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(res, self.LOGIN_URL + "?next=" + self.LOGOUT_URL)
 
         res: HttpResponse = self.client.get(self.LOGOUT_URL, follow=True)
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "account/login.html")
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_GET_authenticated_user(self) -> None:
         """GET /conta/sair | anonymous user"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
-
+        # Confirm user login
         self.assertTrue(self.client.login(username="user", password="password"))
 
+        # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
         res: HttpResponse = self.client.get(self.LOGOUT_URL)
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "account/logout.html")
+        # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
     def test_POST_authenticated_user(self) -> None:
         """POST /conta/sair | anonymous user"""
 
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
-
+        # Confirm user login
         self.assertTrue(self.client.login(username="user", password="password"))
 
+        # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
@@ -427,11 +487,14 @@ class LogoutViewTestCase(BaseAccountTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
         self.assertEqual(res.status_code, 302)
 
+        # Confirm user login
         self.assertTrue(self.client.login(username="user", password="password"))
 
         res: HttpResponse = self.client.post(self.LOGOUT_URL, follow=True)
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "account/login.html")
+        # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)

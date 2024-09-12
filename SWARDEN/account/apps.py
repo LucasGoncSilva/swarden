@@ -1,7 +1,9 @@
+from typing import Final
+
 from django.apps import AppConfig
 
 
 class AccountConfig(AppConfig):
-    default_auto_field = "django.db.models.BigAutoField"
-    name = "account"
-    verbose_name = "Usuário"
+    default_auto_field: Final[str] = "django.db.models.BigAutoField"
+    name: Final[str] = "account"
+    verbose_name: Final[str] = "Usuário"

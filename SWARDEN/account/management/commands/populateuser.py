@@ -11,7 +11,7 @@ class Command(BaseCommand):
         self.stdout.write("\nPopulating account.User")
 
         with open("./account/management/commands/populate_user.txt", "r") as sample:
-            lines = [i.strip().split("::") for i in sample.readlines()]
+            lines: list[list[str]] = [i.strip().split("::") for i in sample.readlines()]
 
         for i in tqdm(
             lines, desc="Users", bar_format="{l_bar}{bar:100}{r_bar}{bar:-10b}"

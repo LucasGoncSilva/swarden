@@ -13,35 +13,37 @@ class ActivationAccountTokenTestCase(TestCase):
     def setUp(self) -> None:
         filterwarnings("ignore", category=RuntimeWarning)
 
-        self.user = User.objects.create_user(
+        self.user: User = User.objects.create_user(
             username="user",
             password="password",
             email="user@email.com",
         )
 
-        self.token1 = ActivationAccountToken.objects.create(
+        self.token1: ActivationAccountToken = ActivationAccountToken.objects.create(
             value="x" * 64, user=self.user, used=False
         )
 
-        self.token2 = ActivationAccountToken.objects.create(
+        self.token2: ActivationAccountToken = ActivationAccountToken.objects.create(
             value="x" * 64, user=self.user, used=True
         )
 
-        self.token3 = ActivationAccountToken.objects.create(
+        self.token3: ActivationAccountToken = ActivationAccountToken.objects.create(
             value="x" * 64, user=self.user, used=False, created=None
         )
 
         try:
             with atomic():
-                self.token4 = ActivationAccountToken.objects.create(
-                    value="x" * 65, user=self.user, used=False
+                self.token4: ActivationAccountToken = (
+                    ActivationAccountToken.objects.create(
+                        value="x" * 65, user=self.user, used=False
+                    )
                 )
         except DataError:
-            self.token4 = ActivationAccountToken.objects.create(
+            self.token4: ActivationAccountToken = ActivationAccountToken.objects.create(
                 value=int, user=self.user, used=False
             )
 
-        self.token5 = ActivationAccountToken.objects.create(
+        self.token5: ActivationAccountToken = ActivationAccountToken.objects.create(
             value="x" * 63, user=self.user, used=False
         )
 
@@ -75,11 +77,21 @@ class ActivationAccountTokenTestCase(TestCase):
     def test_token_create_validity(self) -> None:
         """Tests token creation integrity and validation"""
 
-        token1 = ActivationAccountToken.objects.get(pk=self.token1.pk)
-        token2 = ActivationAccountToken.objects.get(pk=self.token2.pk)
-        token3 = ActivationAccountToken.objects.get(pk=self.token3.pk)
-        token4 = ActivationAccountToken.objects.get(pk=self.token4.pk)
-        token5 = ActivationAccountToken.objects.get(pk=self.token5.pk)
+        token1: ActivationAccountToken = ActivationAccountToken.objects.get(
+            pk=self.token1.pk
+        )
+        token2: ActivationAccountToken = ActivationAccountToken.objects.get(
+            pk=self.token2.pk
+        )
+        token3: ActivationAccountToken = ActivationAccountToken.objects.get(
+            pk=self.token3.pk
+        )
+        token4: ActivationAccountToken = ActivationAccountToken.objects.get(
+            pk=self.token4.pk
+        )
+        token5: ActivationAccountToken = ActivationAccountToken.objects.get(
+            pk=self.token5.pk
+        )
 
         self.assertEqual(ActivationAccountToken.objects.all().count(), 5)
 
@@ -136,7 +148,7 @@ class ActivationAccountTokenTestCase(TestCase):
                         instance.full_clean()
 
         # Not expecting raises
-        no_raise_kwargs: dict[str, dict[str, str | bool | datetime]] = {
+        no_raise_kwargs: dict[str, dict[str, str | User | bool | datetime]] = {
             "token1": {"value": "x" * 64, "user": self.user},
             "token2": {"value": "x" * 64, "user": self.user, "used": False},
             "token3": {"value": "x" * 64, "user": self.user, "used": True},

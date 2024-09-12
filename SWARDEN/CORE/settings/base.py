@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Final
 
 from django.contrib.messages import constants as messages
 
@@ -11,19 +12,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "cw%t5oij*-s6g8xmgkp6__4br))7&01!3+6_r7vw0p6y37aztqvc_@_tz+oo!ga9&-=2_%!qx+k(0e=y)!i_e=s+5vlzonba^m3)"
+SECRET_KEY: str = "cw%t5oij*-s6g8xmgkp6__4br))7&01!3+6_r7vw0p6y37aztqvc_@_tz+oo!ga9&-=2_%!qx+k(0e=y)!i_e=s+5vlzonba^m3)"
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-ALLOWED_HOSTS = ["*", "localhost"]
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+DEBUG: bool = True
+ALLOWED_HOSTS: list[str] = ["*", "localhost"]
+SESSION_COOKIE_SECURE: bool = True
+CSRF_COOKIE_SECURE: bool = True
 
 
 # Application definition
 
-INSTALLED_APPS = [
+INSTALLED_APPS: list[str] = [
     # Default
     "django.contrib.admin",
     "django.contrib.auth",
@@ -46,7 +47,7 @@ INSTALLED_APPS = [
     "general",
 ]
 
-MIDDLEWARE = [
+MIDDLEWARE: list[str] = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -57,9 +58,9 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "CORE.urls"
+ROOT_URLCONF: Final[str] = "CORE.urls"
 
-TEMPLATES = [
+TEMPLATES: Final[list[dict[str, str | list[Path] | bool | dict[str, list[str]]]]] = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [BASE_DIR / "templates"],
@@ -75,13 +76,13 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "CORE.wsgi.application"
+WSGI_APPLICATION: Final[str] = "CORE.wsgi.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-DATABASES = {
+DATABASES: dict[str, dict[str, str | Path]] = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
@@ -92,7 +93,7 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
-AUTH_PASSWORD_VALIDATORS = [
+AUTH_PASSWORD_VALIDATORS: list[dict[str, str]] = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
@@ -111,47 +112,49 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE = "pt-br"
+LANGUAGE_CODE: Final[str] = "pt-br"
 
-TIME_ZONE = "America/Sao_Paulo"
+TIME_ZONE: Final[str] = "America/Sao_Paulo"
 
-USE_I18N = True
+USE_I18N: Final[bool] = True
 
-USE_TZ = True
+USE_TZ: Final[bool] = True
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_DIRS = [
+STATIC_URL: Final[str] = "/static/"
+STATIC_ROOT: Final[Path] = BASE_DIR / "staticfiles"
+STATICFILES_DIRS: Final[list[Path]] = [
     BASE_DIR / "static",
 ]
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATICFILES_STORAGE: Final[str] = (
+    "whitenoise.storage.CompressedManifestStaticFilesStorage"
+)
 
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+DEFAULT_AUTO_FIELD: Final[str] = "django.db.models.BigAutoField"
 
 
 # User Model
-AUTH_USER_MODEL = "account.User"
-LOGOUT_REDIRECT_URL = "conta/entrar"
+AUTH_USER_MODEL: Final[str] = "account.User"
+LOGOUT_REDIRECT_URL: Final[str] = "conta/entrar"
 
 
 # Crispy Forms
-CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
-CRISPY_TEMPLATE_PACK = "bootstrap4"
+CRISPY_ALLOWED_TEMPLATE_PACKS: Final[str] = "bootstrap4"
+CRISPY_TEMPLATE_PACK: Final[str] = "bootstrap4"
 
 
 # E-mail configs
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+EMAIL_BACKEND: str = "django.core.mail.backends.console.EmailBackend"
+EMAIL_HOST: str = "smtp.gmail.com"
+EMAIL_PORT: int = 587
+EMAIL_USE_TLS: bool = True
 
 
 # Messages configs

@@ -34,12 +34,12 @@ class Attempt(Model):
     )
 
     class Meta:
-        verbose_name = "Registro"
-        verbose_name_plural = "Registros"
+        verbose_name: Final[str] = "Registro"
+        verbose_name_plural: Final[str] = "Registros"
 
     def __str__(self) -> str:
-        date = self.timestamp
-        return f"{self.pk}: {date.day}/{date.month}/{date.year} ({date.hour}h{date.minute}'{date.second}\") UTC+3"
+        date: datetime = self.timestamp
+        return f"{self.pk}: {date.day}/{date.month}/{date.year} ({date.hour}h{date.minute}m{date.second}s) UTC+3"
 
     def is_valid(self) -> bool:
         if (

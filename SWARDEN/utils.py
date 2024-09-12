@@ -13,12 +13,16 @@ from django.utils.http import urlsafe_base64_encode
 from account.models import ActivationAccountToken, User
 
 SK: str = settings.SECRET_KEY
-NO_DATA_TO_EXPORT: Final = "Não há dados para exportação."
-SUCCESS_DATA_EXPORTING: Final = "Dados exportados com sucesso."
+NO_DATA_TO_EXPORT: Final[str] = "Não há dados para exportação."
+SUCCESS_DATA_EXPORTING: Final[str] = "Dados exportados com sucesso."
 
-ACTIVATE_ACCOUNT_TOKEN_SEND: Final = """Sua conta foi criada com sucesso, contudo, você deve ativá-la. Para fazer isso, clique no link abaixo:\n\n\n{domain}/conta/ativar/{uidb64}/{token}\n\n\nEquipe sWarden"""
+ACTIVATE_ACCOUNT_TOKEN_SEND: Final[str] = (
+    """Sua conta foi criada com sucesso, contudo, você deve ativá-la. Para fazer isso, clique no link abaixo:\n\n\n{domain}/conta/ativar/{uidb64}/{token}\n\n\nEquipe sWarden"""
+)
 
-ACTIVATE_ACCOUNT_CONFIRM_DONE: Final = """A partir de agora a sua conta está ativa e você pode utilizar dos recursos do sistema para armazenar seus dados sensíveis.\n\n\nEquipe sWarden"""
+ACTIVATE_ACCOUNT_CONFIRM_DONE: Final[str] = (
+    """A partir de agora a sua conta está ativa e você pode utilizar dos recursos do sistema para armazenar seus dados sensíveis.\n\n\nEquipe sWarden"""
+)
 
 
 def get_ip_address(r: HttpRequest) -> Any | None:
@@ -49,12 +53,12 @@ def xor(text: str, key: str, encrypt: bool = True) -> str:
 
     # Encrypt or decrypt the text
     if encrypt:
-        transformed_chars = [
+        transformed_chars: list[str] = [
             chr((ord(text_char) ^ xor_key_val) + 32)
             for text_char, xor_key_val in zip(text, xor_key_generator)
         ]
     else:
-        transformed_chars = [
+        transformed_chars: list[str] = [
             chr((ord(text_char) - 32) ^ xor_key_val)
             for text_char, xor_key_val in zip(text, xor_key_generator)
         ]
@@ -129,9 +133,9 @@ def create_scenarios(params: list[dict[str, Any]]) -> Generator:
     for case in product([0, 1], repeat=len(params)):
         if all(case):
             break
-        temp = compress(params, case)
-        temp = list(temp)
-        scenario = {}
+        _temp: compress[dict[str, Any]] = compress(params, case)
+        temp: list[dict[str, Any]] = list(_temp)
+        scenario: dict = {}
 
         for param in temp:
             scenario.update(param)

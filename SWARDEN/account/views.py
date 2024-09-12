@@ -1,3 +1,5 @@
+from typing import Final
+
 from captcha.fields import CaptchaField
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -24,7 +26,7 @@ from utils import (
 
 # Create your views here.
 class RegisterForm(Form):
-    username: CharField = CharField(
+    username: Final[CharField] = CharField(
         label="",
         max_length=50,
         required=True,
@@ -38,7 +40,7 @@ class RegisterForm(Form):
         ),
         help_text="50 caracteres ou menos. Letras, números e @/./+/-/_ apenas.",
     )
-    first_name: CharField = CharField(
+    first_name: Final[CharField] = CharField(
         label="",
         required=True,
         widget=TextInput(
@@ -49,7 +51,7 @@ class RegisterForm(Form):
             }
         ),
     )
-    last_name: CharField = CharField(
+    last_name: Final[CharField] = CharField(
         label="",
         required=True,
         widget=TextInput(
@@ -60,7 +62,7 @@ class RegisterForm(Form):
             }
         ),
     )
-    email: EmailField = EmailField(
+    email: Final[EmailField] = EmailField(
         label="",
         required=True,
         widget=TextInput(
@@ -71,7 +73,7 @@ class RegisterForm(Form):
             }
         ),
     )
-    password: CharField = CharField(
+    password: Final[CharField] = CharField(
         label="",
         required=True,
         widget=PasswordInput(
@@ -82,7 +84,7 @@ class RegisterForm(Form):
             }
         ),
     )
-    password2: CharField = CharField(
+    password2: Final[CharField] = CharField(
         label="",
         required=True,
         widget=PasswordInput(
@@ -93,11 +95,11 @@ class RegisterForm(Form):
             }
         ),
     )
-    captcha: CaptchaField = CaptchaField()
+    captcha: Final[CaptchaField] = CaptchaField()
 
 
 class LogInForm(Form):
-    username: CharField = CharField(
+    username: Final[CharField] = CharField(
         label="",
         required=True,
         widget=TextInput(
@@ -109,7 +111,7 @@ class LogInForm(Form):
             }
         ),
     )
-    password: CharField = CharField(
+    password: Final[CharField] = CharField(
         label="",
         required=True,
         widget=PasswordInput(
@@ -156,6 +158,10 @@ def register_view(r: HttpRequest) -> HttpResponse | HttpResponseRedirect:
 
     first_name: str | None = form.cleaned_data.get("first_name")
     last_name: str | None = form.cleaned_data.get("last_name")
+
+    if first_name is None or last_name is None:
+        error(r, "Nome e Sobrenome não podem ser campos vazios.")
+        return render(r, "account/register.html", {"form": form})
 
     user: User = User.objects.create_user(
         username=username,
@@ -215,13 +221,13 @@ def login_view(r: HttpRequest) -> HttpResponse | HttpResponseRedirect:
     elif r.method != "POST":
         return render(r, "account/login.html", {"form": LogInForm()})
 
-    form: Form = LogInForm(r.POST)
+    form: Final[Form] = LogInForm(r.POST)
 
     if not form.is_valid():
         return render(r, "account/login.html", {"form": form})
 
-    username: str = str(form.cleaned_data.get("username")).strip()
-    password: str = str(form.cleaned_data.get("password")).strip()
+    username: Final[str] = str(form.cleaned_data.get("username")).strip()
+    password: Final[str] = str(form.cleaned_data.get("password")).strip()
 
     user: AbstractBaseUser | None = authenticate(username=username, password=password)
 

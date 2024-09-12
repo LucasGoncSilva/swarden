@@ -15,30 +15,30 @@ class XORTestCase(TestCase):
             email="user@example.com",
         ).password
 
-        self.q = queue.Queue()
+        self.q: queue.Queue = queue.Queue()
         self.num = 100_000
 
     def test_xor_return_values(self) -> None:
         """Tests raises and return values"""
 
         self.assertIsNone(xor(None, self.password[21:]))
-
         self.assertEqual(xor("", self.password[21:]), "")
-
         self.assertEqual(xor(5, self.password[21:]), 5)
 
     def test_xor_null_value(self) -> None:
         """Tests return values"""
 
         with open("secret/tests/sample.txt", "r") as txt:
-            lines = txt.readlines()
+            lines: list[str] = txt.readlines()
 
             for line in lines:
-                data = line.strip()
+                data: str = line.strip()
 
-                encrypted_data = xor(data, self.password[21:])
+                encrypted_data: str = xor(data, self.password[21:])
 
-                decrypted_data = xor(encrypted_data, self.password[21:], encrypt=False)
+                decrypted_data: str = xor(
+                    encrypted_data, self.password[21:], encrypt=False
+                )
 
                 self.q.put(encrypted_data)
                 self.q.put(decrypted_data)

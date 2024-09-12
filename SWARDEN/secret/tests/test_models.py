@@ -13,14 +13,14 @@ from utils import create_scenarios, xor
 # Create your tests here.
 class CredentialTestCase(TestCase):
     def setUp(self) -> None:
-        self.user = User.objects.create_user(
+        self.user: User = User.objects.create_user(
             username="user",
             password="password",
             email="user@email.com",
         )
 
         # Object 1
-        self.login_credential_1 = LoginCredential.objects.create(
+        self.login_credential_1: LoginCredential = LoginCredential.objects.create(
             owner=self.user,
             service="google--",
             name="Personal Main Account",
@@ -32,7 +32,7 @@ class CredentialTestCase(TestCase):
         )  # Correct object
 
         # Object 2
-        self.login_credential_2 = LoginCredential.objects.create(
+        self.login_credential_2: LoginCredential = LoginCredential.objects.create(
             owner=self.user,
             service="steam--",
             name="Little Fries",
@@ -44,7 +44,7 @@ class CredentialTestCase(TestCase):
         )  # Correct object
 
         # Object 3
-        self.login_credential_3 = LoginCredential.objects.create(
+        self.login_credential_3: LoginCredential = LoginCredential.objects.create(
             owner=self.user,
             service="steam--",
             name="Little Fries",
@@ -56,7 +56,7 @@ class CredentialTestCase(TestCase):
         )
 
         # Object 4
-        self.login_credential_4 = LoginCredential.objects.create(
+        self.login_credential_4: LoginCredential = LoginCredential.objects.create(
             owner=self.user,
             service="steam--",
             name="Little Fries",
@@ -68,7 +68,7 @@ class CredentialTestCase(TestCase):
         )
 
         # Object 5
-        self.login_credential_5 = LoginCredential.objects.create(
+        self.login_credential_5: LoginCredential = LoginCredential.objects.create(
             owner=self.user,
             service="steam--",
             name="Little Fries",
@@ -82,18 +82,20 @@ class CredentialTestCase(TestCase):
         # Object 6
         try:
             with atomic():
-                self.login_credential_6 = LoginCredential.objects.create(
-                    owner=self.user,
-                    service="google--",
-                    name="Salve" * 9,  # More chars than the limit
-                    slug="google--personal-main-account",
-                    thirdy_party_login=False,
-                    thirdy_party_login_name="-----",
-                    login="x" * 201,  # More chars than the limit
-                    password="ilovemenotyou",
+                self.login_credential_6: LoginCredential = (
+                    LoginCredential.objects.create(
+                        owner=self.user,
+                        service="google--",
+                        name="Salve" * 9,  # More chars than the limit
+                        slug="google--personal-main-account",
+                        thirdy_party_login=False,
+                        thirdy_party_login_name="-----",
+                        login="x" * 201,  # More chars than the limit
+                        password="ilovemenotyou",
+                    )
                 )
         except DataError:
-            self.login_credential_6 = LoginCredential.objects.create(
+            self.login_credential_6: LoginCredential = LoginCredential.objects.create(
                 owner=self.user,
                 service="steam--",
                 name="Little Fries",
@@ -105,7 +107,7 @@ class CredentialTestCase(TestCase):
             )
 
         # Object 7
-        self.login_credential_7 = LoginCredential.objects.create(
+        self.login_credential_7: LoginCredential = LoginCredential.objects.create(
             owner=self.user,
             service="pampas-gonden-radio--",  # Inexistent service
             name="Little Fries",
@@ -357,14 +359,14 @@ class CredentialTestCase(TestCase):
 
 class CardTestCase(TestCase):
     def setUp(self) -> None:
-        self.user = User.objects.create_user(
+        self.user: User = User.objects.create_user(
             username="user",
             password="password",
             email="user@email.com",
         )
 
         # Object 1
-        self.card_1 = Card.objects.create(
+        self.card_1: Card = Card.objects.create(
             owner=self.user,
             name="Personal Main Card One",
             card_type="deb",
@@ -380,7 +382,7 @@ class CardTestCase(TestCase):
         # Object 2
         try:
             with atomic():
-                self.card_2 = Card.objects.create(
+                self.card_2: Card = Card.objects.create(
                     owner=self.user,
                     name="Personal Main Card",
                     card_type="creda",  # Inexintent type and more chars than the limit
@@ -393,7 +395,7 @@ class CardTestCase(TestCase):
                     owners_name="TEST USER",
                 )
         except DataError:
-            self.card_2 = Card.objects.create(
+            self.card_2: Card = Card.objects.create(
                 owner=self.user,
                 name="Personal Main Card Two",
                 card_type="baka",  # Inexintent type
@@ -407,7 +409,7 @@ class CardTestCase(TestCase):
             )
 
         # Object 3
-        self.card_3 = Card.objects.create(
+        self.card_3: Card = Card.objects.create(
             owner=self.user,
             name="Personal Main Card Three",
             card_type="deb",
@@ -421,7 +423,7 @@ class CardTestCase(TestCase):
         )
 
         # Object 4
-        self.card_4 = Card.objects.create(
+        self.card_4: Card = Card.objects.create(
             owner=self.user,
             name="Personal Main Card Four",
             card_type="deb",
@@ -435,7 +437,7 @@ class CardTestCase(TestCase):
         )
 
         # Object 5
-        self.card_5 = Card.objects.create(
+        self.card_5: Card = Card.objects.create(
             owner=self.user,
             name="Personal Main Card Five",
             card_type="deb",
@@ -449,7 +451,7 @@ class CardTestCase(TestCase):
         )
 
         # Object 6
-        self.card_6 = Card.objects.create(
+        self.card_6: Card = Card.objects.create(
             owner=self.user,
             name="Personal Main Card Six",
             card_type="deb",
@@ -736,14 +738,14 @@ class CardTestCase(TestCase):
 
 class SecurityNoteTestCase(TestCase):
     def setUp(self) -> None:
-        self.user = User.objects.create_user(
+        self.user: User = User.objects.create_user(
             username="user",
             password="password",
             email="user@email.com",
         )
 
         # Object 1
-        self.security_note_1 = SecurityNote.objects.create(
+        self.security_note_1: SecurityNote = SecurityNote.objects.create(
             owner=self.user,
             title="How to draw an apple",
             slug="how-to-draw-an-apple",
@@ -751,7 +753,7 @@ class SecurityNoteTestCase(TestCase):
         )  # Correct object
 
         # Object 2
-        self.security_note_2 = SecurityNote.objects.create(
+        self.security_note_2: SecurityNote = SecurityNote.objects.create(
             owner=self.user,
             title="How to draw a tree",
             slug="howtodrawatree",  # Should be 'how-to-draw-a-tree'
@@ -759,7 +761,7 @@ class SecurityNoteTestCase(TestCase):
         )
 
         # Object 3
-        self.security_note_3 = SecurityNote.objects.create(
+        self.security_note_3: SecurityNote = SecurityNote.objects.create(
             owner=self.user,
             title="How to draw an apple tree",
             slug="how-to-draw-an-apple-tree",
@@ -767,7 +769,7 @@ class SecurityNoteTestCase(TestCase):
         )
 
         # Object 4
-        self.security_note_4 = SecurityNote.objects.create(
+        self.security_note_4: SecurityNote = SecurityNote.objects.create(
             owner=self.user,
             title="How to draw an apple tree leaf",
             slug="how-to-draw-an-apple-tree-leaf",

@@ -1,4 +1,4 @@
-from typing import Any, Final, Literal
+from typing import Any, Final, Literal, Callable, Type
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.messages import error
@@ -14,8 +14,8 @@ from secret.models import Card, LoginCredential, SecurityNote
 EMPTY_POST_MSG: Final[str] = "Preencha corretamente todos os campos solicitados"
 FEEDBACK_MSG: Final[str] = "Slug já existente. Tente outro apelido ou título."
 
-login_dec = login_required(login_url="/conta/entrar")
-login_dec_dispatch = method_decorator(login_dec, name="dispatch")
+login_dec: Callable = login_required(login_url="/conta/entrar")
+login_dec_dispatch: Callable = method_decorator(login_dec, name="dispatch")
 
 
 def _list_view(
@@ -59,9 +59,9 @@ def credential_detail_view(r: HttpRequest, slug: str) -> HttpResponse:
 
 @login_dec_dispatch
 class CredentialCreateView(CreateView):
-    model = LoginCredential
-    template_name = "secret/create_view.html"
-    fields = "__all__"
+    model: Type = LoginCredential
+    template_name: Final[str] = "secret/create_view.html"
+    fields: Final[str] = "__all__"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
@@ -85,9 +85,9 @@ class CredentialCreateView(CreateView):
 
 @login_dec_dispatch
 class CredentialUpdateView(UpdateView):
-    model = LoginCredential
-    template_name = "secret/create_view.html"
-    fields = "__all__"
+    model: Type = LoginCredential
+    template_name: Final[str] = "secret/create_view.html"
+    fields: Final[str] = "__all__"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
@@ -96,8 +96,8 @@ class CredentialUpdateView(UpdateView):
         return context
 
     def post(self, r: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        post_pk = r.POST.get("pk")
-        filter = dict(owner=r.user, slug=r.POST.get("slug"))
+        post_pk: str | None = r.POST.get("pk")
+        filter: dict = dict(owner=r.user, slug=r.POST.get("slug"))
 
         if LoginCredential.objects.filter(**filter).exclude(pk=post_pk).exists():
             error(r, FEEDBACK_MSG)
@@ -108,9 +108,9 @@ class CredentialUpdateView(UpdateView):
 
 @login_dec_dispatch
 class CredentialDeleteView(DeleteView):
-    model = LoginCredential
-    template_name = "secret/delete_view.html"
-    success_url = "/segredos/credenciais"
+    model: Type = LoginCredential
+    template_name: Final[str] = "secret/delete_view.html"
+    success_url: Final[str] = "/segredos/credenciais"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
@@ -138,9 +138,9 @@ def card_detail_view(r: HttpRequest, slug: str) -> HttpResponse:
 
 @login_dec_dispatch
 class CardCreateView(CreateView):
-    model = Card
-    template_name = "secret/create_view.html"
-    fields = "__all__"
+    model: Type = Card
+    template_name: Final[str] = "secret/create_view.html"
+    fields: Final[str] = "__all__"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
@@ -162,9 +162,9 @@ class CardCreateView(CreateView):
 
 @login_dec_dispatch
 class CardUpdateView(UpdateView):
-    model = Card
-    template_name = "secret/create_view.html"
-    fields = "__all__"
+    model: Type = Card
+    template_name: Final[str] = "secret/create_view.html"
+    fields: Final[str] = "__all__"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
@@ -173,8 +173,8 @@ class CardUpdateView(UpdateView):
         return context
 
     def post(self, r: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        post_pk = r.POST.get("pk")
-        filter = dict(owner=r.user, slug=r.POST.get("slug"))
+        post_pk: str | None = r.POST.get("pk")
+        filter: dict = dict(owner=r.user, slug=r.POST.get("slug"))
 
         if Card.objects.filter(**filter).exclude(pk=post_pk).exists():
             error(r, FEEDBACK_MSG)
@@ -185,9 +185,9 @@ class CardUpdateView(UpdateView):
 
 @login_dec_dispatch
 class CardDeleteView(DeleteView):
-    model = Card
-    template_name = "secret/delete_view.html"
-    success_url = "/segredos/cartoes"
+    model: Type = Card
+    template_name: Final[str] = "secret/delete_view.html"
+    success_url: Final[str] = "/segredos/cartoes"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
@@ -215,9 +215,9 @@ def note_detail_view(r: HttpRequest, slug: str) -> HttpResponse:
 
 @login_dec_dispatch
 class NoteCreateView(CreateView):
-    model = SecurityNote
-    template_name = "secret/create_view.html"
-    fields = "__all__"
+    model: Type = SecurityNote
+    template_name: Final[str] = "secret/create_view.html"
+    fields: Final[str] = "__all__"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
@@ -239,9 +239,9 @@ class NoteCreateView(CreateView):
 
 @login_dec_dispatch
 class NoteUpdateView(UpdateView):
-    model = SecurityNote
-    template_name = "secret/create_view.html"
-    fields = "__all__"
+    model: Type = SecurityNote
+    template_name: Final[str] = "secret/create_view.html"
+    fields: Final[str] = "__all__"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
@@ -250,8 +250,8 @@ class NoteUpdateView(UpdateView):
         return context
 
     def post(self, r: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        post_pk = r.POST.get("pk")
-        filter = dict(owner=r.user, slug=r.POST.get("slug"))
+        post_pk: str | None = r.POST.get("pk")
+        filter: dict = dict(owner=r.user, slug=r.POST.get("slug"))
 
         if SecurityNote.objects.filter(**filter).exclude(pk=post_pk).exists():
             error(r, FEEDBACK_MSG)
@@ -262,9 +262,9 @@ class NoteUpdateView(UpdateView):
 
 @login_dec_dispatch
 class NoteDeleteView(DeleteView):
-    model = SecurityNote
-    template_name = "secret/delete_view.html"
-    success_url = "/segredos/anotacoes"
+    model: Type = SecurityNote
+    template_name: Final[str] = "secret/delete_view.html"
+    success_url: Final[str] = "/segredos/anotacoes"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)

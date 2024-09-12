@@ -9,6 +9,7 @@ class Error403ViewTestCase(TestCase):
 
         res: HttpResponse = self.client.get(reverse("err:403"))
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "err/error_template.html")
         self.assertEqual(res.context.get("code"), 403)
@@ -27,6 +28,7 @@ class Error404ViewTestCase(TestCase):
 
         res: HttpResponse = self.client.get(reverse("err:404"))
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "err/error_template.html")
         self.assertEqual(res.context.get("code"), 404)
@@ -45,6 +47,7 @@ class Error500ViewTestCase(TestCase):
 
         res: HttpResponse = self.client.get(reverse("err:500"))
 
+        # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, "err/error_template.html")
         self.assertEqual(res.context.get("code"), 500)

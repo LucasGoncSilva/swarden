@@ -18,7 +18,7 @@ class Command(BaseCommand):
         self.stdout.write("\nPopulating secret.Card")
 
         with open("./secret/management/commands/populate_card.txt", "r") as sample:
-            f = [i.strip().split("::") for i in sample.readlines()]
+            f: list[list[str]] = [i.strip().split("::") for i in sample.readlines()]
 
         for i in tqdm(f, desc="Cards", bar_format="{l_bar}{bar:100}{r_bar}{bar:-10b}"):
             (
@@ -34,7 +34,7 @@ class Command(BaseCommand):
                 note,
             ) = i
 
-            owner = User.objects.get(pk=owner)
+            owner: User = User.objects.get(pk=owner)
 
             y, m = expiration.split("-")
             expiration = Month(int(y), int(m))
@@ -57,7 +57,7 @@ class Command(BaseCommand):
         self.stdout.write("\nPopulating secret.SecurityNote")
 
         with open("./secret/management/commands/populate_note.txt", "r") as sample:
-            f = [i.strip().split("::") for i in sample.readlines()]
+            f: list[list[str]] = [i.strip().split("::") for i in sample.readlines()]
 
         for i in tqdm(f, desc="Notes", bar_format="{l_bar}{bar:100}{r_bar}{bar:-10b}"):
             owner, title, content = i
@@ -77,7 +77,7 @@ class Command(BaseCommand):
         with open(
             "./secret/management/commands/populate_credential.txt", "r"
         ) as sample:
-            f = [i.strip().split("::") for i in sample.readlines()]
+            f: list[list[str]] = [i.strip().split("::") for i in sample.readlines()]
 
         for i in tqdm(f, desc="Notes", bar_format="{l_bar}{bar:100}{r_bar}{bar:-10b}"):
             (

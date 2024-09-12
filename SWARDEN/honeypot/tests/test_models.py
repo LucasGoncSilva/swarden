@@ -57,12 +57,12 @@ class AttemptTestCase(TestCase):
     def test_attempt_special_str_method_return(self) -> None:
         """Tests attempt return value of __str__ method"""
 
-        attempt1 = Attempt.objects.get(pk=self.attempt1.pk)
+        attempt1: Attempt = Attempt.objects.get(pk=self.attempt1.pk)
         date: datetime = attempt1.timestamp
 
         self.assertEqual(
             attempt1.__str__(),
-            f"{attempt1.pk}: {date.day}/{date.month}/{date.year} ({date.hour}h{date.minute}'{date.second}\") UTC+3",
+            f"{attempt1.pk}: {date.day}/{date.month}/{date.year} ({date.hour}h{date.minute}m{date.second}s) UTC+3",
         )
 
     def test_attempt_key_value_assertion(self) -> None:

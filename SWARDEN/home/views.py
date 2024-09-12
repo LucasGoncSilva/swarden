@@ -1,13 +1,15 @@
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 
+from secret.models import Card, LoginCredential, SecurityNote
+
 
 # Create your views here.
 def index(r: HttpRequest) -> HttpResponse:
     if r.user.is_authenticated:
-        credentials = r.user.credentials.all()
-        cards = r.user.cards.all()
-        notes = r.user.notes.all()
+        credentials: LoginCredential = r.user.credentials.all()
+        cards: Card = r.user.cards.all()
+        notes: SecurityNote = r.user.notes.all()
 
         return render(
             r,

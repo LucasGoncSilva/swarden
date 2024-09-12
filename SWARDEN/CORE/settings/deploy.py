@@ -19,5 +19,5 @@ EMAIL_HOST_USER: str | None = getenv("SWARDEN_EMAIL_DOMAIN")
 EMAIL_HOST_PASSWORD: str | None = getenv("SWARDEN_EMAIL_PASSWORD")
 
 # http -> https redirect
-SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-SECURE_SSL_REDIRECT = True
+SECURE_PROXY_SSL_HEADER: tuple[str, str] = ("HTTP_X_FORWARDED_PROTO", "https")
+SECURE_SSL_REDIRECT: bool = True

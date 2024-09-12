@@ -1,4 +1,4 @@
-from typing import Final
+from typing import Final, Type
 
 from django.contrib import admin
 from django.contrib.auth import admin as auth_admin
@@ -26,8 +26,8 @@ class UserAdmin(auth_admin.UserAdmin):
             },
         ),
     )
-    form = UserChangeForm
-    add_form = UserCreationForm
+    form: Type[UserChangeForm] = UserChangeForm
+    add_form: Type[UserCreationForm] = UserCreationForm
 
 
 admin.site.register(ActivationAccountToken)

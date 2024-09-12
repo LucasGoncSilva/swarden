@@ -4,7 +4,8 @@ from uuid import uuid4
 
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxLengthValidator, MinLengthValidator
-from django.db import models
+
+# from django.db import models
 from django.db.models import (
     BooleanField,
     CharField,
@@ -12,6 +13,8 @@ from django.db.models import (
     EmailField,
     Model,
     UUIDField,
+    CASCADE,
+    ForeignKey,
 )
 
 
@@ -26,7 +29,7 @@ class ActivationAccountToken(Model):
     id: Final[UUIDField] = UUIDField(
         default=uuid4, unique=True, primary_key=True, editable=False
     )
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user: Final[ForeignKey] = ForeignKey(User, on_delete=CASCADE)
     value: Final[CharField] = CharField(
         max_length=64, validators=[MinLengthValidator(64), MaxLengthValidator(64)]
     )
@@ -34,8 +37,8 @@ class ActivationAccountToken(Model):
     created: Final[DateTimeField] = DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = "Token de Ativação"
-        verbose_name_plural = "Tokens de Ativação"
+        verbose_name: Final[str] = "Token de Ativação"
+        verbose_name_plural: Final[str] = "Tokens de Ativação"
 
     def __str__(self) -> str:
         return f"{self.value}"
