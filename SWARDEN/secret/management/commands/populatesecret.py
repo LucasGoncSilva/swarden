@@ -15,7 +15,7 @@ class Command(BaseCommand):
         self.populate_credentials()
 
     def populate_cards(self) -> None:
-        print("\nPopulating secret.Card")
+        self.stdout.write("\nPopulating secret.Card")
 
         with open("./secret/management/commands/populate_card.txt", "r") as sample:
             f = [i.strip().split("::") for i in sample.readlines()]
@@ -54,7 +54,7 @@ class Command(BaseCommand):
             )
 
     def populate_notes(self) -> None:
-        print("\nPopulating secret.SecurityNote")
+        self.stdout.write("\nPopulating secret.SecurityNote")
 
         with open("./secret/management/commands/populate_note.txt", "r") as sample:
             f = [i.strip().split("::") for i in sample.readlines()]
@@ -72,7 +72,7 @@ class Command(BaseCommand):
             )
 
     def populate_credentials(self) -> None:
-        print("\nPopulating secret.LoginCredential")
+        self.stdout.write("\nPopulating secret.LoginCredential")
 
         with open(
             "./secret/management/commands/populate_credential.txt", "r"

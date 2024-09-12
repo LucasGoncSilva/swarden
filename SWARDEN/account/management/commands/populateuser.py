@@ -8,7 +8,7 @@ from account.models import User
 
 class Command(BaseCommand):
     def handle(self, *args: Any, **options: Any) -> None:
-        print("\nPopulating account.User")
+        self.stdout.write("\nPopulating account.User")
 
         with open("./account/management/commands/populate_user.txt", "r") as sample:
             lines = [i.strip().split("::") for i in sample.readlines()]

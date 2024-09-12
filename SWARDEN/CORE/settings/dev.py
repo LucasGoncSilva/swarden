@@ -16,7 +16,9 @@ DATABASES = {
     }
 }
 
+INSTALLED_APPS += ["django_extensions"]
+
 DEBUG = bool(getenv("DEBUG", DEBUG))
 SECRET_KEY = getenv("SECRET_KEY", SECRET_KEY)
 ALLOWED_HOSTS = list(str(getenv("ALLOWED_HOSTS", ALLOWED_HOSTS)))
-CAPTCHA_TEST_MODE = bool(getenv("CAPTCHA_TEST_MODE", False))
+CAPTCHA_TEST_MODE = bool(getenv("CAPTCHA_TEST_MODE", True))
