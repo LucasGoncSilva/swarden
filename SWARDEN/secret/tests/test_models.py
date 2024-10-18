@@ -10,7 +10,6 @@ from secret.month.models import Month
 from utils import create_scenarios, xor
 
 
-# Create your tests here.
 class CredentialTestCase(TestCase):
     def setUp(self) -> None:
         self.user: User = User.objects.create_user(

@@ -9,7 +9,6 @@ from secret.month.models import Month
 from secret.views import EMPTY_POST_MSG, FEEDBACK_MSG
 
 
-# Create your tests here.
 class SecretIndexViewTestCase(TestCase):
     def setUp(self) -> None:
         User.objects.create_user(

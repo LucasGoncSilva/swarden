@@ -6,7 +6,6 @@ from django.core.validators import MaxLengthValidator
 from django.db.models import CharField, DateTimeField, Model, UUIDField
 
 
-# Create your models here.
 class Attempt(Model):
     id: Final[UUIDField] = UUIDField(
         default=uuid4, unique=True, primary_key=True, editable=False

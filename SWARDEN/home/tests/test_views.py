@@ -8,7 +8,6 @@ from secret.models import Card, LoginCredential, SecurityNote
 from secret.month.models import Month
 
 
-# Create your tests here.
 class HomeViewsTestCase(TestCase):
     def setUp(self) -> None:
         user: User = User.objects.create_user(

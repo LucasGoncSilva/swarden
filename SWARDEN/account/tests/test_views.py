@@ -10,7 +10,6 @@ from django.utils.http import urlsafe_base64_encode
 from account.models import ActivationAccountToken, User
 
 
-# Create your tests here.
 class BaseAccountTestCase(TestCase):
     def setUp(self) -> None:
         User.objects.create_user(

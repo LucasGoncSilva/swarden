@@ -7,7 +7,6 @@ from account.forms import UserChangeForm, UserCreationForm
 from account.models import ActivationAccountToken, User
 
 
-# Register your models here.
 @register(User)
 class UserAdmin(auth_admin.UserAdmin):
     search_fields: Final = ("username", "email", "first_name", "last_name")

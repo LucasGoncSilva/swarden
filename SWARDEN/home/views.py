@@ -4,7 +4,6 @@ from django.shortcuts import render
 from secret.models import Card, LoginCredential, SecurityNote
 
 
-# Create your views here.
 def index(r: HttpRequest) -> HttpResponse:
     if r.user.is_authenticated:
         credentials: LoginCredential = r.user.credentials.all()

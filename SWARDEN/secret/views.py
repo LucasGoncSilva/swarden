@@ -10,7 +10,6 @@ from django.views.generic import CreateView, DeleteView, UpdateView
 
 from secret.models import Card, LoginCredential, SecurityNote
 
-# Create your views here.
 EMPTY_POST_MSG: Final[str] = "Preencha corretamente todos os campos solicitados"
 FEEDBACK_MSG: Final[str] = "Slug já existente. Tente outro apelido ou título."
 

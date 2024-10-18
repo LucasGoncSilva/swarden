@@ -6,7 +6,6 @@ from django.http import HttpRequest
 from secret.models import Card, LoginCredential, SecurityNote
 
 
-# Register your models here.
 class BasesWardenModelAdmin(ModelAdmin):
     exclude: tuple = tuple()
     _exclude: tuple = tuple()
