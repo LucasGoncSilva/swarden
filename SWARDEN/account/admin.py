@@ -1,6 +1,6 @@
 from typing import Final, Type
 
-from django.contrib import admin
+from django.contrib.admin import register, ModelAdmin
 from django.contrib.auth import admin as auth_admin
 
 from account.forms import UserChangeForm, UserCreationForm
@@ -8,8 +8,9 @@ from account.models import ActivationAccountToken, User
 
 
 # Register your models here.
-@admin.register(User)
+@register(User)
 class UserAdmin(auth_admin.UserAdmin):
+    search_fields: Final = ("username", "email", "first_name", "last_name")
     add_fieldsets: Final = (
         (
             None,
@@ -30,4 +31,6 @@ class UserAdmin(auth_admin.UserAdmin):
     add_form: Type[UserCreationForm] = UserCreationForm
 
 
-admin.site.register(ActivationAccountToken)
+@register(ActivationAccountToken)
+class ActivationAccountTokenAdmin(ModelAdmin):
+    list_filter: Final = ("user__is_active",)
