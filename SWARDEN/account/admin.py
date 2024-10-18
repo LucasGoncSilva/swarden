@@ -9,6 +9,14 @@ from account.models import ActivationAccountToken, User
 
 @register(User)
 class UserAdmin(auth_admin.UserAdmin):
+    list_display: Final = (
+        "username",
+        "email",
+        "first_name",
+        "last_name",
+        "is_staff",
+        "is_active",
+    )
     search_fields: Final = ("username", "email", "first_name", "last_name")
     add_fieldsets: Final = (
         (

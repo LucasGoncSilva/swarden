@@ -35,8 +35,12 @@ class SecurityNote(Model):
     slug: Final[SlugField] = SlugField(
         max_length=50, validators=[MaxLengthValidator(50)]
     )
-    created: Final[DateTimeField] = DateTimeField(auto_now_add=True)
-    updated: Final[DateTimeField] = DateTimeField(auto_now=True)
+    created: Final[DateTimeField] = DateTimeField(
+        auto_now_add=True, verbose_name="Criado em"
+    )
+    updated: Final[DateTimeField] = DateTimeField(
+        auto_now=True, verbose_name="Atualizado em"
+    )
 
     def __str__(self) -> str:
         return f"{str(self.owner.username)} | {self.title}"

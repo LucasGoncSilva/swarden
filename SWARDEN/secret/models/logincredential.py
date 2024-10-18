@@ -63,8 +63,12 @@ class LoginCredential(Model):
     slug: Final[SlugField] = SlugField(
         max_length=128, validators=[MaxLengthValidator(128)]
     )
-    created: Final[DateTimeField] = DateTimeField(auto_now_add=True)
-    updated: Final[DateTimeField] = DateTimeField(auto_now=True)
+    created: Final[DateTimeField] = DateTimeField(
+        auto_now_add=True, verbose_name="Criado em"
+    )
+    updated: Final[DateTimeField] = DateTimeField(
+        auto_now=True, verbose_name="Atualizado em"
+    )
 
     class Meta:
         ordering: Final[list[str]] = ["-created"]
