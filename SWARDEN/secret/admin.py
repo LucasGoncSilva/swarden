@@ -6,7 +6,6 @@ from django.http import HttpRequest
 from secret.models import Card, LoginCredential, SecurityNote
 
 
-# Register your models here.
 class BasesWardenModelAdmin(ModelAdmin):
     exclude: tuple = tuple()
     _exclude: tuple = tuple()
@@ -23,6 +22,15 @@ class BasesWardenModelAdmin(ModelAdmin):
 
 @register(Card)
 class CardAdmin(BasesWardenModelAdmin):
+    list_filter: Final = ("owner__is_active", "card_type", "bank", "brand")
+    search_fields: Final = (
+        "card_type",
+        "bank",
+        "brand",
+        "owner__username",
+        "owner__first_name",
+        "owner__last_name",
+    )
     prepopulated_fields: Final = {"slug": ("bank", "name")}
     list_display: Final = ("pk", "slug", "created", "updated")
     _exclude: Final = (
@@ -39,6 +47,13 @@ class CardAdmin(BasesWardenModelAdmin):
 
 @register(LoginCredential)
 class LoginCredentialAdmin(BasesWardenModelAdmin):
+    list_filter: Final = ("owner__is_active", "thirdy_party_login", "service")
+    search_fields: Final = (
+        "slug",
+        "service" "owner__username",
+        "owner__first_name",
+        "owner__last_name",
+    )
     prepopulated_fields: Final = {"slug": ("service", "name")}
     list_display: Final = ("pk", "slug", "created", "updated")
     _exclude: Final = (
@@ -53,6 +68,13 @@ class LoginCredentialAdmin(BasesWardenModelAdmin):
 
 @register(SecurityNote)
 class SecurityNoteAdmin(BasesWardenModelAdmin):
+    list_filter: Final = ("owner__is_active",)
+    search_fields: Final = (
+        "slug",
+        "owner__username",
+        "owner__first_name",
+        "owner__last_name",
+    )
     prepopulated_fields: Final = {"slug": ("title",)}
     list_display: Final = ("pk", "slug", "created", "updated")
     _exclude: Final = ("owner", "content")

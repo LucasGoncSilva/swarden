@@ -7,7 +7,6 @@ from honeypot.models import Attempt
 from utils import get_ip_address
 
 
-# Create your views here.
 def honeypot(r: HttpRequest, path: str | None = None) -> HttpResponse:
     if r.method != "POST":
         if r.user.is_authenticated:

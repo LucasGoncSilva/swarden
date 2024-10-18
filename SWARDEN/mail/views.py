@@ -16,7 +16,6 @@ from utils import (
 )
 
 
-# Create your views here.
 @login_required(login_url="/conta/entrar")
 def export_secrets_no_argument(r: HttpRequest):
     return HttpResponseRedirect(reverse("home:index"))

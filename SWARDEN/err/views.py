@@ -4,7 +4,6 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 
 
-# Create your views here.
 def handle403(r: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
     return render(
         r,

@@ -24,7 +24,6 @@ from utils import (
 )
 
 
-# Create your views here.
 class RegisterForm(Form):
     username: Final[CharField] = CharField(
         label="",

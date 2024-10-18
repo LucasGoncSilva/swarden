@@ -5,7 +5,6 @@ from uuid import uuid4
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxLengthValidator, MinLengthValidator
 
-# from django.db import models
 from django.db.models import (
     BooleanField,
     CharField,
@@ -18,10 +17,13 @@ from django.db.models import (
 )
 
 
-# Create your models here.
 class User(AbstractUser):
-    first_name: Final[CharField] = CharField(max_length=150, blank=True)
-    last_name: Final[CharField] = CharField(max_length=150, blank=True)
+    first_name: Final[CharField] = CharField(
+        max_length=150, blank=True, verbose_name="Nome"
+    )
+    last_name: Final[CharField] = CharField(
+        max_length=150, blank=True, verbose_name="Sobrenome"
+    )
     email: Final[EmailField] = EmailField(unique=True)
 
 
