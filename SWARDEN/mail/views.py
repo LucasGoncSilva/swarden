@@ -5,7 +5,7 @@ from typing import Final, Literal, Type
 from django.contrib.auth.decorators import login_required
 from django.contrib.messages import error, success, warning
 from django.db.models import QuerySet
-from django.http import HttpRequest, HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from secret.models import Card, LoginCredential, SecurityNote
 from utils import (
@@ -13,6 +13,8 @@ from utils import (
     SUCCESS_DATA_EXPORTING,
     send_email_exporting_secrets,
 )
+
+from mail.models import WakeDatabase
 
 
 @login_required(login_url='/conta/entrar')
@@ -105,3 +107,14 @@ def export_secrets(
     send_email_exporting_secrets(secret_type, csvfile, str(r.user.email))
     success(r, SUCCESS_DATA_EXPORTING)
     return HttpResponseRedirect(reverse(dispatch_redirect[secret_type]))
+
+
+def wake_db(r: HttpRequest) -> HttpResponse:
+    WakeDatabase.objects.create()
+
+    e = WakeDatabase.objects.all()
+
+    if e.count() > 3:
+        e.delete()
+
+    return HttpResponse(e.count())

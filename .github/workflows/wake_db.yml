@@ -1,0 +1,14 @@
+name: Wake DB
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  curl_job:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Execute CURL
+        run: |
+          curl https://swarden.onrender.com/enviar-email/wake
