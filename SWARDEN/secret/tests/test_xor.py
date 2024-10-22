@@ -1,18 +1,17 @@
 import queue
 import threading
 
-from django.test import TestCase
-
 from account.models import User
+from django.test import TestCase
 from utils import xor
 
 
 class XORTestCase(TestCase):
     def setUp(self) -> None:
         self.password = User.objects.create_user(
-            username="user",
-            password="testing_password",
-            email="user@example.com",
+            username='user',
+            password='testing_password',
+            email='user@example.com',
         ).password
 
         self.q: queue.Queue = queue.Queue()
@@ -22,13 +21,13 @@ class XORTestCase(TestCase):
         """Tests raises and return values"""
 
         self.assertIsNone(xor(None, self.password[21:]))
-        self.assertEqual(xor("", self.password[21:]), "")
+        self.assertEqual(xor('', self.password[21:]), '')
         self.assertEqual(xor(5, self.password[21:]), 5)
 
     def test_xor_null_value(self) -> None:
         """Tests return values"""
 
-        with open("secret/tests/sample.txt", "r") as txt:
+        with open('secret/tests/sample.txt') as txt:
             lines: list[str] = txt.readlines()
 
             for line in lines:
@@ -50,7 +49,7 @@ class XORTestCase(TestCase):
         while True:
             data = self.q.get()
 
-            self.assertNotIn("\x00", data)
+            self.assertNotIn('\x00', data)
             self.assertTrue(
                 all(map(lambda x: x in range(0x110000), [ord(i) for i in data]))
             )

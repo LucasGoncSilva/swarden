@@ -7,7 +7,7 @@ def days(days):
     return datetime.timedelta(days=days)
 
 
-class Month(object):
+class Month:
     def __init__(self, year, month):
         self.year = year
         self.month = month

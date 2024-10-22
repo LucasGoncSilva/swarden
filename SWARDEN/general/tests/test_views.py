@@ -1,17 +1,16 @@
+from account.models import User
 from django.contrib.auth import get_user
 from django.http import HttpResponse
 from django.test import TestCase
 from django.urls import reverse
 
-from account.models import User
-
 
 class IndexViewTestCase(TestCase):
     def setUp(self) -> None:
         User.objects.create_user(
-            username="user",
-            password="password",
-            email="user@email.com",
+            username='user',
+            password='password',
+            email='user@email.com',
         )
 
     def test_GET_anonymous_user(self) -> None:
@@ -21,19 +20,19 @@ class IndexViewTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-        res: HttpResponse = self.client.get(reverse("general:index"))
+        res: HttpResponse = self.client.get(reverse('general:index'))
 
         # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
-            res, reverse("account:login") + "?next=" + reverse("general:index")
+            res, reverse('account:login') + '?next=' + reverse('general:index')
         )
 
-        res: HttpResponse = self.client.get(reverse("general:index"), follow=True)
+        res: HttpResponse = self.client.get(reverse('general:index'), follow=True)
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "account/login.html")
+        self.assertTemplateUsed(res, 'account/login.html')
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -45,16 +44,16 @@ class IndexViewTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username="user", password="password"))
+        self.assertTrue(self.client.login(username='user', password='password'))
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-        res: HttpResponse = self.client.get(reverse("general:index"))
+        res: HttpResponse = self.client.get(reverse('general:index'))
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "general/index.html")
+        self.assertTemplateUsed(res, 'general/index.html')
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
@@ -66,16 +65,16 @@ class IndexViewTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username="user", password="password"))
+        self.assertTrue(self.client.login(username='user', password='password'))
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-        res: HttpResponse = self.client.post(reverse("general:index"))
+        res: HttpResponse = self.client.post(reverse('general:index'))
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "general/index.html")
+        self.assertTemplateUsed(res, 'general/index.html')
         # Anonymous user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)

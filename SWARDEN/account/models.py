@@ -4,25 +4,24 @@ from uuid import uuid4
 
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxLengthValidator, MinLengthValidator
-
 from django.db.models import (
+    CASCADE,
     BooleanField,
     CharField,
     DateTimeField,
     EmailField,
+    ForeignKey,
     Model,
     UUIDField,
-    CASCADE,
-    ForeignKey,
 )
 
 
 class User(AbstractUser):
     first_name: Final[CharField] = CharField(
-        max_length=150, blank=True, verbose_name="Nome"
+        max_length=150, blank=True, verbose_name='Nome'
     )
     last_name: Final[CharField] = CharField(
-        max_length=150, blank=True, verbose_name="Sobrenome"
+        max_length=150, blank=True, verbose_name='Sobrenome'
     )
     email: Final[EmailField] = EmailField(unique=True)
 
@@ -35,15 +34,15 @@ class ActivationAccountToken(Model):
     value: Final[CharField] = CharField(
         max_length=64, validators=[MinLengthValidator(64), MaxLengthValidator(64)]
     )
-    used: BooleanField = BooleanField(default=False, verbose_name="Usado?")
+    used: BooleanField = BooleanField(default=False, verbose_name='Usado?')
     created: Final[DateTimeField] = DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name: Final[str] = "Token de Ativação"
-        verbose_name_plural: Final[str] = "Tokens de Ativação"
+        verbose_name: Final[str] = 'Token de Ativação'
+        verbose_name_plural: Final[str] = 'Tokens de Ativação'
 
     def __str__(self) -> str:
-        return f"{self.value}"
+        return f'{self.value}'
 
     def is_valid(self) -> bool:
         if (

@@ -13,14 +13,14 @@ class Attempt(Model):
     IP: Final[CharField] = CharField(max_length=64, validators=[MaxLengthValidator(64)])
     username: Final[CharField] = CharField(
         max_length=256,
-        verbose_name="Nome de Usuário",
+        verbose_name='Nome de Usuário',
         validators=[MaxLengthValidator(256)],
         blank=True,
         null=True,
     )
     password: Final[CharField] = CharField(
         max_length=256,
-        verbose_name="Senha",
+        verbose_name='Senha',
         validators=[MaxLengthValidator(256)],
         blank=True,
         null=True,
@@ -29,16 +29,24 @@ class Attempt(Model):
         max_length=256, validators=[MaxLengthValidator(256)]
     )
     timestamp: Final[DateTimeField] = DateTimeField(
-        auto_now_add=True, verbose_name="Data e Hora"
+        auto_now_add=True, verbose_name='Data e Hora'
     )
 
     class Meta:
-        verbose_name: Final[str] = "Registro"
-        verbose_name_plural: Final[str] = "Registros"
+        verbose_name: Final[str] = 'Registro'
+        verbose_name_plural: Final[str] = 'Registros'
 
     def __str__(self) -> str:
         date: datetime = self.timestamp
-        return f"{self.pk}: {date.day}/{date.month}/{date.year} ({date.hour}h{date.minute}m{date.second}s) UTC+3"
+
+        d: int = date.day
+        m: int = date.month
+        y: int = date.year
+        h: int = date.hour
+        min: int = date.minute
+        s: int = date.second
+
+        return f'{self.pk}: {d}/{m}/{y} ({h}h{min}m{s}s) UTC+3'
 
     def is_valid(self) -> bool:
         if (

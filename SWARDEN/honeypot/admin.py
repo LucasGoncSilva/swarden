@@ -7,4 +7,4 @@ from honeypot.models import Attempt
 
 @admin.register(Attempt)
 class AttempAdmin(admin.ModelAdmin):
-    readonly_fields: Final = ("IP", "username", "password", "URL", "timestamp")
+    readonly_fields: Final = ('IP', 'username', 'password', 'URL', 'timestamp')

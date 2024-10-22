@@ -1,6 +1,7 @@
 from typing import Final
 from uuid import uuid4
 
+from account.models import User
 from django.core.validators import MaxLengthValidator
 from django.db.models import (
     CASCADE,
@@ -15,10 +16,9 @@ from django.db.models import (
 )
 from django.template.defaultfilters import slugify
 from django.urls import reverse
-
-from account.models import User
-from secret.choices import credentials_services
 from utils import xor
+
+from secret.choices import credentials_services
 
 
 class LoginCredential(Model):
@@ -26,60 +26,60 @@ class LoginCredential(Model):
         default=uuid4, unique=True, primary_key=True, editable=False
     )
     owner: Final[ForeignKey] = ForeignKey(
-        User, on_delete=CASCADE, related_name="credentials", verbose_name="Dono"
+        User, on_delete=CASCADE, related_name='credentials', verbose_name='Dono'
     )
     service: CharField = CharField(
         max_length=64,
         choices=credentials_services,
-        verbose_name="Serviço",
+        verbose_name='Serviço',
         validators=[MaxLengthValidator(64)],
     )
     name: CharField = CharField(
         max_length=40,
-        verbose_name="Apelido (ex: Conta Principal)",
+        verbose_name='Apelido (ex: Conta Principal)',
         validators=[MaxLengthValidator(40)],
     )
     thirdy_party_login: BooleanField = BooleanField(
-        verbose_name="Login com serviço de terceiro?"
+        verbose_name='Login com serviço de terceiro?'
     )
     thirdy_party_login_name: CharField = CharField(
         max_length=40,
-        verbose_name="Apelido do serviço de terceiro",
+        verbose_name='Apelido do serviço de terceiro',
         validators=[MaxLengthValidator(40)],
     )
     login: CharField = CharField(
-        max_length=200, verbose_name="Login", validators=[MaxLengthValidator(200)]
+        max_length=200, verbose_name='Login', validators=[MaxLengthValidator(200)]
     )
     password: CharField = CharField(
-        max_length=200, verbose_name="Senha", validators=[MaxLengthValidator(200)]
+        max_length=200, verbose_name='Senha', validators=[MaxLengthValidator(200)]
     )
     note: TextField = TextField(
         max_length=128,
         blank=True,
         null=True,
-        verbose_name="Anotação particular",
+        verbose_name='Anotação particular',
         validators=[MaxLengthValidator(128)],
     )
     slug: Final[SlugField] = SlugField(
         max_length=128, validators=[MaxLengthValidator(128)]
     )
     created: Final[DateTimeField] = DateTimeField(
-        auto_now_add=True, verbose_name="Criado em"
+        auto_now_add=True, verbose_name='Criado em'
     )
     updated: Final[DateTimeField] = DateTimeField(
-        auto_now=True, verbose_name="Atualizado em"
+        auto_now=True, verbose_name='Atualizado em'
     )
 
     class Meta:
-        ordering: Final[list[str]] = ["-created"]
-        verbose_name: Final[str] = "Credencial"
-        verbose_name_plural: Final[str] = "Credenciais"
+        ordering: Final[list[str]] = ['-created']
+        verbose_name: Final[str] = 'Credencial'
+        verbose_name_plural: Final[str] = 'Credenciais'
 
     def __str__(self) -> str:
-        return f"{str(self.owner.username)} | {self.service} | {self.name}"
+        return f'{str(self.owner.username)} | {self.service} | {self.name}'
 
     def get_absolute_url(self) -> str:
-        return reverse("secret:credential_list_view")
+        return reverse('secret:credential_list_view')
 
     def save(
         self, force_insert=False, force_update=False, using=None, update_fields=None
@@ -110,12 +110,12 @@ class LoginCredential(Model):
 
     def expected_max_length(self, var: str) -> int:
         max_length: Final[dict[str, int]] = {
-            "service": 64,
-            "name": 40,
-            "slug": 128,
-            "thirdy_party_login_name": 40,
-            "login": 200,
-            "password": 200,
+            'service': 64,
+            'name': 40,
+            'slug': 128,
+            'thirdy_party_login_name': 40,
+            'login': 200,
+            'password': 200,
         }
 
         return max_length[var]
@@ -127,12 +127,12 @@ class LoginCredential(Model):
 
     def all_fields_of_right_length(self) -> bool:
         vars: Final[list[str]] = [
-            "service",
-            "name",
-            "slug",
-            "thirdy_party_login_name",
-            "login",
-            "password",
+            'service',
+            'name',
+            'slug',
+            'thirdy_party_login_name',
+            'login',
+            'password',
         ]
 
         return all(map(self.check_field_length, vars))
@@ -142,17 +142,17 @@ class LoginCredential(Model):
             self.owner
             and self.name
             and self.service in [slug for slug, _ in credentials_services]
-            and self.slug == f"{self.service}{slugify(str(self.name))}"
+            and self.slug == f'{self.service}{slugify(str(self.name))}'
             and self.thirdy_party_login_name
             and self.login
             and self.password
         ):
             if (
-                self.thirdy_party_login and self.thirdy_party_login_name != "-----"
+                self.thirdy_party_login and self.thirdy_party_login_name != '-----'
             ) or (
                 not self.thirdy_party_login
-                and self.login != "-----"
-                and self.password != "-----"
+                and self.login != '-----'
+                and self.password != '-----'
             ):
                 return True
         return False

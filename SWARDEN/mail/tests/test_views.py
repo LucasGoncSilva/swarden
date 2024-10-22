@@ -1,11 +1,10 @@
+from account.models import User
 from django.contrib.auth import get_user
 from django.core import mail
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from django.test import TestCase
 from django.urls import reverse
-
-from account.models import User
 from secret.models import Card, LoginCredential, SecurityNote
 from secret.month.models import Month
 from utils import (
@@ -18,9 +17,9 @@ from utils import (
 class BaseMailTestCase(TestCase):
     def setUp(self) -> None:
         self.user: User = User.objects.create_user(
-            username="user",
-            password="password",
-            email="user@email.com",
+            username='user',
+            password='password',
+            email='user@email.com',
         )
 
 
@@ -32,24 +31,24 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-        res: HttpResponse = self.client.get(reverse("mail:export_secrets_no_argument"))
+        res: HttpResponse = self.client.get(reverse('mail:export_secrets_no_argument'))
 
         # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
             res,
-            reverse("account:login")
-            + "?next="
-            + reverse("mail:export_secrets_no_argument"),
+            reverse('account:login')
+            + '?next='
+            + reverse('mail:export_secrets_no_argument'),
         )
 
         res: HttpResponse = self.client.get(
-            reverse("mail:export_secrets_no_argument"), follow=True
+            reverse('mail:export_secrets_no_argument'), follow=True
         )
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "account/login.html")
+        self.assertTemplateUsed(res, 'account/login.html')
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -61,21 +60,21 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username="user", password="password"))
+        self.assertTrue(self.client.login(username='user', password='password'))
 
-        res: HttpResponse = self.client.get(reverse("mail:export_secrets_no_argument"))
+        res: HttpResponse = self.client.get(reverse('mail:export_secrets_no_argument'))
 
         # Success redirect check
         self.assertEqual(res.status_code, 302)
-        self.assertRedirects(res, reverse("home:index"))
+        self.assertRedirects(res, reverse('home:index'))
 
         res: HttpResponse = self.client.get(
-            reverse("mail:export_secrets_no_argument"), follow=True
+            reverse('mail:export_secrets_no_argument'), follow=True
         )
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "home/index.html")
+        self.assertTemplateUsed(res, 'home/index.html')
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
@@ -88,25 +87,25 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
         res: HttpResponse = self.client.get(
-            reverse("mail:export_secrets", args=["invalid"])
+            reverse('mail:export_secrets', args=['invalid'])
         )
 
         # Success redirect check
         self.assertEqual(res.status_code, 302)
         self.assertRedirects(
             res,
-            reverse("account:login")
-            + "?next="
-            + reverse("mail:export_secrets", args=["invalid"]),
+            reverse('account:login')
+            + '?next='
+            + reverse('mail:export_secrets', args=['invalid']),
         )
 
         res: HttpResponse = self.client.get(
-            reverse("mail:export_secrets", args=["invalid"]), follow=True
+            reverse('mail:export_secrets', args=['invalid']), follow=True
         )
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "account/login.html")
+        self.assertTemplateUsed(res, 'account/login.html')
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -118,57 +117,57 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username="user", password="password"))
+        self.assertTrue(self.client.login(username='user', password='password'))
 
         res: HttpResponse = self.client.get(
-            reverse("mail:export_secrets", args=["invalid"])
+            reverse('mail:export_secrets', args=['invalid'])
         )
 
         # Success redirect check
         self.assertEqual(res.status_code, 302)
-        self.assertRedirects(res, reverse("home:index"))
+        self.assertRedirects(res, reverse('home:index'))
 
         res: HttpResponse = self.client.get(
-            reverse("mail:export_secrets", args=["invalid"]), follow=True
+            reverse('mail:export_secrets', args=['invalid']), follow=True
         )
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "home/index.html")
+        self.assertTemplateUsed(res, 'home/index.html')
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
     def test_GET_authenticated_user_no_secret(self) -> None:
-        """GET /enviar-email/exportar-segredos/<Credenciais | Cartões | Anotações> | authenticated user | no secret"""
+        """GET /enviar-email/exportar-segredos/<Credenciais | Cartões | Anotações> | authenticated user | no secret"""  # noqa: E501
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username="user", password="password"))
+        self.assertTrue(self.client.login(username='user', password='password'))
 
         secrets: list[tuple[str, str]] = [
-            ("Credenciais", "secret:credential_list_view"),
-            ("Cartões", "secret:card_list_view"),
-            ("Anotações", "secret:note_list_view"),
+            ('Credenciais', 'secret:credential_list_view'),
+            ('Cartões', 'secret:card_list_view'),
+            ('Anotações', 'secret:note_list_view'),
         ]
 
         for secret, url in secrets:
             with self.subTest(secret=secret):
                 res: HttpResponse = self.client.get(
-                    reverse("mail:export_secrets", args=[secret])
+                    reverse('mail:export_secrets', args=[secret])
                 )
 
                 self.assertEqual(res.status_code, 302)
                 self.assertRedirects(res, reverse(url))
 
                 res: HttpResponse = self.client.get(
-                    reverse("mail:export_secrets", args=[secret]), follow=True
+                    reverse('mail:export_secrets', args=[secret]), follow=True
                 )
 
                 self.assertEqual(res.status_code, 200)
-                self.assertTemplateUsed(res, "secret/list_view.html")
+                self.assertTemplateUsed(res, 'secret/list_view.html')
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
@@ -180,40 +179,40 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username="user", password="password"))
+        self.assertTrue(self.client.login(username='user', password='password'))
 
         LoginCredential.objects.create(
             owner=self.user,
-            service="google--",
-            name="Personal Main Account",
-            slug="google--personal-main-account",
+            service='google--',
+            name='Personal Main Account',
+            slug='google--personal-main-account',
             thirdy_party_login=False,
-            thirdy_party_login_name="-----",
-            login="night_monkey123@gcom",
-            password="ilovemenotyou",
+            thirdy_party_login_name='-----',
+            login='night_monkey123@gcom',
+            password='ilovemenotyou',
         )
 
         res: HttpResponse = self.client.get(
-            reverse("mail:export_secrets", args=["Credenciais"])
+            reverse('mail:export_secrets', args=['Credenciais'])
         )
 
         # Success redirect check
         self.assertEqual(res.status_code, 302)
-        self.assertRedirects(res, reverse("secret:credential_list_view"))
+        self.assertRedirects(res, reverse('secret:credential_list_view'))
 
         res: HttpResponse = self.client.get(
-            reverse("mail:export_secrets", args=["Credenciais"]), follow=True
+            reverse('mail:export_secrets', args=['Credenciais']), follow=True
         )
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "secret/list_view.html")
+        self.assertTemplateUsed(res, 'secret/list_view.html')
         self.assertEqual(len(mail.outbox), 2)
-        self.assertEqual(mail.outbox[-1].subject, "Exportação de Segredos | sWarden")
-        self.assertEqual(mail.outbox[-1].to, ["user@email.com"])
+        self.assertEqual(mail.outbox[-1].subject, 'Exportação de Segredos | sWarden')
+        self.assertEqual(mail.outbox[-1].to, ['user@email.com'])
         self.assertEqual(
             mail.outbox[-1].body,
-            'Aqui estão seus segredos armazenados em "Credenciais" no sWarden.\n\n\nEquipe sWarden',
+            'Aqui estão seus segredos armazenados em "Credenciais" no sWarden.\n\nEquipe sWarden',  # noqa: E501
         )
 
     def test_GET_authenticated_user_card(self) -> None:
@@ -223,42 +222,42 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username="user", password="password"))
+        self.assertTrue(self.client.login(username='user', password='password'))
 
         Card.objects.create(
             owner=self.user,
-            name="Personal Main Card",
-            card_type="deb",
-            number="4002892240028922",
+            name='Personal Main Card',
+            card_type='deb',
+            number='4002892240028922',
             expiration=Month(2028, 11),
-            cvv="113",
-            bank="nubank--",
-            brand="mastercard--",
-            slug="nubank--personal-main-card",
-            owners_name="TEST USER",
+            cvv='113',
+            bank='nubank--',
+            brand='mastercard--',
+            slug='nubank--personal-main-card',
+            owners_name='TEST USER',
         )
 
         res: HttpResponse = self.client.get(
-            reverse("mail:export_secrets", args=["Cartões"])
+            reverse('mail:export_secrets', args=['Cartões'])
         )
 
         # Success redirect check
         self.assertEqual(res.status_code, 302)
-        self.assertRedirects(res, reverse("secret:card_list_view"))
+        self.assertRedirects(res, reverse('secret:card_list_view'))
 
         res: HttpResponse = self.client.get(
-            reverse("mail:export_secrets", args=["Cartões"]), follow=True
+            reverse('mail:export_secrets', args=['Cartões']), follow=True
         )
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "secret/list_view.html")
+        self.assertTemplateUsed(res, 'secret/list_view.html')
         self.assertEqual(len(mail.outbox), 2)
-        self.assertEqual(mail.outbox[-1].subject, "Exportação de Segredos | sWarden")
-        self.assertEqual(mail.outbox[-1].to, ["user@email.com"])
+        self.assertEqual(mail.outbox[-1].subject, 'Exportação de Segredos | sWarden')
+        self.assertEqual(mail.outbox[-1].to, ['user@email.com'])
         self.assertEqual(
             mail.outbox[-1].body,
-            'Aqui estão seus segredos armazenados em "Cartões" no sWarden.\n\n\nEquipe sWarden',
+            'Aqui estão seus segredos armazenados em "Cartões" no sWarden.\n\nEquipe sWarden',  # noqa: E501
         )
 
     def test_GET_authenticated_user_note(self) -> None:
@@ -268,83 +267,119 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username="user", password="password"))
+        self.assertTrue(self.client.login(username='user', password='password'))
 
         SecurityNote.objects.create(
             owner=self.user,
-            title="How to draw an apple",
-            slug="how-to-draw-an-apple",
-            content="Just draw an apple tree and erase the tree.",
+            title='How to draw an apple',
+            slug='how-to-draw-an-apple',
+            content='Just draw an apple tree and erase the tree.',
         )
 
         res: HttpResponse = self.client.get(
-            reverse("mail:export_secrets", args=["Anotações"])
+            reverse('mail:export_secrets', args=['Anotações'])
         )
 
         # Success redirect check
         self.assertEqual(res.status_code, 302)
-        self.assertRedirects(res, reverse("secret:note_list_view"))
+        self.assertRedirects(res, reverse('secret:note_list_view'))
 
         res: HttpResponse = self.client.get(
-            reverse("mail:export_secrets", args=["Anotações"]), follow=True
+            reverse('mail:export_secrets', args=['Anotações']), follow=True
         )
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "secret/list_view.html")
+        self.assertTemplateUsed(res, 'secret/list_view.html')
         self.assertEqual(len(mail.outbox), 2)
-        self.assertEqual(mail.outbox[-1].subject, "Exportação de Segredos | sWarden")
-        self.assertEqual(mail.outbox[-1].to, ["user@email.com"])
+        self.assertEqual(mail.outbox[-1].subject, 'Exportação de Segredos | sWarden')
+        self.assertEqual(mail.outbox[-1].to, ['user@email.com'])
         self.assertEqual(
             mail.outbox[-1].body,
-            'Aqui estão seus segredos armazenados em "Anotações" no sWarden.\n\n\nEquipe sWarden',
+            'Aqui estão seus segredos armazenados em "Anotações" no sWarden.\n\nEquipe sWarden',  # noqa: E501
         )
 
 
 class EmailActivationAccountTokenTestCase(BaseMailTestCase):
     def test_ideal(self) -> None:
-        """send_email_activation_account_token(domain: str, user: User, password: str)"""
+        """
+        send_email_activation_account_token(
+            domain: str,
+            user: User,
+            password: str
+        )
+        """
 
         self.assertIsNone(
-            send_email_activation_account_token("domain", self.user, "password")
+            send_email_activation_account_token('domain', self.user, 'password')
         )
         self.assertEqual(len(mail.outbox), 1)
-        self.assertTrue(mail.outbox[-1].subject, "Ativação de Conta | sWarden")
-        self.assertTrue(mail.outbox[-1].to, ["user@email.com"])
+        self.assertTrue(mail.outbox[-1].subject, 'Ativação de Conta | sWarden')
+        self.assertTrue(mail.outbox[-1].to, ['user@email.com'])
 
     def test_invalid_User(self) -> None:
-        """send_email_activation_account_token(domain: str, user: User, password: str)"""
+        """
+        send_email_activation_account_token(
+            domain: str,
+            user: User,
+            password: str
+        )
+        """
 
         user: User = User()
 
         with self.assertRaises(ValidationError):
-            send_email_activation_account_token("domain", user, "password")
+            send_email_activation_account_token('domain', user, 'password')
 
     def test_wrong_type_domain_arg(self) -> None:
-        """send_email_activation_account_token(domain: not str, user: User, password: str)"""
+        """
+        send_email_activation_account_token(
+            domain: not str,
+            user: User,
+            password: str
+        )
+        """
 
         with self.assertRaises(TypeError):
-            send_email_activation_account_token(500, self.user, "password")
+            send_email_activation_account_token(500, self.user, 'password')
 
     def test_wrong_type_user_arg(self) -> None:
-        """send_email_activation_account_token(domain: str, user: not User, password: str)"""
+        """
+        send_email_activation_account_token(
+            domain: str,
+            user: not User,
+            password: str
+        )
+        """
 
         with self.assertRaises(TypeError):
-            send_email_activation_account_token("domain", "self.user", "password")
+            send_email_activation_account_token('domain', 'self.user', 'password')
 
     def test_wrong_type_password_arg(self) -> None:
-        """send_email_activation_account_token(domain: str, user: User, password: not str)"""
+        """
+        send_email_activation_account_token(
+            domain: str,
+            user: User,
+            password: not str
+        )
+        """
 
         with self.assertRaises(TypeError):
-            send_email_activation_account_token("domain", self.user, 500)
+            send_email_activation_account_token('domain', self.user, 500)
 
     def test_missing_args(self) -> None:
-        """send_email_activation_account_token(domain: str | None, user: User | None, password: str | None)"""
+        """
+        send_email_activation_account_token(
+            domain: str | None,
+            user: User | None,
+            password: str | None
+        )
+        """
 
         params: list[dict[str, str | User]] = [
-            {"domain": "domain"},
-            {"user": self.user},
-            {"password": "password"},
+            {'domain': 'domain'},
+            {'user': self.user},
+            {'password': 'password'},
         ]
 
         for case, scenario in create_scenarios(params):
@@ -357,10 +392,10 @@ class EmailActivationAccountDoneTestCase(BaseMailTestCase):
     def test_ideal(self) -> None:
         """send_email_activate_account_completed(user_email: str)"""
 
-        self.assertIsNone(send_email_activate_account_completed("user@email.com"))
+        self.assertIsNone(send_email_activate_account_completed('user@email.com'))
         self.assertEqual(len(mail.outbox), 1)
-        self.assertTrue(mail.outbox[-1].subject, "Ativação de Conta | sWarden")
-        self.assertTrue(mail.outbox[-1].to, ["user@email.com"])
+        self.assertTrue(mail.outbox[-1].subject, 'Ativação de Conta | sWarden')
+        self.assertTrue(mail.outbox[-1].to, ['user@email.com'])
 
     def test_invalid_email(self) -> None:
         """send_email_activate_account_completed(user_email: not str)"""

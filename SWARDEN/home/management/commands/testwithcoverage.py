@@ -1,5 +1,5 @@
-from typing import Any, Literal
 from os import system
+from typing import Any, Literal
 
 from django.core.management import BaseCommand
 
@@ -7,25 +7,26 @@ from django.core.management import BaseCommand
 class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
-            "--app",
+            '--app',
             type=str,
             help='App to be covered - "." if nothing is defined.',
-            default=".",
+            default='.',
         )
 
     def handle(self, *args: Any, **options: Any) -> None:
         omit_list: list[str] = [
-            "*/month/*,",
-            "*/migrations/*,",
-            "manage.py,",
-            "*/CORE/*,",
+            '*/month/*,',
+            '*/migrations/*,',
+            'manage.py,',
+            '*/CORE/*,',
         ]
 
-        app: Literal["."] | str = options["app"]
+        app: Literal['.'] | str = options['app']
+        source: str = f"--source='{app}'"
+        omit: str = f'--omit=\'{",".join(omit_list)}\''
+        cmd: str = f'coverage run {source} {omit} manage.py test {app}'
 
-        system(
-            f'coverage run --source=\'{app}\' --omit=\'{",".join(omit_list)}\' manage.py test {app}'
-        )
-        system("coverage html")
+        system(cmd)
+        system('coverage html')
 
-        self.stdout.write(self.style.SUCCESS("Coverage done + HTML file generated."))
+        self.stdout.write(self.style.SUCCESS('Coverage done + HTML file generated.'))

@@ -1,6 +1,7 @@
 from typing import Final
 from uuid import uuid4
 
+from account.models import User
 from django.core.validators import MaxLengthValidator, MinLengthValidator
 from django.db.models import (
     CASCADE,
@@ -14,11 +15,10 @@ from django.db.models import (
 )
 from django.template.defaultfilters import slugify
 from django.urls import reverse
+from utils import xor
 
-from account.models import User
 from secret.choices import cards_banks, cards_brands, cards_types
 from secret.month.models import MonthField
-from utils import xor
 
 
 class Card(Model):
@@ -26,68 +26,68 @@ class Card(Model):
         default=uuid4, unique=True, primary_key=True, editable=False
     )
     owner: Final[ForeignKey] = ForeignKey(
-        User, on_delete=CASCADE, related_name="cards", verbose_name="Dono"
+        User, on_delete=CASCADE, related_name='cards', verbose_name='Dono'
     )
     name: CharField = CharField(
         max_length=40,
-        verbose_name="Apelido (ex: Cartão da Família)",
+        verbose_name='Apelido (ex: Cartão da Família)',
         validators=[MaxLengthValidator(40)],
     )
     card_type: CharField = CharField(
         max_length=4,
         choices=cards_types,
-        verbose_name="Tipo (débito, crédito, ...)",
+        verbose_name='Tipo (débito, crédito, ...)',
         validators=[MaxLengthValidator(4)],
     )
     number: CharField = CharField(
         max_length=19,
         validators=[MinLengthValidator(12), MaxLengthValidator(19)],
-        verbose_name="Número do Cartão",
+        verbose_name='Número do Cartão',
     )
-    expiration = MonthField(verbose_name="Data de Expiração")
+    expiration = MonthField(verbose_name='Data de Expiração')
     cvv: CharField = CharField(
         max_length=4,
         validators=[MinLengthValidator(3), MaxLengthValidator(4)],
-        verbose_name="cvv",
+        verbose_name='cvv',
     )
     bank: CharField = CharField(
-        max_length=64, choices=cards_banks, verbose_name="Banco"
+        max_length=64, choices=cards_banks, verbose_name='Banco'
     )
     brand: CharField = CharField(
-        max_length=64, choices=cards_brands, verbose_name="Bandeira"
+        max_length=64, choices=cards_brands, verbose_name='Bandeira'
     )
     owners_name: CharField = CharField(
         max_length=64,
-        verbose_name="Nome do Titular (como no cartão)",
+        verbose_name='Nome do Titular (como no cartão)',
         validators=[MaxLengthValidator(64)],
     )
     note: TextField = TextField(
         max_length=128,
         blank=True,
         null=True,
-        verbose_name="Anotação Particular",
+        verbose_name='Anotação Particular',
         validators=[MaxLengthValidator(128)],
     )
     slug: Final[SlugField] = SlugField(
         max_length=128, validators=[MaxLengthValidator(128)]
     )
     created: Final[DateTimeField] = DateTimeField(
-        auto_now_add=True, verbose_name="Criado em"
+        auto_now_add=True, verbose_name='Criado em'
     )
     updated: Final[DateTimeField] = DateTimeField(
-        auto_now=True, verbose_name="Atualizado em"
+        auto_now=True, verbose_name='Atualizado em'
     )
 
     class Meta:
-        ordering: Final[list[str]] = ["-created"]
-        verbose_name: Final[str] = "Cartão"
-        verbose_name_plural: Final[str] = "Cartões"
+        ordering: Final[list[str]] = ['-created']
+        verbose_name: Final[str] = 'Cartão'
+        verbose_name_plural: Final[str] = 'Cartões'
 
     def __str__(self) -> str:
-        return f"{str(self.owner.username)} | {self.card_type} | {self.name}"
+        return f'{str(self.owner.username)} | {self.card_type} | {self.name}'
 
     def get_absolute_url(self) -> str:
-        return reverse("secret:card_list_view")
+        return reverse('secret:card_list_view')
 
     def save(
         self, force_insert=False, force_update=False, using=None, update_fields=None
@@ -126,34 +126,34 @@ class Card(Model):
 
     def expected_max_length(self, var: str) -> int:
         max_length: Final[dict[str, int]] = {
-            "name": 40,
-            "card_type": 16,
-            "number": 19,
-            "cvv": 4,
-            "bank": 64,
-            "brand": 64,
-            "slug": 128,
-            "owners_name": 64,
-            "note": 128,
+            'name': 40,
+            'card_type': 16,
+            'number': 19,
+            'cvv': 4,
+            'bank': 64,
+            'brand': 64,
+            'slug': 128,
+            'owners_name': 64,
+            'note': 128,
         }
 
         return max_length[var]
 
     def expected_min_length(self, var: str) -> int:
         min_length: Final[dict[str, int]] = {
-            "number": 12,
-            "cvv": 3,
+            'number': 12,
+            'cvv': 3,
         }
 
         return min_length[var]
 
     def check_field_length(self, var: str) -> bool:
-        if var == "expiration":
+        if var == 'expiration':
             return True
 
         value = self.__getattribute__(var)
 
-        if var in ["number", "cvv"]:
+        if var in ['number', 'cvv']:
             return (
                 self.expected_min_length(var)
                 <= len(value)
@@ -164,15 +164,15 @@ class Card(Model):
 
     def all_fields_of_right_length(self) -> bool:
         vars: Final[list[str]] = [
-            "name",
-            "card_type",
-            "number",
-            "expiration",
-            "cvv",
-            "bank",
-            "brand",
-            "slug",
-            "owners_name",
+            'name',
+            'card_type',
+            'number',
+            'expiration',
+            'cvv',
+            'bank',
+            'brand',
+            'slug',
+            'owners_name',
         ]
 
         return all(map(self.check_field_length, vars))
@@ -188,7 +188,7 @@ class Card(Model):
             and self.bank in [slug for slug, _ in cards_banks]
             and self.brand in [slug for slug, _ in cards_brands]
             and self.owners_name
-            and self.slug == f"{self.bank}{slugify(str(self.name))}"
+            and self.slug == f'{self.bank}{slugify(str(self.name))}'
         )
 
     def all_fields_of_correct_types(self) -> bool:

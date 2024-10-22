@@ -13,14 +13,14 @@ from account.models import ActivationAccountToken, User
 class BaseAccountTestCase(TestCase):
     def setUp(self) -> None:
         User.objects.create_user(
-            username="user",
-            password="password",
-            email="user@email.com",
+            username='user',
+            password='password',
+            email='user@email.com',
         )
 
-        self.REGISTER_URL: str = reverse("account:register")
-        self.LOGIN_URL: str = reverse("account:login")
-        self.LOGOUT_URL: str = reverse("account:logout")
+        self.REGISTER_URL: str = reverse('account:register')
+        self.LOGIN_URL: str = reverse('account:login')
+        self.LOGOUT_URL: str = reverse('account:logout')
 
 
 class RegisterViewTestCase(BaseAccountTestCase):
@@ -35,7 +35,7 @@ class RegisterViewTestCase(BaseAccountTestCase):
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "account/register.html")
+        self.assertTemplateUsed(res, 'account/register.html')
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -48,12 +48,12 @@ class RegisterViewTestCase(BaseAccountTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
         res: HttpResponse = self.client.post(
-            self.REGISTER_URL, {"captcha_0": "dummy-value", "captcha_1": "PASSED"}
+            self.REGISTER_URL, {'captcha_0': 'dummy-value', 'captcha_1': 'PASSED'}
         )
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "account/register.html")
+        self.assertTemplateUsed(res, 'account/register.html')
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -66,21 +66,21 @@ class RegisterViewTestCase(BaseAccountTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
         post_data: dict[str, str] = {
-            "username": "username",
-            "first_name": "first",
-            "last_name": "last",
-            "email": "another@example.com",
-            "password": "12345678",
-            "password2": "11223344",
-            "captcha_0": "dummy-value",
-            "captcha_1": "PASSED",
+            'username': 'username',
+            'first_name': 'first',
+            'last_name': 'last',
+            'email': 'another@example.com',
+            'password': '12345678',
+            'password2': '11223344',
+            'captcha_0': 'dummy-value',
+            'captcha_1': 'PASSED',
         }
 
         res: HttpResponse = self.client.post(self.REGISTER_URL, post_data)
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "account/register.html")
+        self.assertTemplateUsed(res, 'account/register.html')
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -93,21 +93,21 @@ class RegisterViewTestCase(BaseAccountTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
         post_data: dict[str, str] = {
-            "username": "user",
-            "first_name": "first",
-            "last_name": "last",
-            "email": "email@example.com",
-            "password": "password",
-            "password2": "password",
-            "captcha_0": "dummy-value",
-            "captcha_1": "PASSED",
+            'username': 'user',
+            'first_name': 'first',
+            'last_name': 'last',
+            'email': 'email@example.com',
+            'password': 'password',
+            'password2': 'password',
+            'captcha_0': 'dummy-value',
+            'captcha_1': 'PASSED',
         }
 
         res: HttpResponse = self.client.post(self.REGISTER_URL, post_data)
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "account/register.html")
+        self.assertTemplateUsed(res, 'account/register.html')
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -120,21 +120,21 @@ class RegisterViewTestCase(BaseAccountTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
         post_data: dict[str, str | None] = {
-            "username": "username",
-            "first_name": "",
-            "last_name": "last",
-            "email": "email@example.com",
-            "password": "password",
-            "password2": "password",
-            "captcha_0": "dummy-value",
-            "captcha_1": "PASSED",
+            'username': 'username',
+            'first_name': '',
+            'last_name': 'last',
+            'email': 'email@example.com',
+            'password': 'password',
+            'password2': 'password',
+            'captcha_0': 'dummy-value',
+            'captcha_1': 'PASSED',
         }
 
         res: HttpResponse = self.client.post(self.REGISTER_URL, post_data)
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "account/register.html")
+        self.assertTemplateUsed(res, 'account/register.html')
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -147,21 +147,21 @@ class RegisterViewTestCase(BaseAccountTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
         post_data: dict[str, str] = {
-            "username": "username",
-            "first_name": "first",
-            "last_name": "last",
-            "email": "another@example.com",
-            "password": "password",
-            "password2": "password",
-            "captcha_0": "dummy-value",
-            "captcha_1": "PASSED",
+            'username': 'username',
+            'first_name': 'first',
+            'last_name': 'last',
+            'email': 'another@example.com',
+            'password': 'password',
+            'password2': 'password',
+            'captcha_0': 'dummy-value',
+            'captcha_1': 'PASSED',
         }
 
         res: HttpResponse = self.client.post(self.REGISTER_URL, post_data, follow=True)
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "account/login.html")
+        self.assertTemplateUsed(res, 'account/login.html')
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -173,7 +173,7 @@ class RegisterViewTestCase(BaseAccountTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username="user", password="password"))
+        self.assertTrue(self.client.login(username='user', password='password'))
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
@@ -182,13 +182,13 @@ class RegisterViewTestCase(BaseAccountTestCase):
 
         # Success redirect check
         self.assertEqual(res.status_code, 302)
-        self.assertRedirects(res, reverse("home:index"))
+        self.assertRedirects(res, reverse('home:index'))
 
         res: HttpResponse = self.client.get(self.REGISTER_URL, follow=True)
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "home/index.html")
+        self.assertTemplateUsed(res, 'home/index.html')
 
 
 class ActivateAccountViewTestCase(BaseAccountTestCase):
@@ -199,19 +199,19 @@ class ActivateAccountViewTestCase(BaseAccountTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-        res: HttpResponse = self.client.get(reverse("account:activate_no_parameter"))
+        res: HttpResponse = self.client.get(reverse('account:activate_no_parameter'))
 
         # Success redirect check
         self.assertEqual(res.status_code, 302)
-        self.assertRedirects(res, reverse("home:index"))
+        self.assertRedirects(res, reverse('home:index'))
 
         res: HttpResponse = self.client.get(
-            reverse("account:activate_no_parameter"), follow=True
+            reverse('account:activate_no_parameter'), follow=True
         )
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "home/landing.html")
+        self.assertTemplateUsed(res, 'home/landing.html')
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -224,20 +224,20 @@ class ActivateAccountViewTestCase(BaseAccountTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
         res: HttpResponse = self.client.get(
-            reverse("account:activate_no_token", args=["404"])
+            reverse('account:activate_no_token', args=['404'])
         )
 
         # Success redirect check
         self.assertEqual(res.status_code, 302)
-        self.assertRedirects(res, reverse("home:index"))
+        self.assertRedirects(res, reverse('home:index'))
 
         res: HttpResponse = self.client.get(
-            reverse("account:activate_no_token", args=["404"]), follow=True
+            reverse('account:activate_no_token', args=['404']), follow=True
         )
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "home/landing.html")
+        self.assertTemplateUsed(res, 'home/landing.html')
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -250,12 +250,12 @@ class ActivateAccountViewTestCase(BaseAccountTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
         res: HttpResponse = self.client.get(
-            reverse("account:activate", args=["404", "x" * 64])
+            reverse('account:activate', args=['404', 'x' * 64])
         )
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "err/error_template.html")
+        self.assertTemplateUsed(res, 'err/error_template.html')
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -272,12 +272,12 @@ class ActivateAccountViewTestCase(BaseAccountTestCase):
         uidb64_pk = urlsafe_base64_encode(force_bytes(user_pk))
 
         res: HttpResponse = self.client.get(
-            reverse("account:activate", args=[uidb64_pk, "x" * 64])
+            reverse('account:activate', args=[uidb64_pk, 'x' * 64])
         )
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "err/error_template.html")
+        self.assertTemplateUsed(res, 'err/error_template.html')
 
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -294,18 +294,18 @@ class ActivateAccountViewTestCase(BaseAccountTestCase):
         uidb64_pk = urlsafe_base64_encode(force_bytes(user.pk))
 
         token: ActivationAccountToken = ActivationAccountToken.objects.create(
-            value="x" * 64,
+            value='x' * 64,
             user=user,
             used=False,
         )
 
         res: HttpResponse = self.client.get(
-            reverse("account:activate", args=[uidb64_pk, token.value]), follow=True
+            reverse('account:activate', args=[uidb64_pk, token.value]), follow=True
         )
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "home/index.html")
+        self.assertTemplateUsed(res, 'home/index.html')
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
@@ -317,25 +317,25 @@ class ActivateAccountViewTestCase(BaseAccountTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username="user", password="password"))
+        self.assertTrue(self.client.login(username='user', password='password'))
 
         user: User = cast(User, User.objects.first())
 
         uidb64_pk = urlsafe_base64_encode(force_bytes(user.pk))
 
         token: ActivationAccountToken = ActivationAccountToken.objects.create(
-            value="x" * 64,
+            value='x' * 64,
             user=user,
             used=False,
         )
 
         res: HttpResponse = self.client.get(
-            reverse("account:activate", args=[uidb64_pk, token.value]), follow=True
+            reverse('account:activate', args=[uidb64_pk, token.value]), follow=True
         )
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "home/index.html")
+        self.assertTemplateUsed(res, 'home/index.html')
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
@@ -353,11 +353,11 @@ class LoginViewTestCase(BaseAccountTestCase):
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "account/login.html")
+        self.assertTemplateUsed(res, 'account/login.html')
 
         res: HttpResponse = self.client.post(
             self.LOGIN_URL,
-            {"username": "user", "password": "password", "email": "email@example.com"},
+            {'username': 'user', 'password': 'password', 'email': 'email@example.com'},
             follow=True,
         )
         # Logged user check
@@ -375,17 +375,17 @@ class LoginViewTestCase(BaseAccountTestCase):
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "account/login.html")
+        self.assertTemplateUsed(res, 'account/login.html')
 
         res: HttpResponse = self.client.post(
             self.LOGIN_URL,
-            {"username": "user", "email": "email@example.com"},
+            {'username': 'user', 'email': 'email@example.com'},
             follow=True,
         )
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "account/login.html")
+        self.assertTemplateUsed(res, 'account/login.html')
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -401,21 +401,21 @@ class LoginViewTestCase(BaseAccountTestCase):
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "account/login.html")
+        self.assertTemplateUsed(res, 'account/login.html')
 
         res: HttpResponse = self.client.post(
             self.LOGIN_URL,
             {
-                "username": "fake_user",
-                "password": "password",
-                "email": "email@example.com",
+                'username': 'fake_user',
+                'password': 'password',
+                'email': 'email@example.com',
             },
             follow=True,
         )
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "account/login.html")
+        self.assertTemplateUsed(res, 'account/login.html')
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -427,7 +427,7 @@ class LoginViewTestCase(BaseAccountTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username="user", password="password"))
+        self.assertTrue(self.client.login(username='user', password='password'))
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
@@ -436,13 +436,13 @@ class LoginViewTestCase(BaseAccountTestCase):
 
         # Success redirect check
         self.assertEqual(res.status_code, 302)
-        self.assertRedirects(res, reverse("home:index"))
+        self.assertRedirects(res, reverse('home:index'))
 
         res: HttpResponse = self.client.get(self.LOGIN_URL, follow=True)
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "home/index.html")
+        self.assertTemplateUsed(res, 'home/index.html')
 
 
 class LogoutViewTestCase(BaseAccountTestCase):
@@ -457,13 +457,13 @@ class LogoutViewTestCase(BaseAccountTestCase):
 
         # Success redirect check
         self.assertEqual(res.status_code, 302)
-        self.assertRedirects(res, self.LOGIN_URL + "?next=" + self.LOGOUT_URL)
+        self.assertRedirects(res, self.LOGIN_URL + '?next=' + self.LOGOUT_URL)
 
         res: HttpResponse = self.client.get(self.LOGOUT_URL, follow=True)
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "account/login.html")
+        self.assertTemplateUsed(res, 'account/login.html')
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
@@ -475,7 +475,7 @@ class LogoutViewTestCase(BaseAccountTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username="user", password="password"))
+        self.assertTrue(self.client.login(username='user', password='password'))
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
@@ -484,7 +484,7 @@ class LogoutViewTestCase(BaseAccountTestCase):
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "account/logout.html")
+        self.assertTemplateUsed(res, 'account/logout.html')
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
@@ -496,7 +496,7 @@ class LogoutViewTestCase(BaseAccountTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username="user", password="password"))
+        self.assertTrue(self.client.login(username='user', password='password'))
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
@@ -507,13 +507,13 @@ class LogoutViewTestCase(BaseAccountTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
         self.assertEqual(res.status_code, 302)
         # Confirm user login
-        self.assertTrue(self.client.login(username="user", password="password"))
+        self.assertTrue(self.client.login(username='user', password='password'))
 
         res: HttpResponse = self.client.post(self.LOGOUT_URL, follow=True)
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, "account/login.html")
+        self.assertTemplateUsed(res, 'account/login.html')
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)

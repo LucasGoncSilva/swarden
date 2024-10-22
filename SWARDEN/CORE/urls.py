@@ -9,46 +9,47 @@ from django.contrib.auth.views import (
 )
 from django.urls import URLPattern, URLResolver, include, path
 
+
 urlpatterns: list[URLResolver | URLPattern] = [
     # Adm pages
-    path("__manager__/", admin.site.urls),
-    path("admin/", include("honeypot.urls")),
+    path('__manager__/', admin.site.urls),
+    path('admin/', include('honeypot.urls')),
     # System functionality's pages
-    path("conta/", include("account.urls")),
+    path('conta/', include('account.urls')),
     path(
-        "reset",
-        PasswordResetView.as_view(template_name="account/password_reset.html"),
-        name="password_reset",
+        'reset',
+        PasswordResetView.as_view(template_name='account/password_reset.html'),
+        name='password_reset',
     ),
     path(
-        "reset-enviado",
-        PasswordResetDoneView.as_view(template_name="account/password_reset_done.html"),
-        name="password_reset_done",
+        'reset-enviado',
+        PasswordResetDoneView.as_view(template_name='account/password_reset_done.html'),
+        name='password_reset_done',
     ),
     path(
-        "reset/<uidb64>/<token>",
+        'reset/<uidb64>/<token>',
         PasswordResetConfirmView.as_view(
-            template_name="account/password_reset_confirm.html"
+            template_name='account/password_reset_confirm.html'
         ),
-        name="password_reset_confirm",
+        name='password_reset_confirm',
     ),
     path(
-        "reset-concluido",
+        'reset-concluido',
         PasswordResetCompleteView.as_view(
-            template_name="account/password_reset_complete.html"
+            template_name='account/password_reset_complete.html'
         ),
-        name="password_reset_complete",
+        name='password_reset_complete',
     ),
-    path("captcha/", include("captcha.urls")),
-    path("enviar-email/", include("mail.urls")),
-    path("erro/", include("err.urls")),
+    path('captcha/', include('captcha.urls')),
+    path('enviar-email/', include('mail.urls')),
+    path('erro/', include('err.urls')),
     # User's pages
-    path("", include("home.urls")),
-    path("segredos/", include("secret.urls")),
-    path("geral/", include("general.urls")),
+    path('', include('home.urls')),
+    path('segredos/', include('secret.urls')),
+    path('geral/', include('general.urls')),
 ]
 
 
-handler403: Final[str] = "err.views.handle403"
-handler404: Final[str] = "err.views.handle404"
-handler500: Final[str] = "err.views.handle500"
+handler403: Final[str] = 'err.views.handle403'
+handler404: Final[str] = 'err.views.handle404'
+handler500: Final[str] = 'err.views.handle500'

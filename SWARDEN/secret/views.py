@@ -1,4 +1,4 @@
-from typing import Any, Final, Literal, Callable, Type
+from typing import Any, Callable, Final, Literal, Type
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.messages import error
@@ -10,23 +10,24 @@ from django.views.generic import CreateView, DeleteView, UpdateView
 
 from secret.models import Card, LoginCredential, SecurityNote
 
-EMPTY_POST_MSG: Final[str] = "Preencha corretamente todos os campos solicitados"
-FEEDBACK_MSG: Final[str] = "Slug já existente. Tente outro apelido ou título."
 
-login_dec: Callable = login_required(login_url="/conta/entrar")
-login_dec_dispatch: Callable = method_decorator(login_dec, name="dispatch")
+EMPTY_POST_MSG: Final[str] = 'Preencha corretamente todos os campos solicitados'
+FEEDBACK_MSG: Final[str] = 'Slug já existente. Tente outro apelido ou título.'
+
+login_dec: Callable = login_required(login_url='/conta/entrar')
+login_dec_dispatch: Callable = method_decorator(login_dec, name='dispatch')
 
 
 def _list_view(
-    r: HttpRequest, secret: Literal["credential", "card", "note"]
+    r: HttpRequest, secret: Literal['credential', 'card', 'note']
 ) -> dict[str, str | list] | None:
-    dispatch: dict[Literal["credential", "card", "note"], dict[str, list | str]] = {
-        "credential": {
-            "object_list": r.user.credentials.all(),
-            "model_name": "Credenciais",
+    dispatch: dict[Literal['credential', 'card', 'note'], dict[str, list | str]] = {
+        'credential': {
+            'object_list': r.user.credentials.all(),
+            'model_name': 'Credenciais',
         },
-        "card": {"object_list": r.user.cards.all(), "model_name": "Cartões"},
-        "note": {"object_list": r.user.notes.all(), "model_name": "Anotações"},
+        'card': {'object_list': r.user.cards.all(), 'model_name': 'Cartões'},
+        'note': {'object_list': r.user.notes.all(), 'model_name': 'Anotações'},
     }
 
     return dispatch.get(secret)
@@ -34,7 +35,7 @@ def _list_view(
 
 @login_dec
 def index(r: HttpRequest) -> HttpResponse:
-    return render(r, "secret/index.html")
+    return render(r, 'secret/index.html')
 
 
 # Credentials views
@@ -42,8 +43,8 @@ def index(r: HttpRequest) -> HttpResponse:
 def credential_list_view(r: HttpRequest) -> HttpResponse:
     return render(
         r,
-        "secret/list_view.html",
-        _list_view(r, "credential"),
+        'secret/list_view.html',
+        _list_view(r, 'credential'),
     )
 
 
@@ -53,28 +54,28 @@ def credential_detail_view(r: HttpRequest, slug: str) -> HttpResponse:
         LoginCredential, owner=r.user, slug=slug
     )
 
-    return render(r, "secret/Credential/detail_view.html", {"object": credential})
+    return render(r, 'secret/Credential/detail_view.html', {'object': credential})
 
 
 @login_dec_dispatch
 class CredentialCreateView(CreateView):
     model: Type = LoginCredential
-    template_name: Final[str] = "secret/create_view.html"
-    fields: Final[str] = "__all__"
+    template_name: Final[str] = 'secret/create_view.html'
+    fields: Final[str] = '__all__'
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
-        context["action"] = "Adição"
-        context["model"] = "Credencial"
+        context['action'] = 'Adição'
+        context['model'] = 'Credencial'
         return context
 
     def post(self, r: HttpRequest) -> HttpResponse | HttpResponseRedirect:
         if not len(r.POST):
             error(r, EMPTY_POST_MSG)
-            return HttpResponseRedirect(reverse("secret:credential_create_view"))
+            return HttpResponseRedirect(reverse('secret:credential_create_view'))
 
         if LoginCredential.objects.filter(
-            owner=r.user, slug=r.POST.get("slug")
+            owner=r.user, slug=r.POST.get('slug')
         ).exists():
             error(r, FEEDBACK_MSG)
             return super().get(r)
@@ -85,18 +86,18 @@ class CredentialCreateView(CreateView):
 @login_dec_dispatch
 class CredentialUpdateView(UpdateView):
     model: Type = LoginCredential
-    template_name: Final[str] = "secret/create_view.html"
-    fields: Final[str] = "__all__"
+    template_name: Final[str] = 'secret/create_view.html'
+    fields: Final[str] = '__all__'
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
-        context["action"] = "Edição"
-        context["model"] = "Credencial"
+        context['action'] = 'Edição'
+        context['model'] = 'Credencial'
         return context
 
     def post(self, r: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        post_pk: str | None = r.POST.get("pk")
-        filter: dict = dict(owner=r.user, slug=r.POST.get("slug"))
+        post_pk: str | None = r.POST.get('pk')
+        filter: dict = dict(owner=r.user, slug=r.POST.get('slug'))
 
         if LoginCredential.objects.filter(**filter).exclude(pk=post_pk).exists():
             error(r, FEEDBACK_MSG)
@@ -108,13 +109,13 @@ class CredentialUpdateView(UpdateView):
 @login_dec_dispatch
 class CredentialDeleteView(DeleteView):
     model: Type = LoginCredential
-    template_name: Final[str] = "secret/delete_view.html"
-    success_url: Final[str] = "/segredos/credenciais"
+    template_name: Final[str] = 'secret/delete_view.html'
+    success_url: Final[str] = '/segredos/credenciais'
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
-        context["action"] = "Exclusão"
-        context["model"] = "Credencial"
+        context['action'] = 'Exclusão'
+        context['model'] = 'Credencial'
         return context
 
 
@@ -123,8 +124,8 @@ class CredentialDeleteView(DeleteView):
 def card_list_view(r: HttpRequest) -> HttpResponse:
     return render(
         r,
-        "secret/list_view.html",
-        _list_view(r, "card"),
+        'secret/list_view.html',
+        _list_view(r, 'card'),
     )
 
 
@@ -132,27 +133,27 @@ def card_list_view(r: HttpRequest) -> HttpResponse:
 def card_detail_view(r: HttpRequest, slug: str) -> HttpResponse:
     card: Card = get_object_or_404(Card, owner=r.user, slug=slug)
 
-    return render(r, "secret/Card/detail_view.html", {"object": card})
+    return render(r, 'secret/Card/detail_view.html', {'object': card})
 
 
 @login_dec_dispatch
 class CardCreateView(CreateView):
     model: Type = Card
-    template_name: Final[str] = "secret/create_view.html"
-    fields: Final[str] = "__all__"
+    template_name: Final[str] = 'secret/create_view.html'
+    fields: Final[str] = '__all__'
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
-        context["action"] = "Adição"
-        context["model"] = "Cartão"
+        context['action'] = 'Adição'
+        context['model'] = 'Cartão'
         return context
 
     def post(self, r: HttpRequest) -> HttpResponse | HttpResponseRedirect:
         if not len(r.POST):
             error(r, EMPTY_POST_MSG)
-            return HttpResponseRedirect(reverse("secret:card_create_view"))
+            return HttpResponseRedirect(reverse('secret:card_create_view'))
 
-        if Card.objects.filter(owner=r.user, slug=r.POST.get("slug")).exists():
+        if Card.objects.filter(owner=r.user, slug=r.POST.get('slug')).exists():
             error(r, FEEDBACK_MSG)
             return super().get(r)
 
@@ -162,18 +163,18 @@ class CardCreateView(CreateView):
 @login_dec_dispatch
 class CardUpdateView(UpdateView):
     model: Type = Card
-    template_name: Final[str] = "secret/create_view.html"
-    fields: Final[str] = "__all__"
+    template_name: Final[str] = 'secret/create_view.html'
+    fields: Final[str] = '__all__'
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
-        context["action"] = "Edição"
-        context["model"] = "Cartão"
+        context['action'] = 'Edição'
+        context['model'] = 'Cartão'
         return context
 
     def post(self, r: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        post_pk: str | None = r.POST.get("pk")
-        filter: dict = dict(owner=r.user, slug=r.POST.get("slug"))
+        post_pk: str | None = r.POST.get('pk')
+        filter: dict = dict(owner=r.user, slug=r.POST.get('slug'))
 
         if Card.objects.filter(**filter).exclude(pk=post_pk).exists():
             error(r, FEEDBACK_MSG)
@@ -185,13 +186,13 @@ class CardUpdateView(UpdateView):
 @login_dec_dispatch
 class CardDeleteView(DeleteView):
     model: Type = Card
-    template_name: Final[str] = "secret/delete_view.html"
-    success_url: Final[str] = "/segredos/cartoes"
+    template_name: Final[str] = 'secret/delete_view.html'
+    success_url: Final[str] = '/segredos/cartoes'
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
-        context["action"] = "Exclusão"
-        context["model"] = "Cartão"
+        context['action'] = 'Exclusão'
+        context['model'] = 'Cartão'
         return context
 
 
@@ -200,8 +201,8 @@ class CardDeleteView(DeleteView):
 def note_list_view(r: HttpRequest) -> HttpResponse:
     return render(
         r,
-        "secret/list_view.html",
-        _list_view(r, "note"),
+        'secret/list_view.html',
+        _list_view(r, 'note'),
     )
 
 
@@ -209,27 +210,27 @@ def note_list_view(r: HttpRequest) -> HttpResponse:
 def note_detail_view(r: HttpRequest, slug: str) -> HttpResponse:
     note: SecurityNote = get_object_or_404(SecurityNote, owner=r.user, slug=slug)
 
-    return render(r, "secret/Note/detail_view.html", {"object": note})
+    return render(r, 'secret/Note/detail_view.html', {'object': note})
 
 
 @login_dec_dispatch
 class NoteCreateView(CreateView):
     model: Type = SecurityNote
-    template_name: Final[str] = "secret/create_view.html"
-    fields: Final[str] = "__all__"
+    template_name: Final[str] = 'secret/create_view.html'
+    fields: Final[str] = '__all__'
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
-        context["action"] = "Adição"
-        context["model"] = "Anotação"
+        context['action'] = 'Adição'
+        context['model'] = 'Anotação'
         return context
 
     def post(self, r: HttpRequest) -> HttpResponse | HttpResponseRedirect:
         if not len(r.POST):
             error(r, EMPTY_POST_MSG)
-            return HttpResponseRedirect(reverse("secret:note_create_view"))
+            return HttpResponseRedirect(reverse('secret:note_create_view'))
 
-        if SecurityNote.objects.filter(owner=r.user, slug=r.POST.get("slug")).exists():
+        if SecurityNote.objects.filter(owner=r.user, slug=r.POST.get('slug')).exists():
             error(r, FEEDBACK_MSG)
             return super().get(r)
 
@@ -239,18 +240,18 @@ class NoteCreateView(CreateView):
 @login_dec_dispatch
 class NoteUpdateView(UpdateView):
     model: Type = SecurityNote
-    template_name: Final[str] = "secret/create_view.html"
-    fields: Final[str] = "__all__"
+    template_name: Final[str] = 'secret/create_view.html'
+    fields: Final[str] = '__all__'
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
-        context["action"] = "Edição"
-        context["model"] = "Anotação"
+        context['action'] = 'Edição'
+        context['model'] = 'Anotação'
         return context
 
     def post(self, r: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        post_pk: str | None = r.POST.get("pk")
-        filter: dict = dict(owner=r.user, slug=r.POST.get("slug"))
+        post_pk: str | None = r.POST.get('pk')
+        filter: dict = dict(owner=r.user, slug=r.POST.get('slug'))
 
         if SecurityNote.objects.filter(**filter).exclude(pk=post_pk).exists():
             error(r, FEEDBACK_MSG)
@@ -262,11 +263,11 @@ class NoteUpdateView(UpdateView):
 @login_dec_dispatch
 class NoteDeleteView(DeleteView):
     model: Type = SecurityNote
-    template_name: Final[str] = "secret/delete_view.html"
-    success_url: Final[str] = "/segredos/anotacoes"
+    template_name: Final[str] = 'secret/delete_view.html'
+    success_url: Final[str] = '/segredos/anotacoes'
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
-        context["action"] = "Exclusão"
-        context["model"] = "Anotação"
+        context['action'] = 'Exclusão'
+        context['model'] = 'Anotação'
         return context

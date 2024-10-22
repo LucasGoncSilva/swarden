@@ -4,5 +4,5 @@ from django.apps import AppConfig
 
 
 class ErrConfig(AppConfig):
-    default_auto_field: Final[str] = "django.db.models.BigAutoField"
-    name: Final[str] = "err"
+    default_auto_field: Final[str] = 'django.db.models.BigAutoField'
+    name: Final[str] = 'err'

@@ -1,6 +1,7 @@
 from typing import Final
 from uuid import uuid4
 
+from account.models import User
 from django.core.validators import MaxLengthValidator
 from django.db.models import (
     CASCADE,
@@ -14,8 +15,6 @@ from django.db.models import (
 )
 from django.template.defaultfilters import slugify
 from django.urls import reverse
-
-from account.models import User
 from utils import xor
 
 
@@ -24,29 +23,29 @@ class SecurityNote(Model):
         default=uuid4, unique=True, primary_key=True, editable=False
     )
     owner: Final[ForeignKey] = ForeignKey(
-        User, on_delete=CASCADE, related_name="notes", verbose_name="Dono"
+        User, on_delete=CASCADE, related_name='notes', verbose_name='Dono'
     )
     title: Final[CharField] = CharField(
-        max_length=40, verbose_name="Título", validators=[MaxLengthValidator(40)]
+        max_length=40, verbose_name='Título', validators=[MaxLengthValidator(40)]
     )
     content: TextField = TextField(
-        max_length=300, verbose_name="Conteúdo", validators=[MaxLengthValidator(300)]
+        max_length=300, verbose_name='Conteúdo', validators=[MaxLengthValidator(300)]
     )
     slug: Final[SlugField] = SlugField(
         max_length=50, validators=[MaxLengthValidator(50)]
     )
     created: Final[DateTimeField] = DateTimeField(
-        auto_now_add=True, verbose_name="Criado em"
+        auto_now_add=True, verbose_name='Criado em'
     )
     updated: Final[DateTimeField] = DateTimeField(
-        auto_now=True, verbose_name="Atualizado em"
+        auto_now=True, verbose_name='Atualizado em'
     )
 
     def __str__(self) -> str:
-        return f"{str(self.owner.username)} | {self.title}"
+        return f'{str(self.owner.username)} | {self.title}'
 
     def get_absolute_url(self) -> str:
-        return reverse("secret:note_list_view")
+        return reverse('secret:note_list_view')
 
     def save(
         self, force_insert=False, force_update=False, using=None, update_fields=None
@@ -65,9 +64,9 @@ class SecurityNote(Model):
 
     def expected_max_length(self, var: str) -> int:
         max_length: Final[dict[str, int]] = {
-            "title": 40,
-            "content": 300,
-            "slug": 50,
+            'title': 40,
+            'content': 300,
+            'slug': 50,
         }
 
         return max_length[var]
@@ -79,9 +78,9 @@ class SecurityNote(Model):
 
     def all_fields_of_right_length(self) -> bool:
         vars: Final[list[str]] = [
-            "title",
-            "content",
-            "slug",
+            'title',
+            'content',
+            'slug',
         ]
 
         return all(map(self.check_field_length, vars))
@@ -117,6 +116,6 @@ class SecurityNote(Model):
         return False
 
     class Meta:
-        ordering: Final[list[str]] = ["-created"]
-        verbose_name: Final[str] = "Nota de Segurança"
-        verbose_name_plural: Final[str] = "Notas de Segurança"
+        ordering: Final[list[str]] = ['-created']
+        verbose_name: Final[str] = 'Nota de Segurança'
+        verbose_name_plural: Final[str] = 'Notas de Segurança'

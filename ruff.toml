@@ -1,0 +1,18 @@
+exclude = [".env", "migrations", "SWARDEN/secret/month"]
+fix = true
+
+[format]
+quote-style = "single"
+docstring-code-format = true
+
+[lint]
+select = ["I", "E", "UP", "F"]
+fixable = ["ALL"]
+exclude=["*/constants.py"]
+
+[lint.isort]
+case-sensitive = true
+lines-after-imports = 2
+
+[lint.pycodestyle]
+max-doc-length = 88

@@ -3,6 +3,6 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 
 
-@login_required(login_url="/conta/entrar")
+@login_required(login_url='/conta/entrar')
 def index(r: HttpRequest) -> HttpResponse:
-    return render(r, "general/index.html")
+    return render(r, 'general/index.html')
