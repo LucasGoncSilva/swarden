@@ -1,6 +1,7 @@
 from typing import Any, Final
 
-from django.contrib.admin import ModelAdmin, register
+from CORE.admin import swarden_admin
+from django.contrib.admin import ModelAdmin
 from django.http import HttpRequest
 
 from secret.models import Card, LoginCredential, SecurityNote
@@ -20,7 +21,6 @@ class BasesWardenModelAdmin(ModelAdmin):
         return super().get_form(request, obj, **kwargs)
 
 
-@register(Card)
 class CardAdmin(BasesWardenModelAdmin):
     list_filter: Final = ('owner__is_active', 'card_type', 'bank', 'brand')
     search_fields: Final = (
@@ -45,7 +45,6 @@ class CardAdmin(BasesWardenModelAdmin):
     )
 
 
-@register(LoginCredential)
 class LoginCredentialAdmin(BasesWardenModelAdmin):
     list_filter: Final = ('owner__is_active', 'thirdy_party_login', 'service')
     search_fields: Final = (
@@ -66,7 +65,6 @@ class LoginCredentialAdmin(BasesWardenModelAdmin):
     )
 
 
-@register(SecurityNote)
 class SecurityNoteAdmin(BasesWardenModelAdmin):
     list_filter: Final = ('owner__is_active',)
     search_fields: Final = (
@@ -78,3 +76,8 @@ class SecurityNoteAdmin(BasesWardenModelAdmin):
     prepopulated_fields: Final = {'slug': ('title',)}
     list_display: Final = ('pk', 'slug', 'created', 'updated')
     _exclude: Final = ('owner', 'content')
+
+
+swarden_admin.register(Card, CardAdmin)
+swarden_admin.register(LoginCredential, LoginCredentialAdmin)
+swarden_admin.register(SecurityNote, SecurityNoteAdmin)

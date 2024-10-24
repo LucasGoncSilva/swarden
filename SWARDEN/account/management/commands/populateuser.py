@@ -1,3 +1,4 @@
+from random import choice
 from typing import Any
 
 from account.models import User
@@ -16,4 +17,11 @@ class Command(BaseCommand):
             lines, desc='Users', bar_format='{l_bar}{bar:100}{r_bar}{bar:-10b}'
         ):
             username, email, password = i
-            User.objects.create_user(username=username, email=email, password=password)
+            user: User = User.objects.create_user(
+                username=username, email=email, password=password
+            )
+
+            if choice([True, False]):
+                user.is_active = False
+
+            user.save()

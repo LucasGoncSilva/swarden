@@ -31,6 +31,7 @@ class SecurityNote(Model):
     content: TextField = TextField(
         max_length=300, verbose_name='Conteúdo', validators=[MaxLengthValidator(300)]
     )
+    # TODO: note_type: TextField(max_length=3, choices=notes_types, verbose_name='Conteúdo', validators=[MaxLengthValidator(300)])
     slug: Final[SlugField] = SlugField(
         max_length=50, validators=[MaxLengthValidator(50)]
     )

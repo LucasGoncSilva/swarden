@@ -1,13 +1,13 @@
 from typing import Final, Type
 
-from django.contrib.admin import ModelAdmin, register
+from CORE.admin import swarden_admin
+from django.contrib.admin import ModelAdmin
 from django.contrib.auth import admin as auth_admin
 
 from account.forms import UserChangeForm, UserCreationForm
 from account.models import ActivationAccountToken, User
 
 
-@register(User)
 class UserAdmin(auth_admin.UserAdmin):
     list_display: Final = (
         'username',
@@ -38,6 +38,9 @@ class UserAdmin(auth_admin.UserAdmin):
     add_form: Type[UserCreationForm] = UserCreationForm
 
 
-@register(ActivationAccountToken)
 class ActivationAccountTokenAdmin(ModelAdmin):
     list_filter: Final = ('user__is_active',)
+
+
+swarden_admin.register(ActivationAccountToken, ActivationAccountTokenAdmin)
+swarden_admin.register(User, UserAdmin)

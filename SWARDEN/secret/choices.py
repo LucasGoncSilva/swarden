@@ -1,3 +1,17 @@
+notes_types: list[tuple[str, str]] = [
+    ('wrk', 'Trabalho'),
+    ('std', 'Estudo'),
+    ('cmt', 'Compromisso'),
+    ('fml', 'Família'),
+    ('hlt', 'Saúde'),
+    ('fin', 'Finança'),
+    ('via', 'Viagem'),
+    ('vol', 'Voluntariado'),
+    ('esp', 'Espiritualidade'),
+    ('leg', 'Assuntos Legais'),
+    ('oth', 'Outro'),
+]
+
 banks: list[tuple[str, str]] = [
     ('banco-do-brasil--', 'Banco do Brasil'),
     ('original--', 'Banco Original'),

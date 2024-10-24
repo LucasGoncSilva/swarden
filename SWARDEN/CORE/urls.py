@@ -1,6 +1,5 @@
 from typing import Final
 
-from django.contrib import admin
 from django.contrib.auth.views import (
     PasswordResetCompleteView,
     PasswordResetConfirmView,
@@ -9,10 +8,12 @@ from django.contrib.auth.views import (
 )
 from django.urls import URLPattern, URLResolver, include, path
 
+from CORE.admin import swarden_admin
+
 
 urlpatterns: list[URLResolver | URLPattern] = [
     # Adm pages
-    path('__manager__/', admin.site.urls),
+    path('__manager__/', swarden_admin.urls),
     path('admin/', include('honeypot.urls')),
     # System functionality's pages
     path('conta/', include('account.urls')),

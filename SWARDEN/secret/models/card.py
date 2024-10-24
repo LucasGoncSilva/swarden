@@ -93,11 +93,8 @@ class Card(Model):
         self, force_insert=False, force_update=False, using=None, update_fields=None
     ) -> None:
         self.name = xor(str(self.name), self.owner.password[21:])
-        self.card_type = xor(str(self.card_type), self.owner.password[21:])
         self.number = xor(str(self.number), self.owner.password[21:])
         self.cvv = xor(str(self.cvv), self.owner.password[21:])
-        self.bank = xor(str(self.bank), self.owner.password[21:])
-        self.brand = xor(str(self.brand), self.owner.password[21:])
         self.owners_name = xor(str(self.owners_name), self.owner.password[21:])
         self.note = xor(str(self.note), self.owner.password[21:])
 
@@ -110,13 +107,8 @@ class Card(Model):
         card: Card = super().from_db(db, field_names, values)
 
         card.name = xor(str(card.name), card.owner.password[21:], encrypt=False)
-        card.card_type = xor(
-            str(card.card_type), card.owner.password[21:], encrypt=False
-        )
         card.number = xor(str(card.number), card.owner.password[21:], encrypt=False)
         card.cvv = xor(str(card.cvv), card.owner.password[21:], encrypt=False)
-        card.bank = xor(str(card.bank), card.owner.password[21:], encrypt=False)
-        card.brand = xor(str(card.brand), card.owner.password[21:], encrypt=False)
         card.owners_name = xor(
             str(card.owners_name), card.owner.password[21:], encrypt=False
         )
