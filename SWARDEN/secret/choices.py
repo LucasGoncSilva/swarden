@@ -1,15 +1,14 @@
-notes_types: list[tuple[str, str]] = [
+notes: list[tuple[str, str]] = [
     ('wrk', 'Trabalho'),
     ('std', 'Estudo'),
     ('cmt', 'Compromisso'),
     ('fml', 'Família'),
     ('hlt', 'Saúde'),
     ('fin', 'Finança'),
-    ('via', 'Viagem'),
+    ('trv', 'Viagem'),
     ('vol', 'Voluntariado'),
     ('esp', 'Espiritualidade'),
     ('leg', 'Assuntos Legais'),
-    ('oth', 'Outro'),
 ]
 
 banks: list[tuple[str, str]] = [
@@ -42,7 +41,6 @@ cards_types: list[tuple[str, str]] = [
     ('pre', 'Pré-pago'),
     ('co', 'Co-branded'),
 ]
-
 
 services: list[tuple[str, str]] = (
     [
@@ -118,7 +116,9 @@ services: list[tuple[str, str]] = (
 cards_banks: list[tuple[str, str]] = sorted(set(banks), key=lambda x: x[1])
 cards_brands: list[tuple[str, str]] = sorted(set(brands), key=lambda x: x[1])
 credentials_services: list[tuple[str, str]] = sorted(set(services), key=lambda x: x[1])
+notes_types: list[tuple[str, str]] = sorted(set(notes), key=lambda x: x[1])
 
 cards_banks.insert(0, ('nao-listado--', 'NÃO LISTADO'))
 cards_brands.insert(0, ('nao-listado--', 'NÃO LISTADO'))
 credentials_services.insert(0, ('nao-listado--', 'NÃO LISTADO'))
+notes_types.append(('oth', 'Outro'))

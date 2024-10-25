@@ -66,7 +66,7 @@ class LoginCredentialAdmin(BasesWardenModelAdmin):
 
 
 class SecurityNoteAdmin(BasesWardenModelAdmin):
-    list_filter: Final = ('owner__is_active',)
+    list_filter: Final = ('owner__is_active', 'note_type')
     search_fields: Final = (
         'slug',
         'owner__username',
@@ -74,7 +74,7 @@ class SecurityNoteAdmin(BasesWardenModelAdmin):
         'owner__last_name',
     )
     prepopulated_fields: Final = {'slug': ('title',)}
-    list_display: Final = ('pk', 'slug', 'created', 'updated')
+    list_display: Final = ('pk', 'note_type', 'slug', 'created', 'updated')
     _exclude: Final = ('owner', 'content')
 
 

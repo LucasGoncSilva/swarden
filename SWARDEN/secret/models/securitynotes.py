@@ -2,7 +2,7 @@ from typing import Final
 from uuid import uuid4
 
 from account.models import User
-from django.core.validators import MaxLengthValidator
+from django.core.validators import MaxLengthValidator, MinLengthValidator
 from django.db.models import (
     CASCADE,
     CharField,
@@ -16,6 +16,8 @@ from django.db.models import (
 from django.template.defaultfilters import slugify
 from django.urls import reverse
 from utils import xor
+
+from secret.choices import notes_types
 
 
 class SecurityNote(Model):
@@ -31,7 +33,12 @@ class SecurityNote(Model):
     content: TextField = TextField(
         max_length=300, verbose_name='Conteúdo', validators=[MaxLengthValidator(300)]
     )
-    # TODO: note_type: TextField(max_length=3, choices=notes_types, verbose_name='Conteúdo', validators=[MaxLengthValidator(300)])
+    note_type: Final[TextField] = TextField(
+        max_length=3,
+        choices=notes_types,
+        verbose_name='Classificação',
+        validators=[MaxLengthValidator(3), MinLengthValidator(3)],
+    )
     slug: Final[SlugField] = SlugField(
         max_length=50, validators=[MaxLengthValidator(50)]
     )
@@ -67,6 +74,7 @@ class SecurityNote(Model):
         max_length: Final[dict[str, int]] = {
             'title': 40,
             'content': 300,
+            'note_type': 3,
             'slug': 50,
         }
 
@@ -81,6 +89,7 @@ class SecurityNote(Model):
         vars: Final[list[str]] = [
             'title',
             'content',
+            'note_type',
             'slug',
         ]
 
@@ -91,6 +100,7 @@ class SecurityNote(Model):
             self.owner
             and self.title
             and self.content
+            and self.note_type
             and self.slug == slugify(str(self.title))
         )
 
@@ -99,9 +109,11 @@ class SecurityNote(Model):
             str(type(self.owner)),
             type(self.title),
             type(self.content),
+            type(self.note_type),
             type(self.slug),
         ] == [
             "<class 'account.models.User'>",
+            str,
             str,
             str,
             str,

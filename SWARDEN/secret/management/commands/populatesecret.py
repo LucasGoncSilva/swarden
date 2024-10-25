@@ -59,13 +59,14 @@ class Command(BaseCommand):
             f: list[list[str]] = [i.strip().split('::') for i in sample.readlines()]
 
         for i in tqdm(f, desc='Notes', bar_format='{l_bar}{bar:100}{r_bar}{bar:-10b}'):
-            owner, title, content = i
+            owner, title, note_type, content = i
 
             owner = User.objects.get(pk=owner)
 
             SecurityNote.objects.create(
                 owner=owner,
                 title=title,
+                note_type=note_type,
                 content=content,
                 slug=title.replace(' ', '-').lower(),
             )

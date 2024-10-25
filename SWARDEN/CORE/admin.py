@@ -22,7 +22,7 @@ def graph1() -> str:
                         {User.objects.filter(is_active=True).count()},
                         {User.objects.filter(is_active=False).count()},
                     ],
-                    backgroundColor: ['#{MAIN_COLOR}aa', '#{DIS_COLOR}aa'],
+                    backgroundColor: ['#{MAIN_COLOR}', '#{DIS_COLOR}'],
                     borderColor: ['#{MAIN_COLOR}', '#{DIS_COLOR}'],
                     borderWidth: 3
                 }}]
@@ -50,7 +50,7 @@ def graph2() -> str:
                         },
                     ],
                     label: 'Segredos / Usuários',
-                    backgroundColor: ['#{MAIN_COLOR}', '#{SEC_COLOR}aa'],
+                    backgroundColor: ['#{MAIN_COLOR}', '#{SEC_COLOR}'],
                     borderColor: ['#{MAIN_COLOR}', '#{SEC_COLOR}'],
                     borderWidth: 3
                 }}]
@@ -84,8 +84,8 @@ def graph3() -> str:
                     ],
                     backgroundColor: [
                         '#{MAIN_COLOR}',
-                        '#{SEC_COLOR}aa',
-                        '#{THIRD_COLOR}aa'
+                        '#{SEC_COLOR}',
+                        '#{THIRD_COLOR}'
                     ],
                     borderColor: ['#{MAIN_COLOR}', '#{SEC_COLOR}', '#{THIRD_COLOR}'],
                     borderWidth: 3
@@ -113,9 +113,9 @@ def graph4() -> str:
                     ],
                     backgroundColor: [
                         '#{MAIN_COLOR}',
-                        '#{SEC_COLOR}aa',
-                        '#{THIRD_COLOR}aa',
-                        '#{DIS_COLOR}aa'
+                        '#{SEC_COLOR}',
+                        '#{THIRD_COLOR}',
+                        '#{DIS_COLOR}'
                     ],
                     borderColor: [
                         '#{MAIN_COLOR}',
@@ -144,7 +144,7 @@ def graph5() -> str:
                         {LoginCredential.objects.filter(thirdy_party_login=True).count()},
                         {LoginCredential.objects.filter(thirdy_party_login=False).count()},
                     ],
-                    backgroundColor: ['#{MAIN_COLOR}', '#{SEC_COLOR}aa'],
+                    backgroundColor: ['#{MAIN_COLOR}', '#{SEC_COLOR}'],
                     borderColor: ['#{MAIN_COLOR}', '#{SEC_COLOR}'],
                     borderWidth: 3
                 }}]
@@ -156,17 +156,78 @@ def graph5() -> str:
     </script>"""
 
 
+def graph6() -> str:
+    lst: list[tuple[str, int]] = [
+        ('leg', SecurityNote.objects.filter(note_type='leg').count()),
+        ('cmt', SecurityNote.objects.filter(note_type='cmt').count()),
+        ('esp', SecurityNote.objects.filter(note_type='esp').count()),
+        ('std', SecurityNote.objects.filter(note_type='std').count()),
+        ('fml', SecurityNote.objects.filter(note_type='fml').count()),
+        ('fin', SecurityNote.objects.filter(note_type='fin').count()),
+        ('hlt', SecurityNote.objects.filter(note_type='hlt').count()),
+        ('wrk', SecurityNote.objects.filter(note_type='wrk').count()),
+        ('trv', SecurityNote.objects.filter(note_type='trv').count()),
+        ('vol', SecurityNote.objects.filter(note_type='vol').count()),
+        ('oth', SecurityNote.objects.filter(note_type='oth').count()),
+    ]
+
+    sorted_lst: list[tuple[str, int]] = list(
+        sorted(lst, key=lambda i: i[1], reverse=True)
+    )
+    return f"""<script>
+        new Chart(document.getElementById('graph6'), {{
+            type: 'doughnut',
+            data: {{
+                labels: [
+                    'Notas {sorted_lst[0][0].title()}',
+                    'Notas {sorted_lst[1][0].title()}',
+                    'Notas {sorted_lst[2][0].title()}',
+                    'Demais notas',
+                ],
+                datasets: [{{
+                    data: [
+                        {sorted_lst[0][1]},
+                        {sorted_lst[1][1]},
+                        {sorted_lst[2][1]},
+                        {sum([i[1] for i in sorted_lst[3:]])},
+                    ],
+                    backgroundColor: [
+                        '#{MAIN_COLOR}',
+                        '#{SEC_COLOR}',
+                        '#{THIRD_COLOR}',
+                        '#{DIS_COLOR}',
+                    ],
+                    borderColor: [
+                        '#{MAIN_COLOR}',
+                        '#{SEC_COLOR}',
+                        '#{THIRD_COLOR}',
+                        '#{DIS_COLOR}',
+                    ],
+                    borderWidth: 3
+                }}]
+            }},
+            options: {{
+                cutout: '60%'
+            }}
+        }});
+    </script>"""
+
+
 class sWardenAdminSite(AdminSite):
+    site_header = 'Administração Geral | sWarden'
+    site_title = 'Admin'
+
     def index(self, request, extra_context=None):
         extra_context = extra_context or {}
 
         extra_context['admin_dashboard'] = {
-            'range': range(5),
+            'range': range(6),
             'graph1': graph1(),
             'graph2': graph2(),
             'graph3': graph3(),
             'graph4': graph4(),
             'graph5': graph5(),
+            'graph6': graph6(),
         }
 
         return super().index(request, extra_context=extra_context)

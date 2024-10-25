@@ -8,7 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <div style="position: absolute; top: 4.3rem; left: 62rem">
-    <h1>Custom Dashboard Section</h1>
+    <h1>Informações Gerais</h1>
 
     <div style="display: grid; grid-template-columns: auto auto auto; row-gap: 5rem;">
         {% for i in admin_dashboard.range %}
@@ -23,5 +23,6 @@
     {{ admin_dashboard.graph3|safe }}
     {{ admin_dashboard.graph4|safe }}
     {{ admin_dashboard.graph5|safe }}
+    {{ admin_dashboard.graph6|safe }}
 </div>
 {% endblock %}

@@ -531,26 +531,22 @@ class CardTestCase(TestCase):
     def test_card_update_validity(self) -> None:
         """Tests card update integrity and validation"""
 
-        Card.objects.filter(pk=self.card_2.pk).update(
-            card_type=xor('cred', self.user.password[21:])
-        )
+        Card.objects.filter(pk=self.card_2.pk).update(card_type='cred')
         Card.objects.filter(pk=self.card_3.pk).update(
             number=xor('1122334455667788', self.user.password[21:]),
             cvv=xor('1986', self.user.password[21:]),
         )
         Card.objects.filter(pk=self.card_4.pk).update(
-            bank=xor('pagseguro--', self.user.password[21:]),
+            bank='pagseguro--',
             slug='pagseguro--personal-main-card-four',
         )
         Card.objects.filter(pk=self.card_5.pk).update(
             slug='nubank--personal-main-card-five'
         )
-        Card.objects.filter(pk=self.card_6.pk).update(
-            brand=xor('mastercard--', self.user.password[21:])
-        )
+        Card.objects.filter(pk=self.card_6.pk).update(brand='mastercard--')
 
-        for card in Card.objects.all():
-            with self.subTest(card=card):
+        for i, card in enumerate(Card.objects.all(), start=1):
+            with self.subTest(card=i):
                 self.assertTrue(card.is_valid())
 
     def test_card_delete_validity(self) -> None:
@@ -585,7 +581,7 @@ class CardTestCase(TestCase):
                         instance: Card = Card(**scenario)
                         instance.full_clean()
 
-        raise_kwargs: dict[str, dict[str, str | Month]] = {
+        raise_kwargs: dict[str, dict[str, str | Month | User]] = {
             'card1': {
                 'owner': self.user,
                 'name': 'x' * 40,
@@ -713,7 +709,7 @@ class CardTestCase(TestCase):
                         instance.full_clean()
 
         # Not expecting raises
-        no_raise_kwargs: dict[str, dict[str, str | Month]] = {
+        no_raise_kwargs: dict[str, dict[str, str | Month | User]] = {
             'card1': {
                 'owner': self.user,
                 'name': 'x' * 40,
@@ -748,6 +744,7 @@ class SecurityNoteTestCase(TestCase):
             owner=self.user,
             title='How to draw an apple',
             slug='how-to-draw-an-apple',
+            note_type='hlt',
             content='Just draw an apple tree and erase the tree.',
         )  # Correct object
 
@@ -756,6 +753,7 @@ class SecurityNoteTestCase(TestCase):
             owner=self.user,
             title='How to draw a tree',
             slug='howtodrawatree',  # 'how-to-draw-a-tree'
+            note_type='hlt',
             content='Just draw an apple tree and erase the apples.',
         )
 
@@ -764,6 +762,7 @@ class SecurityNoteTestCase(TestCase):
             owner=self.user,
             title='How to draw an apple tree',
             slug='how-to-draw-an-apple-tree',
+            note_type='hlt',
             content='x' * 333,  # Length out of range
         )
 
@@ -772,7 +771,17 @@ class SecurityNoteTestCase(TestCase):
             owner=self.user,
             title='How to draw an apple tree leaf',
             slug='how-to-draw-an-apple-tree-leaf',
+            note_type='hlt',
         )  # Missing/empty content field
+
+        # Object 5
+        self.security_note_5: SecurityNote = SecurityNote.objects.create(
+            owner=self.user,
+            title='How to draw an apple',
+            slug='how-to-draw-an-apple',
+            note_type='outro',  # Length out of range
+            content='Just draw an apple tree and erase the tree.',
+        )
 
     def test_note_instance_validity(self) -> None:
         """Tests note instance of correct class"""
@@ -804,6 +813,7 @@ class SecurityNoteTestCase(TestCase):
 
         self.assertEqual(note1.title, 'How to draw an apple')
         self.assertEqual(note1.slug, 'how-to-draw-an-apple')
+        self.assertEqual(note1.note_type, 'hlt')
         self.assertEqual(note1.content, 'Just draw an apple tree and erase the tree.')
 
     def test_note_user_foreign_key_validity(self) -> None:
@@ -820,13 +830,15 @@ class SecurityNoteTestCase(TestCase):
         note2: SecurityNote = SecurityNote.objects.get(pk=self.security_note_2.pk)
         note3: SecurityNote = SecurityNote.objects.get(pk=self.security_note_3.pk)
         note4: SecurityNote = SecurityNote.objects.get(pk=self.security_note_4.pk)
+        note5: SecurityNote = SecurityNote.objects.get(pk=self.security_note_5.pk)
 
-        self.assertEqual(SecurityNote.objects.all().count(), 4)
+        self.assertEqual(SecurityNote.objects.all().count(), 5)
 
         self.assertTrue(note1.is_valid())
         self.assertFalse(note2.is_valid())
         self.assertFalse(note3.is_valid())
         self.assertFalse(note4.is_valid())
+        self.assertFalse(note5.is_valid())
 
     def test_note_update_validity(self) -> None:
         """Tests note update integrity and validation"""
@@ -840,6 +852,7 @@ class SecurityNoteTestCase(TestCase):
         SecurityNote.objects.filter(pk=self.security_note_4.pk).update(
             content='Draw an apple tree and then erase the apples and the tree.'
         )
+        SecurityNote.objects.filter(pk=self.security_note_5.pk).update(note_type='oth')
 
         for note in SecurityNote.objects.all():
             with self.subTest(note=note):
@@ -862,33 +875,56 @@ class SecurityNoteTestCase(TestCase):
             'note1': {'owner': self.user},
             'note2': {'title': 'A Title'},
             'note3': {'slug': 'a-title'},
-            'note4': {'content': 'A regular content'},
-            'note5': {'owner': self.user, 'title': 'A Title'},
-            'note6': {'owner': self.user, 'slug': 'a-title'},
-            'note7': {'owner': self.user, 'content': 'A regular content'},
-            'note8': {'owner': self.user, 'title': 'A Title', 'slug': 'a-title'},
-            'note9': {
-                'owner': self.user,
-                'title': 'A Title',
-                'content': 'A regular content',
-            },
-            'note10': {
-                'owner': self.user,
-                'title': 'x' * 41,
-                'content': 'A regular content',
-                'slug': 'a-title',
-            },
+            'note4': {'note_type': 'std'},
+            'note5': {'content': 'A regular content'},
+            'note6': {'owner': self.user, 'title': 'A Title'},
+            'note7': {'owner': self.user, 'slug': 'a-title'},
+            'note8': {'owner': self.user, 'content': 'A regular content'},
+            'note9': {'owner': self.user, 'note_type': 'std'},
+            'note10': {'owner': self.user, 'title': 'A Title', 'slug': 'a-title'},
             'note11': {
                 'owner': self.user,
                 'title': 'A Title',
-                'content': 'x' * 301,
-                'slug': 'a-title',
+                'content': 'A regular content',
             },
             'note12': {
                 'owner': self.user,
                 'title': 'A Title',
+                'note_type': 'std',
+            },
+            'note13': {
+                'owner': self.user,
+                'title': 'A Title',
+                'content': 'A regular content',
+                'slug': 'a-title',
+            },
+            'note14': {
+                'owner': self.user,
+                'title': 'x' * 41,
+                'content': 'A regular content',
+                'slug': 'a-title',
+                'note_type': 'std',
+            },
+            'note15': {
+                'owner': self.user,
+                'title': 'A Title',
+                'content': 'x' * 301,
+                'slug': 'a-title',
+                'note_type': 'std',
+            },
+            'note16': {
+                'owner': self.user,
+                'title': 'A Title',
                 'content': 'A regular content',
                 'slug': 'x' * 51,
+                'note_type': 'std',
+            },
+            'note17': {
+                'owner': self.user,
+                'title': 'A Title',
+                'content': 'A regular content',
+                'slug': 'a-title',
+                'note_type': 'none',
             },
         }
 
@@ -900,17 +936,19 @@ class SecurityNoteTestCase(TestCase):
                         instance.full_clean()
 
         # Not expecting raises
-        no_raise_kwargs: dict[str, dict[str, str]] = {
+        no_raise_kwargs: dict[str, dict[str, str | User]] = {
             'note1': {
                 'owner': self.user,
                 'title': 'A Title',
                 'content': 'A regular content',
+                'note_type': 'std',
                 'slug': 'a-title',
             },
             'note2': {
                 'owner': self.user,
                 'title': 'x ' * 20,
                 'content': 'x' * 300,
+                'note_type': 'wrk',
                 'slug': 'x-' * 20,
             },
         }
