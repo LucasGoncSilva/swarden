@@ -17,6 +17,7 @@ class Command(BaseCommand):
         omit_list: list[str] = [
             '*/month/*,',
             '*/migrations/*,',
+            '*/admin.py,',
             'manage.py,',
             '*/CORE/*,',
         ]

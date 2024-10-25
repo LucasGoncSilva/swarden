@@ -371,8 +371,8 @@ class Example[Create|List|Detail|Update|Delete]ViewTestCase(BaseExampleTestCase)
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, TEMPLATE)
         # Logged user check
-        self.assertFalse(get_user(self.client).is_anonymous)
-        self.assertTrue(get_user(self.client).is_authenticated)
+        self.assertTrue(get_user(self.client).is_anonymous)
+        self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_POST_authenticated_user(self) -> None:
         """POST /example/view | authenticated user"""
@@ -383,7 +383,10 @@ class Example[Create|List|Detail|Update|Delete]ViewTestCase(BaseExampleTestCase)
 
         self.assertTrue(self.client.login(username='user', password='password'))
 
-        res: HttpResponse = self.client.post(reverse(ENDPOINT))
+        res: HttpResponse = self.client.post(
+            reverse(ENDPOINT),
+            {DATA: HERE},
+        )
 
         # Success response check
         self.assertEqual(res.status_code, 200)
