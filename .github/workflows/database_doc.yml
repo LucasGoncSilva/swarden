@@ -28,4 +28,4 @@ jobs:
         run: dbdocs
 
       - name: Update dbdocs project
-        run: cd docs/db; python generate_dbml.py
+        run: cd .github/db; python generate_dbml.py
