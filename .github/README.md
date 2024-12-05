@@ -1,16 +1,17 @@
 <h1 align="center">
-  <img src="./logo.svg" height="300" width="300" alt="Logo SWARDEN" /><br>
+  <img src="./logo.svg" height="300" width="300" alt="Logo SWARDEN" />
+  <br>
   SWARDEN
 </h1>
 
 ![GitHub License](https://img.shields.io/github/license/LucasGoncSilva/swarden?labelColor=101010)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/LucasGoncSilva/swarden/django_unittest.yml?style=flat&labelColor=%23101010)
 
-Criado em Django como Framework MVC, sWarden funciona como um protótipo real de gerenciador de senhas e credenciais online. Este projeto introduz e apresenta conceitos básicos de segurança de forma prática e descritiva.
+Created in Django as an MVC Framework, sWarden works as a real prototype of an online password and credential manager. This project introduces and presents basic security concepts in a practical and descriptive way.
 
-Foram utilizadas tanto class-based views quanto function-based views, de modo que os diferentes paradigmas implementados pelo Framework sejam exemplificados de forma prática.
+Both class-based views and function-based views were used, so that the different paradigms implemented by the Framework can be exemplified in a practical way.
 
-Agrega às medidas de segurança do Django uma lógica inicial do que seria um honeypot, mais de 140 casos de testes incluindo 4 testes de carga para atestar a integridade do sistema e criptografia nos dados armazenados em banco, tudo aplicável em Docker.
+It adds to Django's security measures an initial logic of what a honeypot would be, more than 140 test cases including 4 load tests to certify the integrity of the system and encryption of the data stored in the database, all applicable in Docker.
 
 ## Stack
 
@@ -28,19 +29,19 @@ Agrega às medidas de segurança do Django uma lógica inicial do que seria um h
 ![Render logo](https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=000&color=fff)
 ![Supabase Logo](https://img.shields.io/badge/Supabase-181818?style=for-the-badge&logo=supabase&logoColor=3ecf8e)
 
-## Arquitetura
+## Arch
 
-A arquitetura pode ser detalhada de forma geral em dois níveis: web e database. As mecânicas são abstraídas a um nível geral, evitando detalhes profundos que confundam à agregar, apresentando uma visão comportamental em escala "macro" seguindo o fluxo de dados sem focar no "micro", como cada ação de cada função. Acompanhe abaixo o fluxo de informações na Web, seguido da estruturação e arquitetura o Banco de Dados (Para mais detalhes sobre o Banco de Dados acesse [https://dbdocs.io/lucasgoncsilva04/SWARDEN](https://dbdocs.io/lucasgoncsilva04/SWARDEN)):
+The architecture can be detailed in general terms on two levels: web and database. The mechanics are abstracted to a general level, avoiding in-depth details that confuse rather than aggregate, presenting a behavioral vision on a “macro” scale following the flow of data without focusing on the “micro”, such as each action of each function. Below is the flow of information on the Web, followed by the structuring and architecture of the Database (For more details on the Database go to [https://dbdocs.io/lucasgoncsilva04/SWARDEN](https://dbdocs.io/lucasgoncsilva04/SWARDEN)):
 
 ### Web
 
-<!-- ![Arquitetura de Funcionamento do Projeto](./web/arch.svg) -->
+<!-- ![sWarden Arch](./web/arch.svg) -->
 
 ```mermaid
 flowchart LR
 
 
-User((User))
+User((User)) 
 
 subgraph CLOUD
     subgraph RENDER
@@ -67,109 +68,109 @@ Model -->|Select| Database
 Database --> Model --> View --> Template --> Dispatcher --> LB --> User
 
 
-style CLOUD fill:#1117,color:#44b78b,stroke:#ccc;
-style RENDER fill:#1117,color:#44b78b,stroke:#ccc;
-style SUPABASE fill:#1117,color:#44b78b,stroke:#ccc;
-style User fill:#fff,color:#0c4b33,stroke:#0c4b33;
-style Database fill:#dfd,color:#0c4b33,stroke:#0c4b33;
+style CLOUD fill:#1111,color:#448bb7,stroke:#ccc;
+style RENDER fill:#1111,color:#448bb7,stroke:#ccc;
+style SUPABASE fill:#1111,color:#448bb7,stroke:#ccc;
+style User fill:#fff,color:#008,stroke:#008;
+style Database fill:#ddf,color:#008,stroke:#008;
 
-classDef Arch fill:#0c4b33,color:#efe,stroke:#efe;
+classDef Arch fill:#008,color:#efe,stroke:#efe;
 
-linkStyle 1,2,3,4,5,6 stroke:#0f0,color:#efe
-linkStyle 7,8,9,10,11,12 stroke:#fff,color:#efe
+linkStyle 1,2,3,4,5,6 stroke:#0af,color:#efe
+linkStyle 7,8,9,10,11,12 stroke:#aaa,color:#efe
 ```
 
 ### DB
 
-![Arquitetura do Banco de Dados](./db/db_schema.svg)
+![Database Arch](./db/db_schema.svg)
 
-## Básico
+## Basic
 
-Antes de iniciar com o desenvolvimento e os comandos, é importante definir as variáveis de ambiente no seu ambiente de desenvolvimento. Abaixo a listagem de quais definir:
+Before starting with development and commands, it is important to define the environment variables in your development environment. Below is a list of which ones to set:
 
-| Variável                 | Caráter                | Responsabilidade                                                                    |
-| :----------------------- | :--------------------- | :---------------------------------------------------------------------------------- |
-| `DJANGO_SETTINGS_MODULE` | `str - optional`       | Definir o módulo de configurações a ser utilizado.<br>Default `CORE.settings.dev`   |
-| `CAPTCHA_TEST_MODE`      | `bool - optional`      | Permitir o bypass do captcha nas telas de acesso.<br>Default `True`                 |
-| `DATABASE_NAME`          | `str - optional`       | Definir o nome de acesso do Banco de Dados.<br>Default `postgres`                   |
-| `DATABASE_USER`          | `str - optional`       | Definir o usuário de acesso do Banco de Dados.<br>Default `postgres`                |
-| `DATABASE_PASSWORD`      | `str - optional`       | Definir a senha de acesso do Banco de Dados.<br>Default `postgres`                  |
-| `DATABASE_HOST`          | `str - optional`       | Definir o host de acesso do Banco de Dados.<br>Default `localhost`                  |
-| `DEBUG`                  | `bool - optional`      | Definir traceback e informações de debug em páginas browser.<br>Default `True`      |
-| `SECRET_KEY`             | `str - optional`       | Definir chave de criptografia e segurança do projeto.<br>Default `cw%t5...ba^m3)`   |
-| `ALLOWED_HOSTS`          | `list[str] - optional` | Definir lista de endereços URL válidos para execução do projeto.<br>Default `['*']` |
+| Name                     |    Type     | Mandatory  |       Default       | Description                                  |
+| :----------------------- | :---------: | :--------: | :-----------------: | :------------------------------------------- |
+| `DJANGO_SETTINGS_MODULE` |    `str`    | `optional` | `CORE.settings.dev` | Defines the settings file to be used         |
+| `CAPTCHA_TEST_MODE`      |   `bool`    | `optional` |       `True`        | Allows captcha bypass on login               |
+| `DATABASE_NAME`          |    `str`    | `optional` |     `postgres`      | Defines database access name                 |
+| `DATABASE_USER`          |    `str`    | `optional` |     `postgres`      | Defines database access user                 |
+| `DATABASE_PASSWORD`      |    `str`    | `optional` |     `postgres`      | Defines database access password             |
+| `DATABASE_HOST`          |    `str`    | `optional` |     `localhost`     | Defines database access host                 |
+| `DEBUG`                  |   `bool`    | `optional` |       `True`        | Defines traceback and debug infos at browser |
+| `SECRET_KEY`             |    `str`    | `optional` |  `cw%t5...ba^m3)`   | Defines general security stuff               |
+| `ALLOWED_HOSTS`          | `list[str]` | `optional` |       `['*']`       | Defines valid URLs to be used                |
 
-### Buscar/iniciar Migrações (Atualizações) de Banco de Dados
+### Start/Search for Database Migrations
 
 `python3 manager.py makemigrations`
 
-### Atualizar Estrutura do Banco de Dados com Novas Migrações
+### Update Database Struct Based on New Migrations
 
 `python3 manager.py migrate`
 
-### Iniciar Testes Automatizados
+### Run Automated Tests
 
 `python3 manager.py test [--parallel N]`
 
-### Iniciar Testes Automatizados c/ Cobertura
+### Run Automated Tests w/ Coverage
 
 `python3 manager.py testwithcoverage`
 
-### Popular Banco de Dados para Execução Local
+### Populate Database for Local Exec
 
-`python3 manager.py populateuser` para usuários
+`python3 manager.py populateuser` for users
 
-`python3 manager.py populatesecret` para segredos - após executar o comando anterior
+`python3 manager.py populatesecret` for secrets - after populate users
 
-### Iniciar o Servidor
+### Start Local Server
 
 `python3 manager.py runserver`
 
-## Utilizando
+## Using
 
-### Criando uma Conta
+### Creating an Account
 
-Para iniciar, caso não tenha uma conta, crie uma acessando `/conta/registrar` ou seguindo o botão "Regsitrar-se", Preencha e envie o formulário. Feito isso, insira seu `username` e sua `password`, ambos informados no formulário anteriormente. Já possui uma conta? Acesse diretamente por `/conta/entrar` ou siga o botão "Entrar".
+To get started, if you don't have an account, create one by going to `/conta/registrar` or by following the "Registrar" button. Fill in and submit the form. Once this is done, enter your username and password, both of which you entered in the form above. Already have an account? Go directly to `/conta/entrar` or follow the "Entrar" button.
 
 <hr>
 
-### Compreendendo a Interface
+### Understanding the Interface
 
-Após acessar, a todo momento haverá uma barra de navegação no topo das páginas. Você pode utilizá-la para navegar entre os módulos do sistema e realizar algumas ações como:
+After logging in, there will always be a navigation bar at the top of the pages. You can use it to navigate between the system modules and perform some actions such as:
 
-- Criar e visualizar suas credenciais de login
-- Criar e visualizar seus dados de cartões
-- Criar e visualizar suas anotações seguras
-- Sair do sistema
+- Create and view login credentials
+- Create and view cards
+- Create and view security notes
+- Logout
 
-#### Página Principal
+#### Homepage
 
-Esta página mostra a quantidade total de cada segredo (credenciais, cartões, anotações) e um breve histórico dos últimos registros feitos. Também permite acessar a página de criação e visualização de cada segredo
+This page shows the total quantity of each secret (credentials, cards, notes) and a brief history of the last registrations made. It also allows you to access the creation and viewing page for each secret.
 
-#### Página de Criação
+#### Creating Page
 
-Utilizando a barra de navegação (através dos menus dropdown) ou com um botão "Adicionar" na tela inicial você acessa a página de criação. Conforme o formulário é preenchido o campo `slug` - apenas leitura - é autopreenchido com a referência do segredo em questão. Você poderá utilizar esse campo para acessar esse mesmo segredo a partir da URL (e.g. `/segredo/cartao/:slug:`).
+Using the navigation bar (via the dropdown menus) or an “Adicionar button on the home screen, you access the creation page.As the form is filled in, the `slug` field - read-only - is autofilled with the reference of the secret in question. You can use this field to access the same secret from the URL (e.g. `/segredo/cartao/:slug:`).
 
-Preenchendo e enviando corretamente o formulário você cria um novo segredo com as informações escritas no formulário, sendo posteriormente redirecionado para a página de listagem dos segredos de mesmo tipo (credencial; cartão; anotação).
+If you fill in and submit the form correctly, you will create a new secret with the information entered in the form, and you will then be redirected to the page listing secrets of the same type (credential; card; note).
 
-#### Página de Listagem
+#### Listing Page
 
-Esta página apresenta todos os segredos criados, um tipo por vez. Clickando em um segredo aqui indicado será apresentada uma tela detalhada desse segredo. Não havendo nenhum segredo, haverá uma mensagem indicando a situação com um botão para a tela de criação.
+This page shows all the secrets you have created, one type at a time. Clicking on a secret here will display a detailed screen for that secret.If there is no secret, there will be a message indicating the situation with a button to the creation screen.
 
-#### Página de Detalhe
+#### Detail Page
 
-Aqui é onde você visualiza os detalhes do segredo escolhido, informação por informação. Junto a isso, há três botões no topo da tela: azul (editar este segredo), vermelho (apagar este segredo) e cinza (adicionar um novo segredo).
+This is where you see the details of your chosen secret, information by information. Next to this, there are three buttons at the top of the screen: blue (edit this secret), red (delete this secret) and gray (add a new secret).
 
 ## To-Do List
 
-- [ ] Usar Autenticação em Duas Etapas
-- [ ] Gerar senhas pseudo-aleatórias como sugestão da plataforma
-- [ ] Criar as páginas `/sobre` e `/serviços`.
-- [ ] Aplicar melhorias de feedback de caracteres nos campos de texto para cada segredo
+- [ ] Use 2FA
+- [ ] Generate pseudo-random passwords as suggestion
+- [ ] Create `/sobre` and `/serviços` pages
+- [ ] Apply chars count feedback in text inputs
 
 ## Contrib
 
-### Escrevendo Testes de Models
+### Writing Models Tests
 
 ```py
 class MyModelTestCase(TestCase):
@@ -292,7 +293,7 @@ class MyModelTestCase(TestCase):
                 instance.full_clean()
 ```
 
-### Escrevendo Testes de Views
+### Writing Views Tests
 
 ```py
 class BaseExampleTestCase(TestCase):

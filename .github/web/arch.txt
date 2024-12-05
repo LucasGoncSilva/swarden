@@ -28,13 +28,13 @@ Model -->|Select| Database
 Database --> Model --> View --> Template --> Dispatcher --> LB --> User
 
 
-style CLOUD fill:#1117,color:#44b78b,stroke:#ccc;
-style RENDER fill:#1117,color:#44b78b,stroke:#ccc;
-style SUPABASE fill:#1117,color:#44b78b,stroke:#ccc;
-style User fill:#fff,color:#0c4b33,stroke:#0c4b33;
-style Database fill:#dfd,color:#0c4b33,stroke:#0c4b33;
+style CLOUD fill:#1111,color:#448bb7,stroke:#ccc;
+style RENDER fill:#1111,color:#448bb7,stroke:#ccc;
+style SUPABASE fill:#1111,color:#448bb7,stroke:#ccc;
+style User fill:#fff,color:#008,stroke:#008;
+style Database fill:#ddf,color:#008,stroke:#008;
 
-classDef Arch fill:#0c4b33,color:#efe,stroke:#efe;
+classDef Arch fill:#008,color:#efe,stroke:#efe;
 
-linkStyle 1,2,3,4,5,6 stroke:#0f0,color:#efe
-linkStyle 7,8,9,10,11,12 stroke:#fff,color:#efe
+linkStyle 1,2,3,4,5,6 stroke:#0af,color:#efe
+linkStyle 7,8,9,10,11,12 stroke:#aaa,color:#efe

@@ -1,0 +1,234 @@
+site_name: SWARDEN
+repo_url: https://github.com/LucasGoncSilva/swarden
+repo_name: LucasGoncSilva/sWarden
+edit_uri: "edit/main/documentation/"
+
+
+theme:
+  name: material
+  language: en
+  favicon: img/logo.svg
+  logo: img/logo.svg
+  font:
+    text: Ubuntu
+
+  icon:
+    tag:
+      homepage: fontawesome/solid/house
+      index: fontawesome/solid/file
+      overview: fontawesome/solid/binoculars
+      test: fontawesome/solid/flask-vial
+      infra: fontawesome/solid/server
+      doc: fontawesome/solid/book
+      legal: fontawesome/solid/scale-unbalanced
+      user: fontawesome/solid/user
+      API: fontawesome/solid/gears
+      browser: fontawesome/solid/desktop
+
+    next: fontawesome/solid/arrow-right
+    previous: fontawesome/solid/arrow-left
+    top: fontawesome/solid/arrow-up
+    repo: fontawesome/brands/git-alt
+    edit: material/pencil
+    view: material/eye
+    admonition:
+      note: fontawesome/solid/note-sticky
+      abstract: fontawesome/solid/book
+      info: fontawesome/solid/circle-info
+      tip: fontawesome/solid/fire-flame-simple
+      success: fontawesome/solid/check
+      question: fontawesome/solid/circle-question
+      warning: fontawesome/solid/triangle-exclamation
+      failure: fontawesome/solid/xmark
+      danger: fontawesome/solid/skull
+      bug: fontawesome/solid/bug
+      example: fontawesome/solid/flask
+      quote: fontawesome/solid/quote-left
+
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Light/Dark Mode
+      primary: blue
+      accent: indigo
+
+    # Palette toggle for dark mode
+    - scheme: slate
+      toggle:
+        icon: material/brightness-3
+        name: Light/Dark Mode
+      primary: teal
+      accent: orange
+
+
+  features:
+    - navigation.indexes
+    - navigation.tabs
+    - navigation.top
+    - toc.integrate
+    - header.autohide
+    - navigation.footer
+    - content.action.view
+    - content.action.edit
+    - announce.dismiss
+    - content.tabs.link
+
+
+markdown_extensions:
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      use_pygments: true
+      pygments_lang_class: true
+      auto_title: true
+      linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - md_in_html
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.arithmatex:
+      generic: true
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+
+plugins:
+  - search
+  - tags
+  - git-revision-date-localized:
+      enable_creation_date: true
+      type: datetime
+      enabled: true
+      enable_creation_date: true
+      fallback_to_build_date: true
+      locale: en
+
+
+extra:
+  tags:
+    Homepage: homepage
+    Index: index
+    Overview: overview
+    Teste: test
+    Infra: infra
+    Documentation: doc
+    Legal: legal
+    Usuário: user
+    API: API
+    Browser: browser
+
+  status:
+    new: Adicionado recentemente
+
+
+copyright: Only God knows
+
+
+nav:
+  - Homepage: index.md
+  - manage.py: manage.py.md
+  - utils.py: utils.py.md
+  - home:
+    - apps.py: home/apps.py.md
+    - urls.py: home/urls.py.md
+    - views.py: home/views.py.md
+    - management:
+      - commands:
+        - testwithcoverage.py: home/management/commands/testwithcoverage.py.md
+    - tests:
+      - test_views.py: home/tests/test_views.py.md
+  - account:
+    - admin.py: account/admin.py.md
+    - apps.py: account/apps.py.md
+    - models.py: account/models.py.md
+    - urls.py: account/urls.py.md
+    - views.py: account/views.py.md
+    - forms.py: account/forms.py.md
+    - management:
+      - commands:
+        - populateuser.py: account/management/commands/populateuser.py.md
+    - migrations:
+      - 0001_initial.py: account/migrations/0001_initial.py.md
+    - tests:
+      - test_models.py: account/tests/test_models.py.md
+      - test_views.py: account/tests/test_views.py.md
+  - CORE:
+    - wsgi.py: CORE/wsgi.py.md
+    - admin.py: CORE/admin.py.md
+    - asgi.py: CORE/asgi.py.md
+    - urls.py: CORE/urls.py.md
+    - settings:
+      - deploy.py: CORE/settings/deploy.py.md
+      - dev.py: CORE/settings/dev.py.md
+      - base.py: CORE/settings/base.py.md
+  - general:
+    - apps.py: general/apps.py.md
+    - urls.py: general/urls.py.md
+    - views.py: general/views.py.md
+    - tests:
+      - test_views.py: general/tests/test_views.py.md
+  - secret:
+    - admin.py: secret/admin.py.md
+    - apps.py: secret/apps.py.md
+    - urls.py: secret/urls.py.md
+    - views.py: secret/views.py.md
+    - month:
+      - widgets.py: secret/month/widgets.py.md
+      - models.py: secret/month/models.py.md
+      - __init__.py: secret/month/__init__.py.md
+      - forms.py: secret/month/forms.py.md
+    - management:
+      - commands:
+        - populatesecret.py: secret/management/commands/populatesecret.py.md
+    - migrations:
+      - 0001_initial.py: secret/migrations/0001_initial.py.md
+    - models:
+      - logincredential.py: secret/models/logincredential.py.md
+      - securitynotes.py: secret/models/securitynotes.py.md
+      - __init__.py: secret/models/__init__.py.md
+      - card.py: secret/models/card.py.md
+    - tests:
+      - test_xor.py: secret/tests/test_xor.py.md
+      - test_models.py: secret/tests/test_models.py.md
+      - test_views.py: secret/tests/test_views.py.md
+  - mail:
+    - apps.py: mail/apps.py.md
+    - models.py: mail/models.py.md
+    - urls.py: mail/urls.py.md
+    - views.py: mail/views.py.md
+    - migrations:
+      - 0001_initial.py: mail/migrations/0001_initial.py.md
+    - tests:
+      - test_views.py: mail/tests/test_views.py.md
+  - err:
+    - apps.py: err/apps.py.md
+    - urls.py: err/urls.py.md
+    - views.py: err/views.py.md
+    - tests:
+      - test_views.py: err/tests/test_views.py.md
+  - honeypot:
+    - admin.py: honeypot/admin.py.md
+    - apps.py: honeypot/apps.py.md
+    - models.py: honeypot/models.py.md
+    - urls.py: honeypot/urls.py.md
+    - views.py: honeypot/views.py.md
+    - migrations:
+      - 0001_initial.py: honeypot/migrations/0001_initial.py.md
+    - tests:
+      - test_models.py: honeypot/tests/test_models.py.md
+      - test_views.py: honeypot/tests/test_views.py.md
