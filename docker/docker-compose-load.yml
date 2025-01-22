@@ -1,0 +1,46 @@
+# docker stop $(docker ps -a -q); docker rm $(docker ps -a -q); docker rmi $(docker images -a -q)
+# docker compose -f docker/docker-compose-load.yml up
+
+services:
+  web:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    command: >
+      bash -c "
+      uv run manage.py collectstatic --noinput
+      && uv run manage.py makemigrations
+      && uv run manage.py migrate
+      && uv run gunicorn CORE.wsgi:application --bind 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_NAME=postgres
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=postgres
+      - DATABASE_HOST=db
+      - CAPTCHA_TEST_MODE=True
+    depends_on:
+      - db
+    restart: on-failure
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "64.0MB"
+
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: pg_isready -U postgres
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "64.0MB"

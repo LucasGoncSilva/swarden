@@ -1,0 +1,170 @@
+{% extends 'shared/base.html' %}
+{% load static %}
+
+
+{% block title %} Página de Usuário {% endblock %}
+
+
+{% block imports %}
+<link rel="stylesheet" href="{% static 'home/index/css/style.css' %}">
+{% endblock %}
+
+
+{% block content %}
+
+{% if messages %}
+{% for message in messages %}
+<div class='alert {{ message.tags }} mt-3 py-2 text-center' role='alert'>{{ message }}</div>
+{% endfor %}
+{% endif %}
+
+<h1 class="text-center">Informações Gerais</h1>
+
+<section class="mt-5 mx-auto px-5 pt-3 pb-5">
+    <h2 class="text-center mb-5">Credenciais</h2>
+    <div class="grid">
+        <fieldset id="credentials" class="px-4 py-4">
+            <legend>Credenciais recém-adicionadas</legend>
+
+            {% for i in credentials %}
+            <a href="{% url 'secret:credential_detail_view' i.slug %}">
+                <div class="px-4">
+                    <img class="my-1" src="/static/secret/img/Credential/{{ i.service }}.svg"
+                        alt="Logo do serviço: {{ i.get_service_display }}">
+                    <h5>{{ i.name }}</h5>
+                </div>
+            </a>
+            {% empty %}
+            <h5><strong>nenhuma</strong></h5>
+            {% endfor %}
+
+        </fieldset>
+
+        <div class="px-4 py-4">
+            <div class="px-4 info">
+                <img class="my-1" src="{% static 'home/index/img/calculator.png' %}"
+                    alt="Ícone de calculadora, indicando e simbolizando 'total'.">
+                <h5>Total: {{ credentials_count }} credenciais</h5>
+            </div>
+
+            <a href="{% url 'secret:credential_list_view' %}">
+                <div class="px-4 action">
+                    <img class="my-1" src="{% static 'home/index/img/credential.png' %}"
+                        alt="Ícone de cartão de identificação, indicando e simbolizando 'credenciais'.">
+                    <h5>Visualizar todas</h5>
+                </div>
+            </a>
+
+            <a href="{% url 'secret:credential_create_view' %}">
+                <div class="px-4 action">
+                    <img class="my-1" src="{% static 'home/index/img/plus.png' %}"
+                        alt="Ícone de mais, indicando e simbolizando 'adicionar'.">
+                    <h5>Adicionar</h5>
+                </div>
+            </a>
+        </div>
+    </div>
+</section>
+
+
+<hr>
+
+
+<!-- Cards -->
+<section class="mt-5 mx-auto px-5 pt-3 pb-5">
+    <h2 class="text-center mb-5">Cartões</h2>
+    <div class="grid">
+        <fieldset class="px-4 py-4">
+            <legend>Cartões recém-adicionados</legend>
+
+            {% for i in cards %}
+            <a href="{% url 'secret:card_detail_view' i.slug %}">
+                <div class="px-4">
+                    <img class="my-1" src="/static/secret/img/Card/{{ i.bank }}.svg"
+                        alt="Logo do banco: {{ i.get_bank_display }}">
+                    <h5>{{ i.name }}</h5>
+                </div>
+            </a>
+            {% empty %}
+            <h5><strong>nenhuma</strong></h5>
+            {% endfor %}
+
+        </fieldset>
+
+        <div class="px-4 py-4">
+            <div class="px-4 info">
+                <img class="my-1" src="{% static 'home/index/img/calculator.png' %}"
+                    alt="Ícone de calculadora, indicando e simbolizando 'total'.">
+                <h5>Total: {{ cards_count }} cartões</h5>
+            </div>
+
+            <a href="{% url 'secret:card_list_view' %}">
+                <div class="px-4 action">
+                    <img class="my-1" src="{% static 'home/index/img/card.png' %}"
+                        alt="Ícone de cartão, indicando e simbolizando 'cartões'.">
+                    <h5>Visualizar todos</h5>
+                </div>
+            </a>
+
+            <a href="{% url 'secret:card_create_view' %}">
+                <div class="px-4 action">
+                    <img class="my-1" src="{% static 'home/index/img/plus.png' %}"
+                        alt="Ícone de mais, indicando e simbolizando 'adicionar'.">
+                    <h5>Adicionar</h5>
+                </div>
+            </a>
+        </div>
+    </div>
+</section>
+
+
+<hr>
+
+
+<!-- Notes -->
+<section class="mt-5 mx-auto px-5 pt-3 pb-5">
+    <h2 class="text-center mb-5">Anotações</h2>
+    <div class="grid">
+        <fieldset class="px-4 py-4">
+            <legend>Anotações recém-adicionadas</legend>
+
+            {% for i in notes %}
+            <a href="{% url 'secret:note_detail_view' i.slug %}">
+                <div class="px-4">
+                    <img class="my-1" src="{% static 'home/index/img/file.png' %}"
+                        alt="Ícone de anotação, indicando e simbolizando 'anotações'.">
+                    <h5>{{ i.title }}</h5>
+                </div>
+            </a>
+            {% empty %}
+            <h5><strong>nenhuma</strong></h5>
+            {% endfor %}
+
+        </fieldset>
+
+        <div class="px-4 py-4">
+            <div class="px-4 info">
+                <img class="my-1" src="{% static 'home/index/img/calculator.png' %}"
+                    alt="Ícone de calculadora, indicando e simbolizando 'total'.">
+                <h5>Total: {{ notes_count }} anotações</h5>
+            </div>
+
+            <a href="{% url 'secret:note_list_view' %}">
+                <div class="px-4 action">
+                    <img class="my-1" src="{% static 'home/index/img/folder.png' %}"
+                        alt="Ícone de pasta, indicando e simbolizando 'anotação'.">
+                    <h5>Visualizar todas</h5>
+                </div>
+            </a>
+
+            <a href="{% url 'secret:note_create_view' %}">
+                <div class="px-4 action">
+                    <img class="my-1" src="{% static 'home/index/img/plus.png' %}"
+                        alt="Ícone de mais, indicando e simbolizando 'adicionar'.">
+                    <h5>Adicionar</h5>
+                </div>
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

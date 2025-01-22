@@ -1,0 +1,243 @@
+site_name: sWardenTheDocs
+site_url: https://lucasgoncsilva.github.io/swarden/
+repo_url: https://github.com/LucasGoncSilva/swarden
+repo_name: LucasGoncSilva/sWarden
+edit_uri: "edit/main/documentation/"
+
+
+theme:
+  name: material
+  language: en
+  favicon: img/logo.svg
+  logo: img/logo.svg
+  font:
+    text: Ubuntu
+
+  icon:
+    tag:
+      homepage: fontawesome/solid/house
+      index: fontawesome/solid/file
+      overview: fontawesome/solid/binoculars
+      test: fontawesome/solid/flask-vial
+      infra: fontawesome/solid/server
+      doc: fontawesome/solid/book
+      legal: fontawesome/solid/scale-unbalanced
+      user: fontawesome/solid/user
+      API: fontawesome/solid/gears
+      browser: fontawesome/solid/desktop
+
+    next: fontawesome/solid/arrow-right
+    previous: fontawesome/solid/arrow-left
+    top: fontawesome/solid/arrow-up
+    repo: fontawesome/brands/git-alt
+    edit: material/pencil
+    view: material/eye
+    admonition:
+      note: fontawesome/solid/note-sticky
+      abstract: fontawesome/solid/book
+      info: fontawesome/solid/circle-info
+      tip: fontawesome/solid/fire-flame-simple
+      success: fontawesome/solid/check
+      question: fontawesome/solid/circle-question
+      warning: fontawesome/solid/triangle-exclamation
+      failure: fontawesome/solid/xmark
+      danger: fontawesome/solid/skull
+      bug: fontawesome/solid/bug
+      example: fontawesome/solid/flask
+      quote: fontawesome/solid/quote-left
+
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Light/Dark Mode
+      primary: indigo
+      accent: indigo
+
+    # Palette toggle for dark mode
+    - scheme: slate
+      toggle:
+        icon: material/brightness-3
+        name: Light/Dark Mode
+      primary: indigo
+      accent: indigo
+
+
+  features:
+    - navigation.indexes
+    - navigation.tabs
+    - navigation.top
+    # - toc.integrate
+    - header.autohide
+    - navigation.footer
+    - content.action.view
+    - content.action.edit
+    - announce.dismiss
+    - content.tabs.link
+
+
+markdown_extensions:
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      use_pygments: true
+      pygments_lang_class: true
+      auto_title: true
+      linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - md_in_html
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.arithmatex:
+      generic: true
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+
+plugins:
+  - search
+  - tags
+  - git-revision-date-localized:
+      enable_creation_date: true
+      type: datetime
+      enabled: true
+      enable_creation_date: true
+      fallback_to_build_date: true
+      locale: en
+
+
+extra:
+  tags:
+    Homepage: homepage
+    Index: index
+    Overview: overview
+    Teste: test
+    Infra: infra
+    Documentation: doc
+    Legal: legal
+    Usuário: user
+    API: API
+    Browser: browser
+
+  status:
+    new: New!
+
+
+copyright: Copyright 2025 LucasGonc
+
+
+nav:
+  - Homepage: index.md
+  - Code of Conduct: CODE_OF_CONDUCT.md
+  - Contributing: CONTRIBUTING.md
+  - Security: SECURITY.md
+  - Support: SUPPORT.md
+  - ToDo: TODO.md
+
+  - Codebase:
+    - index: Codebase/index.md
+    - manage.py: Codebase/manage.py.md
+    - utils.py: Codebase/utils.py.md
+    - home:
+      - apps.py: Codebase/home/apps.py.md
+      - urls.py: Codebase/home/urls.py.md
+      - views.py: Codebase/home/views.py.md
+      - management:
+        - commands:
+          - testwithcoverage.py: Codebase/home/management/commands/testwithcoverage.py.md
+      - tests:
+        - test_views.py: Codebase/home/tests/test_views.py.md
+    - account:
+      - admin.py: Codebase/account/admin.py.md
+      - apps.py: Codebase/account/apps.py.md
+      - models.py: Codebase/account/models.py.md
+      - urls.py: Codebase/account/urls.py.md
+      - views.py: Codebase/account/views.py.md
+      - forms.py: Codebase/account/forms.py.md
+      - management:
+        - commands:
+          - populateuser.py: Codebase/account/management/commands/populateuser.py.md
+      - migrations:
+        - 0001_initial.py: Codebase/account/migrations/0001_initial.py.md
+      - tests:
+        - test_models.py: Codebase/account/tests/test_models.py.md
+        - test_views.py: Codebase/account/tests/test_views.py.md
+    - CORE:
+      - wsgi.py: Codebase/CORE/wsgi.py.md
+      - admin.py: Codebase/CORE/admin.py.md
+      - asgi.py: Codebase/CORE/asgi.py.md
+      - urls.py: Codebase/CORE/urls.py.md
+      - settings:
+        - deploy.py: Codebase/CORE/settings/deploy.py.md
+        - dev.py: Codebase/CORE/settings/dev.py.md
+        - base.py: Codebase/CORE/settings/base.py.md
+    - general:
+      - apps.py: Codebase/general/apps.py.md
+      - urls.py: Codebase/general/urls.py.md
+      - views.py: Codebase/general/views.py.md
+      - tests:
+        - test_views.py: Codebase/general/tests/test_views.py.md
+    - secret:
+      - admin.py: Codebase/secret/admin.py.md
+      - apps.py: Codebase/secret/apps.py.md
+      - urls.py: Codebase/secret/urls.py.md
+      - views.py: Codebase/secret/views.py.md
+      - month:
+        - widgets.py: Codebase/secret/month/widgets.py.md
+        - models.py: Codebase/secret/month/models.py.md
+        - __init__.py: Codebase/secret/month/__init__.py.md
+        - forms.py: Codebase/secret/month/forms.py.md
+      - management:
+        - commands:
+          - populatesecret.py: Codebase/secret/management/commands/populatesecret.py.md
+      - migrations:
+        - 0001_initial.py: Codebase/secret/migrations/0001_initial.py.md
+      - models:
+        - logincredential.py: Codebase/secret/models/logincredential.py.md
+        - securitynotes.py: Codebase/secret/models/securitynotes.py.md
+        - __init__.py: Codebase/secret/models/__init__.py.md
+        - card.py: Codebase/secret/models/card.py.md
+      - tests:
+        - test_xor.py: Codebase/secret/tests/test_xor.py.md
+        - test_models.py: Codebase/secret/tests/test_models.py.md
+        - test_views.py: Codebase/secret/tests/test_views.py.md
+    - mail:
+      - apps.py: Codebase/mail/apps.py.md
+      - models.py: Codebase/mail/models.py.md
+      - urls.py: Codebase/mail/urls.py.md
+      - views.py: Codebase/mail/views.py.md
+      - migrations:
+        - 0001_initial.py: Codebase/mail/migrations/0001_initial.py.md
+      - tests:
+        - test_views.py: Codebase/mail/tests/test_views.py.md
+    - err:
+      - apps.py: Codebase/err/apps.py.md
+      - urls.py: Codebase/err/urls.py.md
+      - views.py: Codebase/err/views.py.md
+      - tests:
+        - test_views.py: Codebase/err/tests/test_views.py.md
+    - honeypot:
+      - admin.py: Codebase/honeypot/admin.py.md
+      - apps.py: Codebase/honeypot/apps.py.md
+      - models.py: Codebase/honeypot/models.py.md
+      - urls.py: Codebase/honeypot/urls.py.md
+      - views.py: Codebase/honeypot/views.py.md
+      - migrations:
+        - 0001_initial.py: Codebase/honeypot/migrations/0001_initial.py.md
+      - tests:
+        - test_models.py: Codebase/honeypot/tests/test_models.py.md
+        - test_views.py: Codebase/honeypot/tests/test_views.py.md

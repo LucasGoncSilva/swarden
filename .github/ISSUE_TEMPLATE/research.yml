@@ -1,0 +1,100 @@
+name: Research request
+description: Suggest a technology, method, or approach for potential use in the project
+title: "[Research]: "
+labels: ["research"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to propose a new technology, method, or approach!  
+        Please provide as much detail as possible to help us evaluate your suggestion effectively.
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Guidelines
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://lucasgoncsilva.github.io/swarden/CODE_OF_CONDUCT.md), [Contributing](https://lucasgoncsilva.github.io/swarden/CONTRIBUTING), [Security](https://lucasgoncsilva.github.io/swarden/SECURITY), and [Support](https://lucasgoncsilva.github.io/swarden/SUPPORT) guidelines.
+      options:
+        - label: I agree to follow this project's Guidelines.
+          required: true
+
+  - type: input
+    id: technology
+    attributes:
+      label: Suggested Technology, Method, or Approach
+      description: Name of the technology, methodology, or approach you are proposing.
+      placeholder: React, TDD, SOLID principles, REST API, etc.
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Use Case
+      description: Where or how would this technology/method be applied in the project?
+      placeholder: Describe the specific area or feature of the project where this applies.
+    validations:
+      required: true
+
+  - type: textarea
+    id: benefits
+    attributes:
+      label: Expected Benefits
+      description: Explain why this approach is valuable and what problems it solves.
+      placeholder: What are the advantages? How will it improve the project or development process?
+    validations:
+      required: true
+
+  - type: textarea
+    id: implementation
+    attributes:
+      label: Proposed Implementation
+      description: How would you integrate this into the project? Provide a high-level overview or steps.
+      placeholder: Describe the implementation plan or approach to adoption.
+    validations:
+      required: true
+
+  - type: textarea
+    id: risks
+    attributes:
+      label: Risks and Challenges
+      description: Identify any potential risks, trade-offs, or challenges with adopting this approach.
+      placeholder: Are there any limitations, compatibility issues, or learning curves to consider?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Have you considered other options? If yes, why is this the best choice?
+      placeholder: List other approaches and why they were not chosen.
+    validations:
+      required: false
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples or Use Cases
+      description: Provide real-world examples or scenarios where this has been successfully used.
+      placeholder: Examples of how this technology/method has been applied elsewhere.
+    validations:
+      required: false
+
+  - type: textarea
+    id: attachments
+    attributes:
+      label: Attachments
+      description: Add any relevant images, videos, diagrams, or documentation to support your suggestion.
+      placeholder: Upload files or provide links to external resources here.
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Information
+      description: Include any other relevant details or thoughts about your suggestion.
+      placeholder: Is there anything else we should know?
+    validations:
+      required: false
