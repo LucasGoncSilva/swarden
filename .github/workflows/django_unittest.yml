@@ -59,4 +59,4 @@ jobs:
       - name: Run Tests
         run: |
           cd SWARDEN
-          uv run SWARDEN/manage.py test --parallel
+          uv run manage.py test --parallel

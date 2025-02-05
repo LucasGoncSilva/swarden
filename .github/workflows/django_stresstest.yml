@@ -43,7 +43,7 @@ jobs:
 
       - name: Upload Locust Report
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: stresstest-result
           path: report/html/stress.html

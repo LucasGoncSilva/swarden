@@ -1,7 +1,7 @@
 <h1 align="center">
-  <img src="./img/logo.svg" height="300" width="300" alt="Logo SWARDEN" />
+  <img src="./img/logo.svg" height="300" width="300" alt="Logo sWarden" />
   <br>
-  SWARDEN
+  sWarden
 </h1>
 
 ![GitHub License](https://img.shields.io/github/license/LucasGoncSilva/swarden?labelColor=101010)
