@@ -1,4 +1,3 @@
-
 from CORE.admin import swarden_admin
 from django.contrib import admin
 
