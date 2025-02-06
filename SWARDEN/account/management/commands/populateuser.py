@@ -1,4 +1,3 @@
-from random import choice
 from typing import Any
 
 from account.models import User
