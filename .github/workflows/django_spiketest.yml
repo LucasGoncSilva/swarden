@@ -2,10 +2,6 @@ name: Django Spike Testing
 
 on: [push, fork, pull_request]
 
-env:
-  EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
-  EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
-
 jobs:
   spiketest:
     runs-on: ubuntu-latest
