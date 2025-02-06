@@ -79,7 +79,7 @@ _Note: All contributions will be licensed under the project's license._
 
 - **Update the CHANGELOG** for all enhancements and bug fixes. Include the corresponding issue number if one exists, and your GitHub username. (example: "- Fixed crash in profile view. #123 @jessesquires")
 
-- **Use the repo's correct branch.** Branch from `main` and [submit your pull request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request-from-a-fork) to `staging`:
+- **Use the repo's correct branch.** Branch from `main` and [submit your pull request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request-from-a-fork) to `PR`:
 
 <table>
 <thead>
@@ -107,15 +107,18 @@ Do **NOT**
 
 gitGraph
     commit id: " " tag: "v1.0.0"
-    branch staging
-    branch dev
-    checkout dev
+    branch stg
+    branch PR
+    branch your_dev
+    checkout your_dev
     commit id: "[feat] XYZ"
     commit id: "[fix] ABC"
-    checkout staging
-    merge dev tag: "PR: Lorem Ipsum"
+    checkout PR
+    merge your_dev tag: "PR: Lorem Ipsum"
+    checkout stg
+    merge PR tag: "v1.1.0-stg"
     checkout main
-    merge staging tag: "v1.1.0"
+    merge stg tag: "v1.1.0"
 ```
 
 </td>
@@ -130,13 +133,33 @@ gitGraph
 
 gitGraph
     commit id: " " tag: "v1.0.0"
-    branch staging
-    branch dev
-    checkout dev
+    branch stg
+    branch PR
+    branch your_dev
+    checkout your_dev
     commit id: "[feat] XYZ"
     commit id: "[fix] ABC"
     checkout main
-    merge dev tag: "PR: Lorem Ipsum"
+    merge your_dev tag: "PR: Lorem Ipsum"
+```
+
+```mermaid
+%%{init: { 'logLevel': 'debug', 'themeVariables': {
+            'git0': '#0077ff77',
+            'git1': '#00770077',
+            'git2': '#ffaa0077'
+    } } }%%
+
+gitGraph
+    commit id: " " tag: "v1.0.0"
+    branch stg
+    branch PR
+    branch your_dev
+    checkout your_dev
+    commit id: "[feat] XYZ"
+    commit id: "[fix] ABC"
+    checkout stg
+    merge your_dev tag: "PR: Lorem Ipsum"
 ```
 
 </td>
@@ -144,7 +167,7 @@ gitGraph
 </tbody>
 </table>
 
-> **PRs MUST BE BRANCHED FROM `main` AND SUBMITTED TO `staging`**
+> **PRs MUST BE BRANCHED FROM `main` AND SUBMITTED TO `PR`**
 
 - **[Resolve any merge conflicts](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/resolving-a-merge-conflict-on-github)** that occur.
 
