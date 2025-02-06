@@ -8,9 +8,13 @@ from tqdm import tqdm
 
 class Command(BaseCommand):
     def handle(self, *args: Any, **options: Any) -> None:
+        if User.objects.filter(username='ernestodruso').exists():
+            self.stdout.write('\naccount.User is already populated')
+            return
+
         self.stdout.write('\nPopulating account.User')
 
-        with open('./account/management/commands/populate_user.txt') as sample:
+        with open('./account/management/commands/populateuser.txt') as sample:
             lines: list[list[str]] = [i.strip().split('::') for i in sample.readlines()]
 
         for i in tqdm(
@@ -21,7 +25,6 @@ class Command(BaseCommand):
                 username=username, email=email, password=password
             )
 
-            if choice([True, False]):
-                user.is_active = False
+            user.is_active = True
 
             user.save()
