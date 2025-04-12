@@ -3,8 +3,6 @@ name: Django Unit Testing
 on: [push, fork, pull_request]
 
 env:
-  EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
-  EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
   CAPTCHA_TEST_MODE: True
 
 jobs:
@@ -59,4 +57,4 @@ jobs:
       - name: Run Tests
         run: |
           cd SWARDEN
-          uv run SWARDEN/manage.py test --parallel
+          uv run manage.py test --parallel

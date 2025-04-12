@@ -14,14 +14,18 @@ class Command(BaseCommand):
         self.populate_credentials()
 
     def populate_cards(self) -> None:
+        if Card.objects.filter(slug='nao-listado--rdias').exists():
+            self.stdout.write('secret.Card is already populated')
+            return
+
         self.stdout.write('\nPopulating secret.Card')
 
-        with open('./secret/management/commands/populate_card.txt') as sample:
+        with open('./secret/management/commands/populatecard.txt') as sample:
             f: list[list[str]] = [i.strip().split('::') for i in sample.readlines()]
 
         for i in tqdm(f, desc='Cards', bar_format='{l_bar}{bar:100}{r_bar}{bar:-10b}'):
             (
-                owner,
+                owner_id,
                 name,
                 card_type,
                 number,
@@ -33,7 +37,7 @@ class Command(BaseCommand):
                 note,
             ) = i
 
-            owner: User = User.objects.get(pk=owner)
+            owner: User = User.objects.get(pk=owner_id)
 
             y, m = expiration.split('-')
             expiration = Month(int(y), int(m))
@@ -53,15 +57,19 @@ class Command(BaseCommand):
             )
 
     def populate_notes(self) -> None:
+        if SecurityNote.objects.filter(slug='dolorem-mo').exists():
+            self.stdout.write('secret.SecurityNote is already populated')
+            return
+
         self.stdout.write('\nPopulating secret.SecurityNote')
 
-        with open('./secret/management/commands/populate_note.txt') as sample:
+        with open('./secret/management/commands/populatenote.txt') as sample:
             f: list[list[str]] = [i.strip().split('::') for i in sample.readlines()]
 
         for i in tqdm(f, desc='Notes', bar_format='{l_bar}{bar:100}{r_bar}{bar:-10b}'):
-            owner, title, note_type, content = i
+            owner_id, title, note_type, content = i
 
-            owner = User.objects.get(pk=owner)
+            owner = User.objects.get(pk=owner_id)
 
             SecurityNote.objects.create(
                 owner=owner,
@@ -72,14 +80,18 @@ class Command(BaseCommand):
             )
 
     def populate_credentials(self) -> None:
+        if LoginCredential.objects.filter(slug='discord--giovanna-cardoso').exists():
+            self.stdout.write('secret.LoginCredential is already populated')
+            return
+
         self.stdout.write('\nPopulating secret.LoginCredential')
 
-        with open('./secret/management/commands/populate_credential.txt') as sample:
+        with open('./secret/management/commands/populatecredential.txt') as sample:
             f: list[list[str]] = [i.strip().split('::') for i in sample.readlines()]
 
         for i in tqdm(f, desc='Notes', bar_format='{l_bar}{bar:100}{r_bar}{bar:-10b}'):
             (
-                owner,
+                owner_id,
                 service,
                 name,
                 thirdy_party_login,
@@ -89,7 +101,7 @@ class Command(BaseCommand):
                 note,
             ) = i
 
-            owner = User.objects.get(pk=owner)
+            owner = User.objects.get(pk=owner_id)
 
             LoginCredential.objects.create(
                 owner=owner,

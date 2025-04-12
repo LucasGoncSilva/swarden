@@ -36,7 +36,7 @@ jobs:
         restore-keys: |
           mkdocs-material-
 
-    - name: Publish Docs
+    - name: Publish MkDocs
       working-directory: ./documentation
       run: |
         pip install uv

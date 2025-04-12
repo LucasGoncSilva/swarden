@@ -14,7 +14,6 @@ from CORE.admin import swarden_admin
 
 urlpatterns: list[URLResolver | URLPattern] = [
     # Adm pages
-    path(f'{getenv("ADMIN", "__manager__")}/', swarden_admin.urls),
     path('admin/', include('honeypot.urls')),
     # System functionality's pages
     path('conta/', include('account.urls')),
@@ -51,6 +50,8 @@ urlpatterns: list[URLResolver | URLPattern] = [
     path('geral/', include('general.urls')),
 ]
 
+if getenv('DJANGO_SETTINGS_MODULE', 'CORE.settings.dev') == 'CORE.settings.dev':
+    urlpatterns += [path(f'{getenv("ADMIN", "__manager__")}/', swarden_admin.urls)]
 
 handler403: Final[str] = 'err.views.handle403'
 handler404: Final[str] = 'err.views.handle404'

@@ -1,7 +1,7 @@
 <h1 align="center">
-  <img src="./img/logo.svg" height="300" width="300" alt="Logo SWARDEN" />
+  <img src="./img/logo.svg" height="300" width="300" alt="Logo sWarden" />
   <br>
-  SWARDEN
+  sWarden
 </h1>
 
 ![GitHub License](https://img.shields.io/github/license/LucasGoncSilva/swarden?labelColor=101010)
@@ -60,7 +60,7 @@ Before copying anything, we recommend you to read our guidelines: [Code of Condu
 Once done with it, fork this repo to create a copy at your repos and clone your version:
 
 ```sh
-git clone <YOUR_GITHUB_SWARDEN_URL>
+git clone git@github.com:<YOUR_REPO>/swarden.git
 cd swarden
 ```
 

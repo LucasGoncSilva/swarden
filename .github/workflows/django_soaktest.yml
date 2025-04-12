@@ -2,10 +2,6 @@ name: Django Soak Testing
 
 on: [push, fork, pull_request]
 
-env:
-  EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
-  EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
-
 jobs:
   soaktest:
     runs-on: ubuntu-latest
@@ -43,7 +39,7 @@ jobs:
 
       - name: Upload Locust Report
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: soaktest-result
           path: report/html/soak.html

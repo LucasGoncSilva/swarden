@@ -1,4 +1,3 @@
-
 from CORE.admin import swarden_admin
 from django.contrib.admin import ModelAdmin
 from django.contrib.auth import admin as auth_admin
