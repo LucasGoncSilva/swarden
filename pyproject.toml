@@ -12,13 +12,13 @@ requires-python = ">=3.13"
 dependencies = [
     "crispy-bootstrap4>=2024.10",
     "dj-database-url>=2.3.0",
-    "django>=5.1.5",
-    "django-crispy-forms>=2.3",
+    "django>=5.2",
+    "django-crispy-forms>=2.4",
     "django-monthfield>=0.1.4",
     "django-ranged-response>=0.2.0",
     "django-simple-captcha>=0.6.2",
     "gunicorn>=23.0.0",
-    "pillow>=11.1.0",
+    "pillow>=11.2.1",
     "psycopg2-binary>=2.9.10",
     "whitenoise>=6.9.0",
 ]
@@ -27,9 +27,9 @@ dependencies = [
 dev = [
     "coverage>=7.8.0",
     "django-extensions>=4.1",
-    "locust>=2.34.1",
+    "locust>=2.36.1",
     "mosheh>=1.3.4",
-    "ruff>=0.11.5",
+    "ruff>=0.11.7",
     "tblib>=3.1.0",
     "tqdm>=4.67.1",
 ]
