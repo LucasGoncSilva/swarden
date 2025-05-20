@@ -1,0 +1,27 @@
+swarden.example.com {
+    root * /app/staticfiles
+    encode gzip
+
+    file_server
+
+    @static {
+        path /static/*
+    }
+    handle @static {
+        root * /app/staticfiles
+        file_server
+    }
+
+    reverse_proxy /api/* gunicorn:8000
+    reverse_proxy /admin/* gunicorn:8000
+    reverse_proxy / gunicorn:8000
+
+    header {
+        Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        Referrer-Policy "strict-origin"
+        Permissions-Policy "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+        Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none';"
+    }
+}

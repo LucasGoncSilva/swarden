@@ -19,9 +19,9 @@ class Command(BaseCommand):
         for i in tqdm(
             lines, desc='Users', bar_format='{l_bar}{bar:100}{r_bar}{bar:-10b}'
         ):
-            username, email, password = i
+            username, email, passphrase = i
             user: User = User.objects.create_user(
-                username=username, email=email, password=password
+                username=username, email=email, passphrase=passphrase
             )
 
             user.is_active = True

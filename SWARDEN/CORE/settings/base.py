@@ -33,10 +33,9 @@ INSTALLED_APPS: list[str] = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # 3rd party
-    'crispy_forms',
-    'crispy_bootstrap4',
     'whitenoise',
     'captcha',
+    'csp',
     # Local
     'account',
     'honeypot',
@@ -45,10 +44,12 @@ INSTALLED_APPS: list[str] = [
     'err',
     'mail',
     'general',
+    'plans',
 ]
 
 MIDDLEWARE: list[str] = [
     'django.middleware.security.SecurityMiddleware',
+    'csp.middleware.CSPMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -112,7 +113,7 @@ AUTH_PASSWORD_VALIDATORS: list[dict[str, str]] = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE: Final[str] = 'pt-br'
+LANGUAGE_CODE: Final[str] = 'en'
 
 TIME_ZONE: Final[str] = 'America/Sao_Paulo'
 
@@ -142,26 +143,24 @@ DEFAULT_AUTO_FIELD: Final[str] = 'django.db.models.BigAutoField'
 
 # User Model
 AUTH_USER_MODEL: Final[str] = 'account.User'
-LOGOUT_REDIRECT_URL: Final[str] = 'conta/entrar'
+LOGOUT_REDIRECT_URL: Final[str] = 'account/login'
 
 
-# Crispy Forms
-CRISPY_ALLOWED_TEMPLATE_PACKS: Final[str] = 'bootstrap4'
-CRISPY_TEMPLATE_PACK: Final[str] = 'bootstrap4'
-
-
-# E-mail configs
-EMAIL_BACKEND: str = 'django.core.mail.backends.console.EmailBackend'
-EMAIL_HOST: str = 'smtp.gmail.com'
-EMAIL_PORT: int = 587
-EMAIL_USE_TLS: bool = True
+# Argon2 Hash Algo
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+    'django.contrib.auth.hashers.ScryptPasswordHasher',
+]
 
 
 # Messages configs
 MESSAGE_TAGS: dict[int, str] = {
-    messages.DEBUG: 'alert-primary',
+    messages.DEBUG: 'alert-debug',
     messages.INFO: 'alert-info',
     messages.SUCCESS: 'alert-success',
     messages.WARNING: 'alert-warning',
-    messages.ERROR: 'alert-danger',
+    messages.ERROR: 'alert-error',
 }

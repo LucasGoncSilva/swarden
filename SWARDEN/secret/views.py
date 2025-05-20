@@ -3,8 +3,13 @@ from typing import Any, Final, Literal
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.messages import error
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
+from django.http import (
+    HttpRequest,
+    HttpResponse,
+    HttpResponsePermanentRedirect,
+    HttpResponseRedirect,
+)
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, DeleteView, UpdateView
@@ -15,7 +20,7 @@ from secret.models import Card, LoginCredential, SecurityNote
 EMPTY_POST_MSG: Final[str] = 'Preencha corretamente todos os campos solicitados'
 FEEDBACK_MSG: Final[str] = 'Slug já existente. Tente outro apelido ou título.'
 
-login_dec: Callable = login_required(login_url='/conta/entrar')
+login_dec: Callable = login_required(login_url='/account/login')
 login_dec_dispatch: Callable = method_decorator(login_dec, name='dispatch')
 
 
@@ -25,18 +30,18 @@ def _list_view(
     dispatch: dict[Literal['credential', 'card', 'note'], dict[str, list | str]] = {
         'credential': {
             'object_list': r.user.credentials.all(),  # type: ignore
-            'model_name': 'Credenciais',
+            'model_name': 'Credentials',
         },
-        'card': {'object_list': r.user.cards.all(), 'model_name': 'Cartões'},  # type: ignore
-        'note': {'object_list': r.user.notes.all(), 'model_name': 'Anotações'},  # type: ignore
+        'card': {'object_list': r.user.cards.all(), 'model_name': 'Payment Cards'},  # type: ignore
+        'note': {'object_list': r.user.notes.all(), 'model_name': 'Notes'},  # type: ignore
     }
 
     return dispatch.get(secret)
 
 
 @login_dec
-def index(r: HttpRequest) -> HttpResponse:
-    return render(r, 'secret/index.html')
+def index(r: HttpRequest) -> HttpResponseRedirect | HttpResponsePermanentRedirect:
+    return redirect(reverse('home:index'))
 
 
 # Credentials views
@@ -66,8 +71,8 @@ class CredentialCreateView(CreateView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
-        context['action'] = 'Adição'
-        context['model'] = 'Credencial'
+        context['action'] = 'Adition'
+        context['model'] = 'Credential'
         return context
 
     def post(
@@ -94,12 +99,13 @@ class CredentialUpdateView(UpdateView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
-        context['action'] = 'Edição'
-        context['model'] = 'Credencial'
+        context['action'] = 'Edition'
+        context['model'] = 'Credential'
         return context
 
     def post(self, r: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         post_pk: str | None = r.POST.get('pk')
+        print(post_pk)
         filter: dict = dict(owner=r.user, slug=r.POST.get('slug'))
 
         if LoginCredential.objects.filter(**filter).exclude(pk=post_pk).exists():
@@ -113,12 +119,12 @@ class CredentialUpdateView(UpdateView):
 class CredentialDeleteView(DeleteView):
     model: type = LoginCredential
     template_name: str = 'secret/delete_view.html'
-    success_url = '/segredos/credenciais'
+    success_url = '/secrets/credentials'
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
-        context['action'] = 'Exclusão'
-        context['model'] = 'Credencial'
+        context['action'] = 'Deletion'
+        context['model'] = 'Credential'
         return context
 
 
@@ -147,8 +153,8 @@ class CardCreateView(CreateView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
-        context['action'] = 'Adição'
-        context['model'] = 'Cartão'
+        context['action'] = 'Adition'
+        context['model'] = 'Payment Card'
         return context
 
     def post(
@@ -173,8 +179,8 @@ class CardUpdateView(UpdateView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
-        context['action'] = 'Edição'
-        context['model'] = 'Cartão'
+        context['action'] = 'Edition'
+        context['model'] = 'Payment Card'
         return context
 
     def post(self, r: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
@@ -192,12 +198,12 @@ class CardUpdateView(UpdateView):
 class CardDeleteView(DeleteView):
     model: type = Card
     template_name: str = 'secret/delete_view.html'
-    success_url = '/segredos/cartoes'
+    success_url = '/secrets/payment-cards'
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
-        context['action'] = 'Exclusão'
-        context['model'] = 'Cartão'
+        context['action'] = 'Deletion'
+        context['model'] = 'Payment Card'
         return context
 
 
@@ -226,8 +232,8 @@ class NoteCreateView(CreateView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
-        context['action'] = 'Adição'
-        context['model'] = 'Anotação'
+        context['action'] = 'Adition'
+        context['model'] = 'Note'
         return context
 
     def post(
@@ -252,8 +258,8 @@ class NoteUpdateView(UpdateView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
-        context['action'] = 'Edição'
-        context['model'] = 'Anotação'
+        context['action'] = 'Edition'
+        context['model'] = 'Note'
         return context
 
     def post(self, r: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
@@ -271,10 +277,10 @@ class NoteUpdateView(UpdateView):
 class NoteDeleteView(DeleteView):
     model: type = SecurityNote
     template_name: str = 'secret/delete_view.html'
-    success_url = '/segredos/anotacoes'
+    success_url = '/secrets/notes'
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
-        context['action'] = 'Exclusão'
-        context['model'] = 'Anotação'
+        context['action'] = 'Deletion'
+        context['model'] = 'Note'
         return context

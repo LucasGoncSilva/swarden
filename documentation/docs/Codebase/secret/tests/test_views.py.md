@@ -208,8 +208,8 @@ Kwargs: `#!py None`
 
         def setUp(self) -> None:
             self.user: User = User.objects.create_user(username='user', password='password', email='user@email.com')
-            LoginCredential.objects.create(owner=self.user, service='google--', name='Personal Main Account', slug='google--personal-main-account', thirdy_party_login=False, thirdy_party_login_name='-----', login='night_monkey123@gmail.com', password='ilovemenotyou')
-            LoginCredential.objects.create(owner=self.user, service='steam--', name='Little Fries', slug='steam--little-fries', thirdy_party_login=True, thirdy_party_login_name='Personal Main Account', login='-----', password='-----')
+            LoginCredential.objects.create(owner=self.user, service='google--', name='Personal Main Account', slug='google--personal-main-account', third_party_login=False, third_party_login_name='-----', login='night_monkey123@gmail.com', password='ilovemenotyou')
+            LoginCredential.objects.create(owner=self.user, service='steam--', name='Little Fries', slug='steam--little-fries', third_party_login=True, third_party_login_name='Personal Main Account', login='-----', password='-----')
     ```
 
 ### `#!py class LoginCredentialCreateViewsTestCase`
@@ -284,7 +284,7 @@ Kwargs: `#!py None`
 
         def test_POST_anonymous_user_empty_form_existing_secret(self) -> None:
             """POST /segredo/credenciais/nova | anonymous user | existent secret slug"""
-            cred_data: dict = {'owner': self.user, 'service': 'google--', 'name': 'Personal Main Account', 'slug': 'google--personal-main-account', 'thirdy_party_login': False, 'thirdy_party_login_name': '-----', 'login': 'night_monkey123@gmail.com', 'password': 'ilovemenotyou'}
+            cred_data: dict = {'owner': self.user, 'service': 'google--', 'name': 'Personal Main Account', 'slug': 'google--personal-main-account', 'third_party_login': False, 'third_party_login_name': '-----', 'login': 'night_monkey123@gmail.com', 'password': 'ilovemenotyou'}
             self.assertTrue(get_user(self.client).is_anonymous)
             self.assertFalse(get_user(self.client).is_authenticated)
             res: HttpResponse = self.client.post(reverse('secret:credential_create_view'), cred_data)
@@ -298,7 +298,7 @@ Kwargs: `#!py None`
 
         def test_POST_authenticated_user_empty_form_existing_secret(self) -> None:
             """POST /segredo/credenciais/nova | authenticated user | empty form"""
-            cred_data: dict = {'owner': self.user, 'service': 'google--', 'name': 'Personal Main Account', 'slug': 'google--personal-main-account', 'thirdy_party_login': False, 'thirdy_party_login_name': '-----', 'login': 'night_monkey123@gmail.com', 'password': 'ilovemenotyou'}
+            cred_data: dict = {'owner': self.user, 'service': 'google--', 'name': 'Personal Main Account', 'slug': 'google--personal-main-account', 'third_party_login': False, 'third_party_login_name': '-----', 'login': 'night_monkey123@gmail.com', 'password': 'ilovemenotyou'}
             self.assertTrue(get_user(self.client).is_anonymous)
             self.assertFalse(get_user(self.client).is_authenticated)
             self.assertTrue(self.client.login(username='user', password='password'))
@@ -315,7 +315,7 @@ Kwargs: `#!py None`
 
         def test_POST_authenticated_user_valid_form(self) -> None:
             """POST /segredo/credenciais/nova | authenticated user | valid form"""
-            cred_data: dict = {'owner': self.user, 'service': 'google--', 'name': 'Another Personal Main Account', 'slug': 'google--another-personal-main-account', 'thirdy_party_login': False, 'thirdy_party_login_name': '-----', 'login': 'night_monkey123@gmail.com', 'password': 'ilovemenotyou'}
+            cred_data: dict = {'owner': self.user, 'service': 'google--', 'name': 'Another Personal Main Account', 'slug': 'google--another-personal-main-account', 'third_party_login': False, 'third_party_login_name': '-----', 'login': 'night_monkey123@gmail.com', 'password': 'ilovemenotyou'}
             self.assertTrue(get_user(self.client).is_anonymous)
             self.assertFalse(get_user(self.client).is_authenticated)
             self.assertTrue(self.client.login(username='user', password='password'))
@@ -1225,8 +1225,8 @@ Kwargs: `#!py None`
     ```py
     def setUp(self) -> None:
         self.user: User = User.objects.create_user(username='user', password='password', email='user@email.com')
-        LoginCredential.objects.create(owner=self.user, service='google--', name='Personal Main Account', slug='google--personal-main-account', thirdy_party_login=False, thirdy_party_login_name='-----', login='night_monkey123@gmail.com', password='ilovemenotyou')
-        LoginCredential.objects.create(owner=self.user, service='steam--', name='Little Fries', slug='steam--little-fries', thirdy_party_login=True, thirdy_party_login_name='Personal Main Account', login='-----', password='-----')
+        LoginCredential.objects.create(owner=self.user, service='google--', name='Personal Main Account', slug='google--personal-main-account', third_party_login=False, third_party_login_name='-----', login='night_monkey123@gmail.com', password='ilovemenotyou')
+        LoginCredential.objects.create(owner=self.user, service='steam--', name='Little Fries', slug='steam--little-fries', third_party_login=True, third_party_login_name='Personal Main Account', login='-----', password='-----')
     ```
 
 ### `#!py def test_GET_anonymous_user`
@@ -1367,7 +1367,7 @@ Kwargs: `#!py None`
     ```py
     def test_POST_anonymous_user_empty_form_existing_secret(self) -> None:
         """POST /segredo/credenciais/nova | anonymous user | existent secret slug"""
-        cred_data: dict = {'owner': self.user, 'service': 'google--', 'name': 'Personal Main Account', 'slug': 'google--personal-main-account', 'thirdy_party_login': False, 'thirdy_party_login_name': '-----', 'login': 'night_monkey123@gmail.com', 'password': 'ilovemenotyou'}
+        cred_data: dict = {'owner': self.user, 'service': 'google--', 'name': 'Personal Main Account', 'slug': 'google--personal-main-account', 'third_party_login': False, 'third_party_login_name': '-----', 'login': 'night_monkey123@gmail.com', 'password': 'ilovemenotyou'}
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         res: HttpResponse = self.client.post(reverse('secret:credential_create_view'), cred_data)
@@ -1397,7 +1397,7 @@ Kwargs: `#!py None`
     ```py
     def test_POST_authenticated_user_empty_form_existing_secret(self) -> None:
         """POST /segredo/credenciais/nova | authenticated user | empty form"""
-        cred_data: dict = {'owner': self.user, 'service': 'google--', 'name': 'Personal Main Account', 'slug': 'google--personal-main-account', 'thirdy_party_login': False, 'thirdy_party_login_name': '-----', 'login': 'night_monkey123@gmail.com', 'password': 'ilovemenotyou'}
+        cred_data: dict = {'owner': self.user, 'service': 'google--', 'name': 'Personal Main Account', 'slug': 'google--personal-main-account', 'third_party_login': False, 'third_party_login_name': '-----', 'login': 'night_monkey123@gmail.com', 'password': 'ilovemenotyou'}
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         self.assertTrue(self.client.login(username='user', password='password'))
@@ -1430,7 +1430,7 @@ Kwargs: `#!py None`
     ```py
     def test_POST_authenticated_user_valid_form(self) -> None:
         """POST /segredo/credenciais/nova | authenticated user | valid form"""
-        cred_data: dict = {'owner': self.user, 'service': 'google--', 'name': 'Another Personal Main Account', 'slug': 'google--another-personal-main-account', 'thirdy_party_login': False, 'thirdy_party_login_name': '-----', 'login': 'night_monkey123@gmail.com', 'password': 'ilovemenotyou'}
+        cred_data: dict = {'owner': self.user, 'service': 'google--', 'name': 'Another Personal Main Account', 'slug': 'google--another-personal-main-account', 'third_party_login': False, 'third_party_login_name': '-----', 'login': 'night_monkey123@gmail.com', 'password': 'ilovemenotyou'}
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         self.assertTrue(self.client.login(username='user', password='password'))

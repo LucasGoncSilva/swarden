@@ -144,8 +144,8 @@ Kwargs: `#!py None`
         def setUp(self) -> None:
             user: User = User.objects.create_user(username='user', password='password', email='user@email.com')
             Card.objects.create(owner=user, name='Personal Main Card', card_type='deb', number='4002892240028922', expiration=Month(2028, 11), cvv='113', bank='nubank--', brand='mastercard--', slug='nubank--personal-main-card', owners_name='TEST USER')
-            LoginCredential.objects.create(owner=user, service='google--', name='Personal Main Account', slug='google--personal-main-account', thirdy_party_login=False, thirdy_party_login_name='-----', login='night_monkey123@gmail.com', password='ilovemenotyou')
-            LoginCredential.objects.create(owner=user, service='steam--', name='Little Fries', slug='steam--little-fries', thirdy_party_login=True, thirdy_party_login_name='Personal Main Account', login='-----', password='-----')
+            LoginCredential.objects.create(owner=user, service='google--', name='Personal Main Account', slug='google--personal-main-account', third_party_login=False, third_party_login_name='-----', login='night_monkey123@gmail.com', password='ilovemenotyou')
+            LoginCredential.objects.create(owner=user, service='steam--', name='Little Fries', slug='steam--little-fries', third_party_login=True, third_party_login_name='Personal Main Account', login='-----', password='-----')
             SecurityNote.objects.create(owner=user, title='How to draw an apple', slug='how-to-draw-an-apple', content='Just draw an apple tree and erase the tree.')
 
         def test_GET_anonymous_user(self):
@@ -200,8 +200,8 @@ Kwargs: `#!py None`
     def setUp(self) -> None:
         user: User = User.objects.create_user(username='user', password='password', email='user@email.com')
         Card.objects.create(owner=user, name='Personal Main Card', card_type='deb', number='4002892240028922', expiration=Month(2028, 11), cvv='113', bank='nubank--', brand='mastercard--', slug='nubank--personal-main-card', owners_name='TEST USER')
-        LoginCredential.objects.create(owner=user, service='google--', name='Personal Main Account', slug='google--personal-main-account', thirdy_party_login=False, thirdy_party_login_name='-----', login='night_monkey123@gmail.com', password='ilovemenotyou')
-        LoginCredential.objects.create(owner=user, service='steam--', name='Little Fries', slug='steam--little-fries', thirdy_party_login=True, thirdy_party_login_name='Personal Main Account', login='-----', password='-----')
+        LoginCredential.objects.create(owner=user, service='google--', name='Personal Main Account', slug='google--personal-main-account', third_party_login=False, third_party_login_name='-----', login='night_monkey123@gmail.com', password='ilovemenotyou')
+        LoginCredential.objects.create(owner=user, service='steam--', name='Little Fries', slug='steam--little-fries', third_party_login=True, third_party_login_name='Personal Main Account', login='-----', password='-----')
         SecurityNote.objects.create(owner=user, title='How to draw an apple', slug='how-to-draw-an-apple', content='Just draw an apple tree and erase the tree.')
     ```
 

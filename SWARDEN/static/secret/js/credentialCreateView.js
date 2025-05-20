@@ -1,70 +1,87 @@
-window.addEventListener('DOMContentLoaded', function () {
-  const thirdyPartyLoginDiv = document.getElementById('div_id_thirdy_party_login_name')
-  const thirdyPartyLogin = document.getElementById('id_thirdy_party_login_name')
-  const loginDiv = document.getElementById('div_id_login')
-  const login = document.getElementById('id_login')
-  const passwordDiv = document.getElementById('div_id_password')
-  const password = document.getElementById('id_password')
-  const thirdyPartyCheck = document.getElementById('id_thirdy_party_login')
-  const form = document.querySelector('form')
-  const service = document.getElementById('id_service')
-  const name = document.getElementById('id_name')
-  const slug_field = document.getElementById('id_slug')
+window.addEventListener("DOMContentLoaded", function () {
+  const thirdPartyLogin = document.getElementById("id_third_party_login_name");
+  const thirdPartyLoginDiv = thirdPartyLogin.parentElement;
+  const login = document.getElementById("id_login");
+  const loginDiv = login.parentElement;
+  const password = document.getElementById("id_password");
+  const passwordDiv = password.parentElement;
+  const thirdPartyCheck = document.getElementById("id_third_party_login");
+  const form = document.querySelector("form");
+  const service = document.getElementById("id_service");
+  const name = document.getElementById("id_name");
+  const slug_field = document.getElementById("id_slug");
 
+  slug_field.readOnly = true;
 
-  slug_field.readOnly = true
+  function initPage() {
+    loginDiv.classList.remove("hidden-zero");
+    passwordDiv.classList.remove("hidden-zero");
+    thirdPartyLoginDiv.classList.remove("hidden-zero");
 
-
-  if (thirdyPartyCheck.checked) {
-    login.value = '-----'
-    password.value = '-----'
-    loginDiv.classList.add('hide')
-    passwordDiv.classList.add('hide')
-  } else {
-    thirdyPartyLogin.value = '-----'
-    thirdyPartyLoginDiv.classList.add('hide')
+    if (thirdPartyCheck.checked) {
+      login.value = "-----";
+      password.value = "-----";
+      loginDiv.classList.add("hidden-zero");
+      passwordDiv.classList.add("hidden-zero");
+    } else {
+      thirdPartyLogin.value = "-----";
+      thirdPartyLoginDiv.classList.add("hidden-zero");
+    }
   }
-
+  initPage();
 
   function toggleFields() {
-    thirdyPartyLoginDiv.classList.toggle('hide')
-    loginDiv.classList.toggle('hide')
-    passwordDiv.classList.toggle('hide')
+    thirdPartyLoginDiv.classList.toggle("hidden-zero");
+    loginDiv.classList.toggle("hidden-zero");
+    passwordDiv.classList.toggle("hidden-zero");
+  }
+
+  function slugifyText(text) {
+    return text
+      .toString() // Cast to string (optional)
+      .normalize("NFKD") // The normalize() using NFKD method returns the Unicode Normalization Form of a given string.
+      .toLowerCase() // Convert the string to lowercase letters
+      .trim() // Remove whitespace from both sides of a string (optional)
+      .replace(/\s+/g, "-") // Replace spaces with -
+      .replace(/[^\w\-]+/g, ""); // Remove all non-word chars
   }
 
   function populateSlug() {
-    slug_field.value = service.value + slugify(name.value)
+    slug_field.value = service.value + slugifyText(name.value);
   }
 
-
-  thirdyPartyCheck.onclick = function () {
+  thirdPartyCheck.onclick = function () {
     if (this.checked) {
-      login.value = '-----'
-      password.value = '-----'
-      toggleFields()
-      thirdyPartyLogin.value = ''
+      login.value = "-----";
+      password.value = "-----";
+      toggleFields();
+      thirdPartyLogin.value = "";
     } else {
-      thirdyPartyLogin.value = '-----'
-      toggleFields()
-      login.value = ''
-      password.value = ''
+      thirdPartyLogin.value = "-----";
+      toggleFields();
+      login.value = "";
+      password.value = "";
     }
-  }
+  };
 
-  form.onsubmit = function () {
-    if (!thirdyPartyCheck.checked) {
-      thirdyPartyLogin.value = '-----'
+  form.addEventListener("submit", function () {
+    if (!thirdPartyCheck.checked) {
+      thirdPartyLogin.value = "-----";
     } else {
-      login.value = '-----'
-      password.value = '-----'
+      login.value = "-----";
+      password.value = "-----";
     }
-  }
+  });
+  form.addEventListener("reset", function () {
+    setTimeout(function () {
+      initPage();
+    }, 0);
+  });
 
-  service.addEventListener('change', populateSlug)
-  service.addEventListener('focus', populateSlug)
-  service.addEventListener('keyup', populateSlug)
-  name.addEventListener('change', populateSlug)
-  name.addEventListener('focus', populateSlug)
-  name.addEventListener('keyup', populateSlug)
-
-})
+  service.addEventListener("change", populateSlug);
+  service.addEventListener("focus", populateSlug);
+  service.addEventListener("keyup", populateSlug);
+  name.addEventListener("change", populateSlug);
+  name.addEventListener("focus", populateSlug);
+  name.addEventListener("keyup", populateSlug);
+});

@@ -11,7 +11,7 @@ class HomeViewsTestCase(TestCase):
     def setUp(self) -> None:
         user: User = User.objects.create_user(
             username='user',
-            password='password',
+            passphrase='passphrase',
             email='user@email.com',
         )
 
@@ -33,8 +33,8 @@ class HomeViewsTestCase(TestCase):
             service='google--',
             name='Personal Main Account',
             slug='google--personal-main-account',
-            thirdy_party_login=False,
-            thirdy_party_login_name='-----',
+            third_party_login=False,
+            third_party_login_name='-----',
             login='night_monkey123@gmail.com',
             password='ilovemenotyou',
         )
@@ -44,8 +44,8 @@ class HomeViewsTestCase(TestCase):
             service='steam--',
             name='Little Fries',
             slug='steam--little-fries',
-            thirdy_party_login=True,
-            thirdy_party_login_name='Personal Main Account',
+            third_party_login=True,
+            third_party_login_name='Personal Main Account',
             login='-----',
             password='-----',
         )
@@ -80,7 +80,7 @@ class HomeViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-        self.client.login(username='user', password='password')
+        self.client.login(username='user', passphrase='passphrase')
 
         res: HttpResponse = self.client.get(reverse('home:index'))
 

@@ -1,8 +1,12 @@
 from datetime import datetime
-from typing import Final
+from typing import Any, Final, Self
 from uuid import uuid4
 
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    BaseUserManager,
+    PermissionsMixin,
+)
 from django.core.validators import MaxLengthValidator, MinLengthValidator
 from django.db.models import (
     CASCADE,
@@ -16,14 +20,38 @@ from django.db.models import (
 )
 
 
-class User(AbstractUser):
-    first_name: Final[CharField] = CharField(
-        max_length=150, blank=True, verbose_name='Nome'
-    )
-    last_name: Final[CharField] = CharField(
-        max_length=150, blank=True, verbose_name='Sobrenome'
-    )
+class sWardenUserManager(BaseUserManager):
+    def create_user(
+        self: Self, email: str, passphrase=None, **extra_fields: Any
+    ) -> Self:
+        if not email:
+            raise ValueError('Email is required.')
+
+        normalized_email: str = self.normalize_email(email)
+        user = self.model(email=normalized_email, **extra_fields)
+        user.set_password(passphrase)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self: Self, email, passphrase=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        return self.create_user(email, passphrase, **extra_fields)
+
+
+class User(AbstractBaseUser, PermissionsMixin):
+    username: Final[CharField] = CharField(max_length=150, unique=True)
     email: Final[EmailField] = EmailField(unique=True)
+    is_active: bool | BooleanField = BooleanField(default=False)
+    is_staff: Final[BooleanField] = BooleanField(default=False)
+
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email']
+
+    objects = sWardenUserManager()
+
+    def __str__(self: Self) -> str:
+        return self.username
 
 
 class ActivationAccountToken(Model):
@@ -34,17 +62,13 @@ class ActivationAccountToken(Model):
     value: Final[CharField] = CharField(
         max_length=64, validators=[MinLengthValidator(64), MaxLengthValidator(64)]
     )
-    used: BooleanField = BooleanField(default=False, verbose_name='Usado?')
+    used: BooleanField = BooleanField(default=False)
     created: Final[DateTimeField] = DateTimeField(auto_now_add=True)
 
-    class Meta:
-        verbose_name: Final[str] = 'Token de Ativação'
-        verbose_name_plural: Final[str] = 'Tokens de Ativação'
-
-    def __str__(self) -> str:
+    def __str__(self: Self) -> str:
         return f'{self.value}'
 
-    def is_valid(self) -> bool:
+    def is_valid(self: Self) -> bool:
         if (
             self.value
             and len(self.value) == 64

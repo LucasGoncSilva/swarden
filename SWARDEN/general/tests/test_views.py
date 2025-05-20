@@ -9,7 +9,7 @@ class IndexViewTestCase(TestCase):
     def setUp(self) -> None:
         User.objects.create_user(
             username='user',
-            password='password',
+            passphrase='passphrase',
             email='user@email.com',
         )
 
@@ -44,7 +44,7 @@ class IndexViewTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
@@ -65,7 +65,7 @@ class IndexViewTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)

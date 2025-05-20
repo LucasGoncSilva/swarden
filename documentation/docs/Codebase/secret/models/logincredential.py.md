@@ -240,8 +240,8 @@ Kwargs: `#!py None`
         owner: Final[ForeignKey] = ForeignKey(User, on_delete=CASCADE, related_name='credentials', verbose_name='Dono')
         service: CharField = CharField(max_length=64, choices=credentials_services, verbose_name='Serviço', validators=[MaxLengthValidator(64)])
         name: CharField = CharField(max_length=40, verbose_name='Apelido (ex: Conta Principal)', validators=[MaxLengthValidator(40)])
-        thirdy_party_login: BooleanField = BooleanField(verbose_name='Login com serviço de terceiro?')
-        thirdy_party_login_name: CharField = CharField(max_length=40, verbose_name='Apelido do serviço de terceiro', validators=[MaxLengthValidator(40)])
+        third_party_login: BooleanField = BooleanField(verbose_name='Login com serviço de terceiro?')
+        third_party_login_name: CharField = CharField(max_length=40, verbose_name='Apelido do serviço de terceiro', validators=[MaxLengthValidator(40)])
         login: CharField = CharField(max_length=200, verbose_name='Login', validators=[MaxLengthValidator(200)])
         password: CharField = CharField(max_length=200, verbose_name='Senha', validators=[MaxLengthValidator(200)])
         note: TextField = TextField(max_length=128, blank=True, null=True, verbose_name='Anotação particular', validators=[MaxLengthValidator(128)])
@@ -261,7 +261,7 @@ Kwargs: `#!py None`
             return reverse('secret:credential_list_view')
 
         def save(self, force_insert=False, force_update=False, using=None, update_fields=None) -> None:
-            self.thirdy_party_login_name = xor(str(self.thirdy_party_login_name), self.owner.password[21:])
+            self.third_party_login_name = xor(str(self.third_party_login_name), self.owner.password[21:])
             self.login = xor(str(self.login), self.owner.password[21:])
             self.password = xor(str(self.password), self.owner.password[21:])
             self.note = xor(str(self.note), self.owner.password[21:])
@@ -270,14 +270,14 @@ Kwargs: `#!py None`
         @classmethod
         def from_db(cls, db, field_names, values):
             cred: LoginCredential = super().from_db(db, field_names, values)
-            cred.thirdy_party_login_name = xor(str(cred.thirdy_party_login_name), cred.owner.password[21:], encrypt=False)
+            cred.third_party_login_name = xor(str(cred.third_party_login_name), cred.owner.password[21:], encrypt=False)
             cred.login = xor(str(cred.login), cred.owner.password[21:], encrypt=False)
             cred.password = xor(str(cred.password), cred.owner.password[21:], encrypt=False)
             cred.note = xor(str(cred.note), cred.owner.password[21:], encrypt=False)
             return cred
 
         def expected_max_length(self, var: str) -> int:
-            max_length: Final[dict[str, int]] = {'service': 64, 'name': 40, 'slug': 128, 'thirdy_party_login_name': 40, 'login': 200, 'password': 200}
+            max_length: Final[dict[str, int]] = {'service': 64, 'name': 40, 'slug': 128, 'third_party_login_name': 40, 'login': 200, 'password': 200}
             return max_length[var]
 
         def check_field_length(self, var: str) -> bool:
@@ -285,17 +285,17 @@ Kwargs: `#!py None`
             return len(value) <= self.expected_max_length(var)
 
         def all_fields_of_right_length(self) -> bool:
-            vars: Final[list[str]] = ['service', 'name', 'slug', 'thirdy_party_login_name', 'login', 'password']
+            vars: Final[list[str]] = ['service', 'name', 'slug', 'third_party_login_name', 'login', 'password']
             return all(map(self.check_field_length, vars))
 
         def all_fields_present(self) -> bool:
-            if self.owner and self.name and (self.service in [slug for (slug, _) in credentials_services]) and (self.slug == f'{self.service}{slugify(str(self.name))}') and self.thirdy_party_login_name and self.login and self.password:
-                if self.thirdy_party_login and self.thirdy_party_login_name != '-----' or (not self.thirdy_party_login and self.login != '-----' and (self.password != '-----')):
+            if self.owner and self.name and (self.service in [slug for (slug, _) in credentials_services]) and (self.slug == f'{self.service}{slugify(str(self.name))}') and self.third_party_login_name and self.login and self.password:
+                if self.third_party_login and self.third_party_login_name != '-----' or (not self.third_party_login and self.login != '-----' and (self.password != '-----')):
                     return True
             return False
 
         def all_fields_of_correct_types(self) -> bool:
-            return [str(type(self.owner)), type(self.service), type(self.name), type(self.slug), type(self.thirdy_party_login), type(self.thirdy_party_login_name), type(self.login), type(self.password)] == ["<class 'account.models.User'>", str, str, str, bool, str, str, str]
+            return [str(type(self.owner)), type(self.service), type(self.name), type(self.slug), type(self.third_party_login), type(self.third_party_login_name), type(self.login), type(self.password)] == ["<class 'account.models.User'>", str, str, str, bool, str, str, str]
 
         def is_valid(self) -> bool:
             if self.all_fields_present() and self.all_fields_of_correct_types() and self.all_fields_of_right_length():
@@ -380,7 +380,7 @@ Kwargs: `#!py None`
 
     ```py
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None) -> None:
-        self.thirdy_party_login_name = xor(str(self.thirdy_party_login_name), self.owner.password[21:])
+        self.third_party_login_name = xor(str(self.third_party_login_name), self.owner.password[21:])
         self.login = xor(str(self.login), self.owner.password[21:])
         self.password = xor(str(self.password), self.owner.password[21:])
         self.note = xor(str(self.note), self.owner.password[21:])
@@ -405,7 +405,7 @@ Kwargs: `#!py None`
     @classmethod
     def from_db(cls, db, field_names, values):
         cred: LoginCredential = super().from_db(db, field_names, values)
-        cred.thirdy_party_login_name = xor(str(cred.thirdy_party_login_name), cred.owner.password[21:], encrypt=False)
+        cred.third_party_login_name = xor(str(cred.third_party_login_name), cred.owner.password[21:], encrypt=False)
         cred.login = xor(str(cred.login), cred.owner.password[21:], encrypt=False)
         cred.password = xor(str(cred.password), cred.owner.password[21:], encrypt=False)
         cred.note = xor(str(cred.note), cred.owner.password[21:], encrypt=False)
@@ -428,7 +428,7 @@ Kwargs: `#!py None`
 
     ```py
     def expected_max_length(self, var: str) -> int:
-        max_length: Final[dict[str, int]] = {'service': 64, 'name': 40, 'slug': 128, 'thirdy_party_login_name': 40, 'login': 200, 'password': 200}
+        max_length: Final[dict[str, int]] = {'service': 64, 'name': 40, 'slug': 128, 'third_party_login_name': 40, 'login': 200, 'password': 200}
         return max_length[var]
     ```
 
@@ -468,7 +468,7 @@ Kwargs: `#!py None`
 
     ```py
     def all_fields_of_right_length(self) -> bool:
-        vars: Final[list[str]] = ['service', 'name', 'slug', 'thirdy_party_login_name', 'login', 'password']
+        vars: Final[list[str]] = ['service', 'name', 'slug', 'third_party_login_name', 'login', 'password']
         return all(map(self.check_field_length, vars))
     ```
 
@@ -488,8 +488,8 @@ Kwargs: `#!py None`
 
     ```py
     def all_fields_present(self) -> bool:
-        if self.owner and self.name and (self.service in [slug for (slug, _) in credentials_services]) and (self.slug == f'{self.service}{slugify(str(self.name))}') and self.thirdy_party_login_name and self.login and self.password:
-            if self.thirdy_party_login and self.thirdy_party_login_name != '-----' or (not self.thirdy_party_login and self.login != '-----' and (self.password != '-----')):
+        if self.owner and self.name and (self.service in [slug for (slug, _) in credentials_services]) and (self.slug == f'{self.service}{slugify(str(self.name))}') and self.third_party_login_name and self.login and self.password:
+            if self.third_party_login and self.third_party_login_name != '-----' or (not self.third_party_login and self.login != '-----' and (self.password != '-----')):
                 return True
         return False
     ```
@@ -510,7 +510,7 @@ Kwargs: `#!py None`
 
     ```py
     def all_fields_of_correct_types(self) -> bool:
-        return [str(type(self.owner)), type(self.service), type(self.name), type(self.slug), type(self.thirdy_party_login), type(self.thirdy_party_login_name), type(self.login), type(self.password)] == ["<class 'account.models.User'>", str, str, str, bool, str, str, str]
+        return [str(type(self.owner)), type(self.service), type(self.name), type(self.slug), type(self.third_party_login), type(self.third_party_login_name), type(self.login), type(self.password)] == ["<class 'account.models.User'>", str, str, str, bool, str, str, str]
     ```
 
 ### `#!py def is_valid`

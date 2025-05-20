@@ -7,33 +7,32 @@ from account.models import ActivationAccountToken, User
 
 
 class UserAdmin(auth_admin.UserAdmin):
-    list_display = (
-        'username',
-        'email',
-        'first_name',
-        'last_name',
-        'is_staff',
-        'is_active',
+    form = UserChangeForm
+    add_form = UserCreationForm
+
+    list_display = ('email', 'username', 'is_staff', 'is_superuser')
+    list_filter = ('is_staff', 'is_superuser')
+
+    fieldsets = (
+        (None, {'fields': ('email', 'username', 'password')}),
+        (
+            'Permissões',
+            {'fields': ('is_staff', 'is_superuser', 'groups', 'user_permissions')},
+        ),
     )
-    search_fields = ('username', 'email', 'first_name', 'last_name')
+
     add_fieldsets = (
         (
             None,
             {
                 'classes': ('wide',),
-                'fields': (
-                    'username',
-                    'first_name',
-                    'last_name',
-                    'email',
-                    'password1',
-                    'password2',
-                ),
+                'fields': ('email', 'username', 'password1', 'password2'),
             },
         ),
     )
-    form = UserChangeForm
-    add_form = UserCreationForm
+
+    search_fields = ('email', 'username')
+    ordering = ('email',)
 
 
 class ActivationAccountTokenAdmin(ModelAdmin):

@@ -25,63 +25,45 @@ class Card(Model):
     id: Final[UUIDField] = UUIDField(
         default=uuid4, unique=True, primary_key=True, editable=False
     )
-    owner: Final[ForeignKey] = ForeignKey(
-        User, on_delete=CASCADE, related_name='cards', verbose_name='Dono'
-    )
+    owner: Final[ForeignKey] = ForeignKey(User, on_delete=CASCADE, related_name='cards')
     name: CharField = CharField(
         max_length=40,
-        verbose_name='Apelido (ex: Cartão da Família)',
         validators=[MaxLengthValidator(40)],
     )
     card_type: CharField = CharField(
         max_length=4,
         choices=cards_types,
-        verbose_name='Tipo (débito, crédito, ...)',
         validators=[MaxLengthValidator(4)],
     )
     number: CharField = CharField(
         max_length=19,
         validators=[MinLengthValidator(12), MaxLengthValidator(19)],
-        verbose_name='Número do Cartão',
     )
-    expiration = MonthField(verbose_name='Data de Expiração')
+    expiration = MonthField()
     cvv: CharField = CharField(
         max_length=4,
         validators=[MinLengthValidator(3), MaxLengthValidator(4)],
-        verbose_name='cvv',
     )
-    bank: CharField = CharField(
-        max_length=64, choices=cards_banks, verbose_name='Banco'
-    )
-    brand: CharField = CharField(
-        max_length=64, choices=cards_brands, verbose_name='Bandeira'
-    )
+    bank: CharField = CharField(max_length=64, choices=cards_banks)
+    brand: CharField = CharField(max_length=64, choices=cards_brands)
     owners_name: CharField = CharField(
         max_length=64,
-        verbose_name='Nome do Titular (como no cartão)',
         validators=[MaxLengthValidator(64)],
     )
     note: TextField = TextField(
         max_length=128,
         blank=True,
         null=True,
-        verbose_name='Anotação Particular',
         validators=[MaxLengthValidator(128)],
     )
     slug: Final[SlugField] = SlugField(
         max_length=128, validators=[MaxLengthValidator(128)]
     )
-    created: Final[DateTimeField] = DateTimeField(
-        auto_now_add=True, verbose_name='Criado em'
-    )
-    updated: Final[DateTimeField] = DateTimeField(
-        auto_now=True, verbose_name='Atualizado em'
-    )
+    created: Final[DateTimeField] = DateTimeField(auto_now_add=True)
+    updated: Final[DateTimeField] = DateTimeField(auto_now=True)
 
     class Meta:
         ordering: Final[list[str]] = ['-created']
-        verbose_name: Final[str] = 'Cartão'
-        verbose_name_plural: Final[str] = 'Cartões'
 
     def __str__(self) -> str:
         return f'{str(self.owner.username)} | {self.card_type} | {self.name}'

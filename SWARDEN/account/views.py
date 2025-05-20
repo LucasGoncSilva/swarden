@@ -26,71 +26,52 @@ from account.models import ActivationAccountToken, User
 
 class RegisterForm(Form):
     username: Final[CharField] = CharField(
-        label='',
-        max_length=50,
+        label='Username',
+        min_length=2,
+        max_length=32,
         required=True,
         widget=TextInput(
             attrs={
-                'placeholder': 'Username (nome de usuário)*',
-                'class': 'py-2',
-                'style': 'text-align: center;',
+                'id': 'username',
+                'placeholder': 'Enter your username',
                 'autofocus': 'autofocus',
+                'autocomplete': 'off',
             }
         ),
-        help_text='50 caracteres ou menos. Letras, números e @/./+/-/_ apenas.',
-    )
-    first_name: Final[CharField] = CharField(
-        label='',
-        required=True,
-        widget=TextInput(
-            attrs={
-                'placeholder': 'Nome*',
-                'class': 'mt-3 py-2',
-                'style': 'text-align: center;',
-            }
-        ),
-    )
-    last_name: Final[CharField] = CharField(
-        label='',
-        required=True,
-        widget=TextInput(
-            attrs={
-                'placeholder': 'Sobrenome*',
-                'class': 'py-2',
-                'style': 'text-align: center;',
-            }
-        ),
+        help_text='Max of 32 chars. Letters, numbers and "@", ".", "+", "-", "_" only.',
     )
     email: Final[EmailField] = EmailField(
-        label='',
+        label='Email',
         required=True,
         widget=TextInput(
             attrs={
-                'placeholder': 'Email*',
-                'class': 'mt-3 py-2',
-                'style': 'text-align: center;',
+                'id': 'email',
+                'placeholder': 'Enter your email',
+                'autocomplete': 'off',
             }
         ),
     )
-    password: Final[CharField] = CharField(
+    passphrase: Final[CharField] = CharField(
+        label='Passphrase',
+        required=True,
+        widget=PasswordInput(
+            attrs={
+                'id': 'passphrase',
+                'placeholder': 'Enter your passphrase',
+                'autocomplete': 'off',
+            }
+        ),
+        help_text='Use a "passphase", sentence '
+        'instead of random characters or just password.',
+    )
+    passphrase2: Final[CharField] = CharField(
         label='',
         required=True,
         widget=PasswordInput(
             attrs={
-                'placeholder': 'Senha*',
-                'class': 'mt-3 py-2',
-                'style': 'text-align: center;',
-            }
-        ),
-    )
-    password2: Final[CharField] = CharField(
-        label='',
-        required=True,
-        widget=PasswordInput(
-            attrs={
-                'placeholder': 'Confirmação de senha*',
-                'class': 'mb-5 py-2',
-                'style': 'text-align: center;',
+                'id': 'passphrase-confirm',
+                'placeholder': 'Confirm your passphrase',
+                'autocomplete': 'off',
             }
         ),
     )
@@ -99,25 +80,27 @@ class RegisterForm(Form):
 
 class LogInForm(Form):
     username: Final[CharField] = CharField(
-        label='',
+        label='Username',
+        min_length=2,
+        max_length=32,
         required=True,
         widget=TextInput(
             attrs={
-                'placeholder': 'Username*',
-                'class': 'py-2',
-                'style': 'text-align: center;',
+                'id': 'username',
+                'placeholder': 'Enter your username',
                 'autofocus': 'autofocus',
+                'autocomplete': 'off',
             }
         ),
     )
-    password: Final[CharField] = CharField(
-        label='',
+    passphrase: Final[CharField] = CharField(
+        label='Passphrase',
         required=True,
         widget=PasswordInput(
             attrs={
-                'placeholder': 'Pass*',
-                'class': 'mt-3 py-2',
-                'style': 'text-align: center;',
+                'id': 'passphrase',
+                'placeholder': 'Enter your passphrase',
+                'autocomplete': 'off',
             }
         ),
     )
@@ -136,11 +119,11 @@ def register_view(r: HttpRequest) -> HttpResponse | HttpResponseRedirect:
     if not form.is_valid():
         return render(r, 'account/register.html', {'form': form})
 
-    password: str | None = form.cleaned_data.get('password')
-    password2: str | None = form.cleaned_data.get('password2')
+    passphrase: str | None = form.cleaned_data.get('passphrase')
+    passphrase2: str | None = form.cleaned_data.get('passphrase2')
 
-    if not password or not password2 or password != password2:
-        error(r, 'Senhas não compatíveis')
+    if not passphrase or not passphrase2 or passphrase != passphrase2:
+        error(r, 'Passphrases does not match')
         return render(r, 'account/register.html', {'form': form})
 
     username: str | None = form.cleaned_data.get('username')
@@ -152,22 +135,22 @@ def register_view(r: HttpRequest) -> HttpResponse | HttpResponseRedirect:
         or username is None
         or email is None
     ):
-        error(r, 'Username e/ou e-mail indisponível')
+        error(r, 'Username unavailable')
         return render(r, 'account/register.html', {'form': form})
 
     first_name: str = cast(str, form.cleaned_data.get('first_name'))
     last_name: str = cast(str, form.cleaned_data.get('last_name'))
 
-    user: User = User.objects.create_user(
+    user: User = User.objects.create_user(  # type: ignore
         username=username,
         first_name=first_name,
         last_name=last_name,
         email=email,
-        password=password,
+        passphrase=passphrase,
         is_active=False,
     )
 
-    send_email_activation_account_token(r.get_host(), user, password)
+    send_email_activation_account_token(r.get_host(), user, passphrase)
 
     success(r, 'Conta criada. Acesse seu e-mail para ativar sua conta.')
     return HttpResponseRedirect(reverse('account:login'))
@@ -222,19 +205,19 @@ def login_view(r: HttpRequest) -> HttpResponse | HttpResponseRedirect:
         return render(r, 'account/login.html', {'form': form})
 
     username: Final[str] = str(form.cleaned_data.get('username')).strip()
-    password: Final[str] = str(form.cleaned_data.get('password')).strip()
+    passphrase: Final[str] = str(form.cleaned_data.get('passphrase')).strip()
 
-    user: AbstractBaseUser | None = authenticate(username=username, password=password)
+    user: AbstractBaseUser | None = authenticate(username=username, password=passphrase)
 
     if user is None:
-        error(r, 'Username e/ou senha inválida')
+        error(r, 'Invalid username and/or passphrase')
         return render(r, 'account/login.html', {'form': form})
 
     login(r, user)
     return HttpResponseRedirect(reverse('home:index'))
 
 
-@login_required(login_url='/conta/entrar')
+@login_required(login_url='/account/login')
 def logout_view(r: HttpRequest) -> HttpResponse | HttpResponseRedirect:
     if r.method == 'POST':
         logout(r)

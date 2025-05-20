@@ -80,7 +80,7 @@ Type: `#!py ...`
 
 Return Type: `#!py HttpResponse`
 
-Decorators: `#!py login_required(login_url='/conta/entrar')`
+Decorators: `#!py login_required(login_url='/account/login')`
 
 Args: `#!py r: HttpRequest`
 
@@ -89,7 +89,7 @@ Kwargs: `#!py None`
 ??? example "SNIPPET"
 
     ```py
-    @login_required(login_url='/conta/entrar')
+    @login_required(login_url='/account/login')
     def index(r: HttpRequest) -> HttpResponse:
         return render(r, 'general/index.html')
     ```

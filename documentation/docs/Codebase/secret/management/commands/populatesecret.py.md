@@ -159,9 +159,9 @@ Kwargs: `#!py None`
             with open('./secret/management/commands/populate_credential.txt') as sample:
                 f: list[list[str]] = [i.strip().split('::') for i in sample.readlines()]
             for i in tqdm(f, desc='Notes', bar_format='{l_bar}{bar:100}{r_bar}{bar:-10b}'):
-                (owner, service, name, thirdy_party_login, thirdy_party_login_name, login, password, note) = i
+                (owner, service, name, third_party_login, third_party_login_name, login, password, note) = i
                 owner = User.objects.get(pk=owner)
-                LoginCredential.objects.create(owner=owner, service=service, name=name, thirdy_party_login=thirdy_party_login, thirdy_party_login_name=thirdy_party_login_name, login=login, password=password, note=note, slug=f"{service}{name.replace(' ', '-').lower()}")
+                LoginCredential.objects.create(owner=owner, service=service, name=name, third_party_login=third_party_login, third_party_login_name=third_party_login_name, login=login, password=password, note=note, slug=f"{service}{name.replace(' ', '-').lower()}")
     ```
 
 
@@ -263,9 +263,9 @@ Kwargs: `#!py None`
         with open('./secret/management/commands/populate_credential.txt') as sample:
             f: list[list[str]] = [i.strip().split('::') for i in sample.readlines()]
         for i in tqdm(f, desc='Notes', bar_format='{l_bar}{bar:100}{r_bar}{bar:-10b}'):
-            (owner, service, name, thirdy_party_login, thirdy_party_login_name, login, password, note) = i
+            (owner, service, name, third_party_login, third_party_login_name, login, password, note) = i
             owner = User.objects.get(pk=owner)
-            LoginCredential.objects.create(owner=owner, service=service, name=name, thirdy_party_login=thirdy_party_login, thirdy_party_login_name=thirdy_party_login_name, login=login, password=password, note=note, slug=f"{service}{name.replace(' ', '-').lower()}")
+            LoginCredential.objects.create(owner=owner, service=service, name=name, third_party_login=third_party_login, third_party_login_name=third_party_login_name, login=login, password=password, note=note, slug=f"{service}{name.replace(' ', '-').lower()}")
     ```
 
 

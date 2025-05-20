@@ -344,7 +344,7 @@ Kwargs: `#!py None`
     class LoginViewTestCase(BaseAccountTestCase):
 
         def test_GET_anonymous_user(self) -> None:
-            """GET /conta/entrar | anonymous user"""
+            """GET /account/login | anonymous user"""
             self.assertTrue(get_user(self.client).is_anonymous)
             self.assertFalse(get_user(self.client).is_authenticated)
             res: HttpResponse = self.client.get(self.LOGIN_URL)
@@ -355,7 +355,7 @@ Kwargs: `#!py None`
             self.assertTrue(get_user(self.client).is_authenticated)
 
         def test_GET_anonymous_user_invalid_form(self) -> None:
-            """GET /conta/entrar | anonymous user | invalid form"""
+            """GET /account/login | anonymous user | invalid form"""
             self.assertTrue(get_user(self.client).is_anonymous)
             self.assertFalse(get_user(self.client).is_authenticated)
             res: HttpResponse = self.client.get(self.LOGIN_URL)
@@ -368,7 +368,7 @@ Kwargs: `#!py None`
             self.assertFalse(get_user(self.client).is_authenticated)
 
         def test_GET_anonymous_user_user_is_None(self) -> None:
-            """GET /conta/entrar | anonymous user | user is None"""
+            """GET /account/login | anonymous user | user is None"""
             self.assertTrue(get_user(self.client).is_anonymous)
             self.assertFalse(get_user(self.client).is_authenticated)
             res: HttpResponse = self.client.get(self.LOGIN_URL)
@@ -381,7 +381,7 @@ Kwargs: `#!py None`
             self.assertFalse(get_user(self.client).is_authenticated)
 
         def test_GET_authenticated_user(self) -> None:
-            """GET /conta/entrar | authenticated user"""
+            """GET /account/login | authenticated user"""
             self.assertTrue(get_user(self.client).is_anonymous)
             self.assertFalse(get_user(self.client).is_authenticated)
             self.assertTrue(self.client.login(username='user', password='password'))
@@ -859,7 +859,7 @@ Kwargs: `#!py None`
 
     ```py
     def test_GET_anonymous_user(self) -> None:
-        """GET /conta/entrar | anonymous user"""
+        """GET /account/login | anonymous user"""
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         res: HttpResponse = self.client.get(self.LOGIN_URL)
@@ -886,7 +886,7 @@ Kwargs: `#!py None`
 
     ```py
     def test_GET_anonymous_user_invalid_form(self) -> None:
-        """GET /conta/entrar | anonymous user | invalid form"""
+        """GET /account/login | anonymous user | invalid form"""
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         res: HttpResponse = self.client.get(self.LOGIN_URL)
@@ -915,7 +915,7 @@ Kwargs: `#!py None`
 
     ```py
     def test_GET_anonymous_user_user_is_None(self) -> None:
-        """GET /conta/entrar | anonymous user | user is None"""
+        """GET /account/login | anonymous user | user is None"""
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         res: HttpResponse = self.client.get(self.LOGIN_URL)
@@ -944,7 +944,7 @@ Kwargs: `#!py None`
 
     ```py
     def test_GET_authenticated_user(self) -> None:
-        """GET /conta/entrar | authenticated user"""
+        """GET /account/login | authenticated user"""
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         self.assertTrue(self.client.login(username='user', password='password'))

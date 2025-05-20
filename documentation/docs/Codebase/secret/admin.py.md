@@ -171,11 +171,11 @@ Kwargs: `#!py None`
 
     ```py
     class LoginCredentialAdmin(BasesWardenModelAdmin):
-        list_filter: Final = ('owner__is_active', 'thirdy_party_login', 'service')
+        list_filter: Final = ('owner__is_active', 'third_party_login', 'service')
         search_fields: Final = ('slug', 'serviceowner__username', 'owner__first_name', 'owner__last_name')
         prepopulated_fields: Final = {'slug': ('service', 'name')}
         list_display: Final = ('pk', 'slug', 'created', 'updated')
-        _exclude: Final = ('owner', 'thirdy_party_login', 'thirdy_party_login_name', 'login', 'password', 'note')
+        _exclude: Final = ('owner', 'third_party_login', 'third_party_login_name', 'login', 'password', 'note')
     ```
 
 ### `#!py class SecurityNoteAdmin`

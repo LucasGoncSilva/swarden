@@ -14,7 +14,7 @@ class BaseAccountTestCase(TestCase):
     def setUp(self) -> None:
         User.objects.create_user(
             username='user',
-            password='password',
+            passphrase='passphrase',
             email='user@email.com',
         )
 
@@ -58,8 +58,8 @@ class RegisterViewTestCase(BaseAccountTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-    def test_POST_anonymous_user_different_passwords(self) -> None:
-        """POST /conta/registrar | anonymous user | different passwords"""
+    def test_POST_anonymous_user_different_passphrases(self) -> None:
+        """POST /conta/registrar | anonymous user | different passphrases"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
@@ -70,8 +70,8 @@ class RegisterViewTestCase(BaseAccountTestCase):
             'first_name': 'first',
             'last_name': 'last',
             'email': 'another@example.com',
-            'password': '12345678',
-            'password2': '11223344',
+            'passphrase': '12345678',
+            'passphrase2': '11223344',
             'captcha_0': 'dummy-value',
             'captcha_1': 'PASSED',
         }
@@ -97,8 +97,8 @@ class RegisterViewTestCase(BaseAccountTestCase):
             'first_name': 'first',
             'last_name': 'last',
             'email': 'email@example.com',
-            'password': 'password',
-            'password2': 'password',
+            'passphrase': 'passphrase',
+            'passphrase2': 'passphrase',
             'captcha_0': 'dummy-value',
             'captcha_1': 'PASSED',
         }
@@ -124,8 +124,8 @@ class RegisterViewTestCase(BaseAccountTestCase):
             'first_name': '',
             'last_name': 'last',
             'email': 'email@example.com',
-            'password': 'password',
-            'password2': 'password',
+            'passphrase': 'passphrase',
+            'passphrase2': 'passphrase',
             'captcha_0': 'dummy-value',
             'captcha_1': 'PASSED',
         }
@@ -151,8 +151,8 @@ class RegisterViewTestCase(BaseAccountTestCase):
             'first_name': 'first',
             'last_name': 'last',
             'email': 'another@example.com',
-            'password': 'password',
-            'password2': 'password',
+            'passphrase': 'passphrase',
+            'passphrase2': 'passphrase',
             'captcha_0': 'dummy-value',
             'captcha_1': 'PASSED',
         }
@@ -173,7 +173,7 @@ class RegisterViewTestCase(BaseAccountTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
@@ -317,7 +317,7 @@ class ActivateAccountViewTestCase(BaseAccountTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         user: User = cast(User, User.objects.first())
 
@@ -343,7 +343,7 @@ class ActivateAccountViewTestCase(BaseAccountTestCase):
 
 class LoginViewTestCase(BaseAccountTestCase):
     def test_GET_anonymous_user(self) -> None:
-        """GET /conta/entrar | anonymous user"""
+        """GET /account/login | anonymous user"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
@@ -357,7 +357,11 @@ class LoginViewTestCase(BaseAccountTestCase):
 
         res: HttpResponse = self.client.post(
             self.LOGIN_URL,
-            {'username': 'user', 'password': 'password', 'email': 'email@example.com'},
+            {
+                'username': 'user',
+                'passphrase': 'passphrase',
+                'email': 'email@example.com',
+            },
             follow=True,
         )
         # Logged user check
@@ -365,7 +369,7 @@ class LoginViewTestCase(BaseAccountTestCase):
         self.assertTrue(get_user(self.client).is_authenticated)
 
     def test_GET_anonymous_user_invalid_form(self) -> None:
-        """GET /conta/entrar | anonymous user | invalid form"""
+        """GET /account/login | anonymous user | invalid form"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
@@ -391,7 +395,7 @@ class LoginViewTestCase(BaseAccountTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_GET_anonymous_user_user_is_None(self) -> None:
-        """GET /conta/entrar | anonymous user | user is None"""
+        """GET /account/login | anonymous user | user is None"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
@@ -407,7 +411,7 @@ class LoginViewTestCase(BaseAccountTestCase):
             self.LOGIN_URL,
             {
                 'username': 'fake_user',
-                'password': 'password',
+                'passphrase': 'passphrase',
                 'email': 'email@example.com',
             },
             follow=True,
@@ -421,13 +425,13 @@ class LoginViewTestCase(BaseAccountTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_GET_authenticated_user(self) -> None:
-        """GET /conta/entrar | authenticated user"""
+        """GET /account/login | authenticated user"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
@@ -475,7 +479,7 @@ class LogoutViewTestCase(BaseAccountTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
@@ -496,7 +500,7 @@ class LogoutViewTestCase(BaseAccountTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
@@ -507,7 +511,7 @@ class LogoutViewTestCase(BaseAccountTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
         self.assertEqual(res.status_code, 302)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.post(self.LOGOUT_URL, follow=True)
 

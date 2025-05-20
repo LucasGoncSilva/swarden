@@ -14,7 +14,7 @@ class CredentialTestCase(TestCase):
     def setUp(self) -> None:
         self.user: User = User.objects.create_user(
             username='user',
-            password='password',
+            passphrase='passphrase',
             email='user@email.com',
         )
 
@@ -24,8 +24,8 @@ class CredentialTestCase(TestCase):
             service='google--',
             name='Personal Main Account',
             slug='google--personal-main-account',
-            thirdy_party_login=False,
-            thirdy_party_login_name='-----',
+            third_party_login=False,
+            third_party_login_name='-----',
             login='night_monkey123@gmail.com',
             password='ilovemenotyou',
         )  # Correct object
@@ -36,8 +36,8 @@ class CredentialTestCase(TestCase):
             service='steam--',
             name='Little Fries',
             slug='steam--little-fries',
-            thirdy_party_login=True,
-            thirdy_party_login_name='Personal Main Account',
+            third_party_login=True,
+            third_party_login_name='Personal Main Account',
             login='-----',
             password='-----',
         )  # Correct object
@@ -48,8 +48,8 @@ class CredentialTestCase(TestCase):
             service='steam--',
             name='Little Fries',
             slug='steam--little-fries',
-            thirdy_party_login=True,  # False or...
-            thirdy_party_login_name='-----',  # something different to '-----'
+            third_party_login=True,  # False or...
+            third_party_login_name='-----',  # something different to '-----'
             login='night_monkey123',  # '-----'
             password='ilovemenotyou',  # '-----'
         )
@@ -60,8 +60,8 @@ class CredentialTestCase(TestCase):
             service='steam--',
             name='Little Fries',
             slug='steam--potato',  # 'steam--little-fries'
-            thirdy_party_login=False,
-            thirdy_party_login_name='-----',
+            third_party_login=False,
+            third_party_login_name='-----',
             login='',  # Empty login
             password='night_monkey123',
         )
@@ -72,8 +72,8 @@ class CredentialTestCase(TestCase):
             service='steam--',
             name='Little Fries',
             slug='steam--little-fries',
-            thirdy_party_login=False,
-            thirdy_party_login_name='-----',
+            third_party_login=False,
+            third_party_login_name='-----',
             login='night_monkey123',
             # Missing/empty password field
         )
@@ -87,8 +87,8 @@ class CredentialTestCase(TestCase):
                         service='google--',
                         name='Salve' * 9,  # More chars than the limit
                         slug='google--personal-main-account',
-                        thirdy_party_login=False,
-                        thirdy_party_login_name='-----',
+                        third_party_login=False,
+                        third_party_login_name='-----',
                         login='x' * 201,  # More chars than the limit
                         password='ilovemenotyou',
                     )
@@ -99,8 +99,8 @@ class CredentialTestCase(TestCase):
                 service='steam--',
                 name='Little Fries',
                 slug='steam--little-fries',
-                thirdy_party_login=False,
-                thirdy_party_login_name='-----',
+                third_party_login=False,
+                third_party_login_name='-----',
                 login='night_monkey123',
                 # Missing/empty password field
             )
@@ -111,8 +111,8 @@ class CredentialTestCase(TestCase):
             service='pampas-gonden-radio--',  # Inexistent service
             name='Little Fries',
             slug='pampas-gonden-radio--little-fries',
-            thirdy_party_login=True,
-            thirdy_party_login_name='Personal Main Account',
+            third_party_login=True,
+            third_party_login_name='Personal Main Account',
             login='-----',
             password='-----',
         )
@@ -134,8 +134,8 @@ class CredentialTestCase(TestCase):
         self.assertEqual(cred1.service, 'google--')
         self.assertEqual(cred1.name, 'Personal Main Account')
         self.assertEqual(cred1.slug, 'google--personal-main-account')
-        self.assertFalse(cred1.thirdy_party_login)
-        self.assertEqual(cred1.thirdy_party_login_name, '-----')
+        self.assertFalse(cred1.third_party_login)
+        self.assertEqual(cred1.third_party_login_name, '-----')
         self.assertEqual(cred1.login, 'night_monkey123@gmail.com')
         self.assertEqual(cred1.password, 'ilovemenotyou')
 
@@ -217,7 +217,7 @@ class CredentialTestCase(TestCase):
         """Tests credential update integrity and validation"""
 
         LoginCredential.objects.filter(pk=self.login_credential_3.pk).update(
-            thirdy_party_login=False
+            third_party_login=False
         )
         LoginCredential.objects.filter(pk=self.login_credential_4.pk).update(
             slug='steam--little-fries',
@@ -254,8 +254,8 @@ class CredentialTestCase(TestCase):
             {'owner': self.user},
             {'service': 'aws--'},
             {'name': 'Name'},
-            {'thirdy_party_login': False},
-            {'thirdy_party_login_name': '-----'},
+            {'third_party_login': False},
+            {'third_party_login_name': '-----'},
             {'login': 'LoginName'},
             {'password': 'PasswordName'},
             {'slug': 'aws--name'},
@@ -273,8 +273,8 @@ class CredentialTestCase(TestCase):
                 'owner': self.user,
                 'service': 'aws--',
                 'name': 'x' * 41,
-                'thirdy_party_login': False,
-                'thirdy_party_login_name': 'x' * 40,
+                'third_party_login': False,
+                'third_party_login_name': 'x' * 40,
                 'login': 'x' * 200,
                 'password': 'x' * 200,
                 'note': 'x' * 128,
@@ -284,8 +284,8 @@ class CredentialTestCase(TestCase):
                 'owner': self.user,
                 'service': 'aws--',
                 'name': 'x' * 40,
-                'thirdy_party_login': False,
-                'thirdy_party_login_name': 'x' * 41,
+                'third_party_login': False,
+                'third_party_login_name': 'x' * 41,
                 'login': 'x' * 201,
                 'password': 'x' * 200,
                 'note': 'x' * 128,
@@ -295,8 +295,8 @@ class CredentialTestCase(TestCase):
                 'owner': self.user,
                 'service': 'aws--',
                 'name': 'x' * 40,
-                'thirdy_party_login': False,
-                'thirdy_party_login_name': 'x' * 40,
+                'third_party_login': False,
+                'third_party_login_name': 'x' * 40,
                 'login': 'x' * 200,
                 'password': 'x' * 201,
                 'note': 'x' * 128,
@@ -306,8 +306,8 @@ class CredentialTestCase(TestCase):
                 'owner': self.user,
                 'service': 'aws--',
                 'name': 'x' * 40,
-                'thirdy_party_login': False,
-                'thirdy_party_login_name': 'x' * 40,
+                'third_party_login': False,
+                'third_party_login_name': 'x' * 40,
                 'login': 'x' * 200,
                 'password': 'x' * 200,
                 'note': 'x' * 129,
@@ -317,8 +317,8 @@ class CredentialTestCase(TestCase):
                 'owner': self.user,
                 'service': 'aws--',
                 'name': 'x' * 40,
-                'thirdy_party_login': False,
-                'thirdy_party_login_name': 'x' * 40,
+                'third_party_login': False,
+                'third_party_login_name': 'x' * 40,
                 'login': 'x' * 200,
                 'password': 'x' * 200,
                 'note': 'x' * 128,
@@ -341,8 +341,8 @@ class CredentialTestCase(TestCase):
                 'owner': self.user,
                 'service': 'aws--',
                 'name': 'x' * 40,
-                'thirdy_party_login': False,
-                'thirdy_party_login_name': 'x' * 40,
+                'third_party_login': False,
+                'third_party_login_name': 'x' * 40,
                 'login': 'x' * 200,
                 'password': 'x' * 200,
                 'note': 'x' * 128,
@@ -360,7 +360,7 @@ class CardTestCase(TestCase):
     def setUp(self) -> None:
         self.user: User = User.objects.create_user(
             username='user',
-            password='password',
+            passphrase='passphrase',
             email='user@email.com',
         )
 
@@ -735,7 +735,7 @@ class SecurityNoteTestCase(TestCase):
     def setUp(self) -> None:
         self.user: User = User.objects.create_user(
             username='user',
-            password='password',
+            passphrase='passphrase',
             email='user@email.com',
         )
 

@@ -18,7 +18,7 @@ class BaseMailTestCase(TestCase):
     def setUp(self) -> None:
         self.user: User = User.objects.create_user(
             username='user',
-            password='password',
+            passphrase='passphrase',
             email='user@email.com',
         )
 
@@ -60,7 +60,7 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.get(reverse('mail:export_secrets_no_argument'))
 
@@ -117,7 +117,7 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.get(
             reverse('mail:export_secrets', args=['invalid'])
@@ -145,7 +145,7 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         secrets: list[tuple[str, str]] = [
             ('Credenciais', 'secret:credential_list_view'),
@@ -179,15 +179,15 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         LoginCredential.objects.create(
             owner=self.user,
             service='google--',
             name='Personal Main Account',
             slug='google--personal-main-account',
-            thirdy_party_login=False,
-            thirdy_party_login_name='-----',
+            third_party_login=False,
+            third_party_login_name='-----',
             login='night_monkey123@gcom',
             password='ilovemenotyou',
         )
@@ -222,7 +222,7 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         Card.objects.create(
             owner=self.user,
@@ -267,7 +267,7 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         SecurityNote.objects.create(
             owner=self.user,
@@ -414,7 +414,7 @@ class WakeDatabaseViewTestCase(TestCase):
     def setUp(self) -> None:
         self.user: User = User.objects.create_user(
             username='user',
-            password='password',
+            passphrase='passphrase',
             email='user@email.com',
         )
 
@@ -442,7 +442,7 @@ class WakeDatabaseViewTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.get(self.ENDPOINT)
 
@@ -476,7 +476,7 @@ class WakeDatabaseViewTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.post(
             self.ENDPOINT, {'DATA': 'HERE'}, follow=True

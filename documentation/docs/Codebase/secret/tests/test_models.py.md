@@ -179,17 +179,17 @@ Kwargs: `#!py None`
 
         def setUp(self) -> None:
             self.user: User = User.objects.create_user(username='user', password='password', email='user@email.com')
-            self.login_credential_1: LoginCredential = LoginCredential.objects.create(owner=self.user, service='google--', name='Personal Main Account', slug='google--personal-main-account', thirdy_party_login=False, thirdy_party_login_name='-----', login='night_monkey123@gmail.com', password='ilovemenotyou')
-            self.login_credential_2: LoginCredential = LoginCredential.objects.create(owner=self.user, service='steam--', name='Little Fries', slug='steam--little-fries', thirdy_party_login=True, thirdy_party_login_name='Personal Main Account', login='-----', password='-----')
-            self.login_credential_3: LoginCredential = LoginCredential.objects.create(owner=self.user, service='steam--', name='Little Fries', slug='steam--little-fries', thirdy_party_login=True, thirdy_party_login_name='-----', login='night_monkey123', password='ilovemenotyou')
-            self.login_credential_4: LoginCredential = LoginCredential.objects.create(owner=self.user, service='steam--', name='Little Fries', slug='steam--potato', thirdy_party_login=False, thirdy_party_login_name='-----', login='', password='night_monkey123')
-            self.login_credential_5: LoginCredential = LoginCredential.objects.create(owner=self.user, service='steam--', name='Little Fries', slug='steam--little-fries', thirdy_party_login=False, thirdy_party_login_name='-----', login='night_monkey123')
+            self.login_credential_1: LoginCredential = LoginCredential.objects.create(owner=self.user, service='google--', name='Personal Main Account', slug='google--personal-main-account', third_party_login=False, third_party_login_name='-----', login='night_monkey123@gmail.com', password='ilovemenotyou')
+            self.login_credential_2: LoginCredential = LoginCredential.objects.create(owner=self.user, service='steam--', name='Little Fries', slug='steam--little-fries', third_party_login=True, third_party_login_name='Personal Main Account', login='-----', password='-----')
+            self.login_credential_3: LoginCredential = LoginCredential.objects.create(owner=self.user, service='steam--', name='Little Fries', slug='steam--little-fries', third_party_login=True, third_party_login_name='-----', login='night_monkey123', password='ilovemenotyou')
+            self.login_credential_4: LoginCredential = LoginCredential.objects.create(owner=self.user, service='steam--', name='Little Fries', slug='steam--potato', third_party_login=False, third_party_login_name='-----', login='', password='night_monkey123')
+            self.login_credential_5: LoginCredential = LoginCredential.objects.create(owner=self.user, service='steam--', name='Little Fries', slug='steam--little-fries', third_party_login=False, third_party_login_name='-----', login='night_monkey123')
             try:
                 with atomic():
-                    self.login_credential_6: LoginCredential = LoginCredential.objects.create(owner=self.user, service='google--', name='Salve' * 9, slug='google--personal-main-account', thirdy_party_login=False, thirdy_party_login_name='-----', login='x' * 201, password='ilovemenotyou')
+                    self.login_credential_6: LoginCredential = LoginCredential.objects.create(owner=self.user, service='google--', name='Salve' * 9, slug='google--personal-main-account', third_party_login=False, third_party_login_name='-----', login='x' * 201, password='ilovemenotyou')
             except DataError:
-                self.login_credential_6: LoginCredential = LoginCredential.objects.create(owner=self.user, service='steam--', name='Little Fries', slug='steam--little-fries', thirdy_party_login=False, thirdy_party_login_name='-----', login='night_monkey123')
-            self.login_credential_7: LoginCredential = LoginCredential.objects.create(owner=self.user, service='pampas-gonden-radio--', name='Little Fries', slug='pampas-gonden-radio--little-fries', thirdy_party_login=True, thirdy_party_login_name='Personal Main Account', login='-----', password='-----')
+                self.login_credential_6: LoginCredential = LoginCredential.objects.create(owner=self.user, service='steam--', name='Little Fries', slug='steam--little-fries', third_party_login=False, third_party_login_name='-----', login='night_monkey123')
+            self.login_credential_7: LoginCredential = LoginCredential.objects.create(owner=self.user, service='pampas-gonden-radio--', name='Little Fries', slug='pampas-gonden-radio--little-fries', third_party_login=True, third_party_login_name='Personal Main Account', login='-----', password='-----')
 
         def test_credential_instance_validity(self) -> None:
             """Tests credential instance of correct class"""
@@ -203,8 +203,8 @@ Kwargs: `#!py None`
             self.assertEqual(cred1.service, 'google--')
             self.assertEqual(cred1.name, 'Personal Main Account')
             self.assertEqual(cred1.slug, 'google--personal-main-account')
-            self.assertFalse(cred1.thirdy_party_login)
-            self.assertEqual(cred1.thirdy_party_login_name, '-----')
+            self.assertFalse(cred1.third_party_login)
+            self.assertEqual(cred1.third_party_login_name, '-----')
             self.assertEqual(cred1.login, 'night_monkey123@gmail.com')
             self.assertEqual(cred1.password, 'ilovemenotyou')
 
@@ -247,7 +247,7 @@ Kwargs: `#!py None`
 
         def test_credential_update_validity(self) -> None:
             """Tests credential update integrity and validation"""
-            LoginCredential.objects.filter(pk=self.login_credential_3.pk).update(thirdy_party_login=False)
+            LoginCredential.objects.filter(pk=self.login_credential_3.pk).update(third_party_login=False)
             LoginCredential.objects.filter(pk=self.login_credential_4.pk).update(slug='steam--little-fries', login='some_login_text_or_email_or_some_other_stuff_like_this')
             LoginCredential.objects.filter(pk=self.login_credential_5.pk).update(password='https://www.youtube.com/watch?v=dQw4w9WgXcQ')
             LoginCredential.objects.filter(pk=self.login_credential_6.pk).update(password='https://www.youtube.com/watch?v=dQw4w9WgXcQ')
@@ -265,21 +265,21 @@ Kwargs: `#!py None`
 
         def test_credential_db_exception_raises(self) -> None:
             """Tests credential correct integrity and validation with raised exceptions"""
-            params: list[dict[str, User | str | bool]] = [{'owner': self.user}, {'service': 'aws--'}, {'name': 'Name'}, {'thirdy_party_login': False}, {'thirdy_party_login_name': '-----'}, {'login': 'LoginName'}, {'password': 'PasswordName'}, {'slug': 'aws--name'}]
+            params: list[dict[str, User | str | bool]] = [{'owner': self.user}, {'service': 'aws--'}, {'name': 'Name'}, {'third_party_login': False}, {'third_party_login_name': '-----'}, {'login': 'LoginName'}, {'password': 'PasswordName'}, {'slug': 'aws--name'}]
             for (case, scenario) in create_scenarios(params):
                 with self.subTest(scenario=case):
                     with self.assertRaises(ValidationError):
                         with atomic():
                             instance: LoginCredential = LoginCredential(**scenario)
                             instance.full_clean()
-            raise_kwargs: dict[str, dict[str, User | str | bool]] = {'cred1': {'owner': self.user, 'service': 'aws--', 'name': 'x' * 41, 'thirdy_party_login': False, 'thirdy_party_login_name': 'x' * 40, 'login': 'x' * 200, 'password': 'x' * 200, 'note': 'x' * 128, 'slug': 'aws--' + 'x' * 123}, 'cred2': {'owner': self.user, 'service': 'aws--', 'name': 'x' * 40, 'thirdy_party_login': False, 'thirdy_party_login_name': 'x' * 41, 'login': 'x' * 201, 'password': 'x' * 200, 'note': 'x' * 128, 'slug': 'aws--' + 'x' * 123}, 'cred3': {'owner': self.user, 'service': 'aws--', 'name': 'x' * 40, 'thirdy_party_login': False, 'thirdy_party_login_name': 'x' * 40, 'login': 'x' * 200, 'password': 'x' * 201, 'note': 'x' * 128, 'slug': 'aws--' + 'x' * 123}, 'cred4': {'owner': self.user, 'service': 'aws--', 'name': 'x' * 40, 'thirdy_party_login': False, 'thirdy_party_login_name': 'x' * 40, 'login': 'x' * 200, 'password': 'x' * 200, 'note': 'x' * 129, 'slug': 'aws--' + 'x' * 123}, 'cred5': {'owner': self.user, 'service': 'aws--', 'name': 'x' * 40, 'thirdy_party_login': False, 'thirdy_party_login_name': 'x' * 40, 'login': 'x' * 200, 'password': 'x' * 200, 'note': 'x' * 128, 'slug': 'aws--' + 'x' * 124}}
+            raise_kwargs: dict[str, dict[str, User | str | bool]] = {'cred1': {'owner': self.user, 'service': 'aws--', 'name': 'x' * 41, 'third_party_login': False, 'third_party_login_name': 'x' * 40, 'login': 'x' * 200, 'password': 'x' * 200, 'note': 'x' * 128, 'slug': 'aws--' + 'x' * 123}, 'cred2': {'owner': self.user, 'service': 'aws--', 'name': 'x' * 40, 'third_party_login': False, 'third_party_login_name': 'x' * 41, 'login': 'x' * 201, 'password': 'x' * 200, 'note': 'x' * 128, 'slug': 'aws--' + 'x' * 123}, 'cred3': {'owner': self.user, 'service': 'aws--', 'name': 'x' * 40, 'third_party_login': False, 'third_party_login_name': 'x' * 40, 'login': 'x' * 200, 'password': 'x' * 201, 'note': 'x' * 128, 'slug': 'aws--' + 'x' * 123}, 'cred4': {'owner': self.user, 'service': 'aws--', 'name': 'x' * 40, 'third_party_login': False, 'third_party_login_name': 'x' * 40, 'login': 'x' * 200, 'password': 'x' * 200, 'note': 'x' * 129, 'slug': 'aws--' + 'x' * 123}, 'cred5': {'owner': self.user, 'service': 'aws--', 'name': 'x' * 40, 'third_party_login': False, 'third_party_login_name': 'x' * 40, 'login': 'x' * 200, 'password': 'x' * 200, 'note': 'x' * 128, 'slug': 'aws--' + 'x' * 124}}
             for scenario in raise_kwargs.keys():
                 with self.subTest(scenario=scenario):
                     with self.assertRaises(ValidationError):
                         with atomic():
                             instance: LoginCredential = LoginCredential(**raise_kwargs[scenario])
                             instance.full_clean()
-            no_raise_kwargs: dict[str, dict[str, User | str | bool]] = {'cred1': {'owner': self.user, 'service': 'aws--', 'name': 'x' * 40, 'thirdy_party_login': False, 'thirdy_party_login_name': 'x' * 40, 'login': 'x' * 200, 'password': 'x' * 200, 'note': 'x' * 128, 'slug': 'aws--' + 'x' * 123}}
+            no_raise_kwargs: dict[str, dict[str, User | str | bool]] = {'cred1': {'owner': self.user, 'service': 'aws--', 'name': 'x' * 40, 'third_party_login': False, 'third_party_login_name': 'x' * 40, 'login': 'x' * 200, 'password': 'x' * 200, 'note': 'x' * 128, 'slug': 'aws--' + 'x' * 123}}
             for scenario in no_raise_kwargs.keys():
                 with self.subTest(scenario=scenario):
                     instance: LoginCredential = LoginCredential(**no_raise_kwargs[scenario])
@@ -523,17 +523,17 @@ Kwargs: `#!py None`
     ```py
     def setUp(self) -> None:
         self.user: User = User.objects.create_user(username='user', password='password', email='user@email.com')
-        self.login_credential_1: LoginCredential = LoginCredential.objects.create(owner=self.user, service='google--', name='Personal Main Account', slug='google--personal-main-account', thirdy_party_login=False, thirdy_party_login_name='-----', login='night_monkey123@gmail.com', password='ilovemenotyou')
-        self.login_credential_2: LoginCredential = LoginCredential.objects.create(owner=self.user, service='steam--', name='Little Fries', slug='steam--little-fries', thirdy_party_login=True, thirdy_party_login_name='Personal Main Account', login='-----', password='-----')
-        self.login_credential_3: LoginCredential = LoginCredential.objects.create(owner=self.user, service='steam--', name='Little Fries', slug='steam--little-fries', thirdy_party_login=True, thirdy_party_login_name='-----', login='night_monkey123', password='ilovemenotyou')
-        self.login_credential_4: LoginCredential = LoginCredential.objects.create(owner=self.user, service='steam--', name='Little Fries', slug='steam--potato', thirdy_party_login=False, thirdy_party_login_name='-----', login='', password='night_monkey123')
-        self.login_credential_5: LoginCredential = LoginCredential.objects.create(owner=self.user, service='steam--', name='Little Fries', slug='steam--little-fries', thirdy_party_login=False, thirdy_party_login_name='-----', login='night_monkey123')
+        self.login_credential_1: LoginCredential = LoginCredential.objects.create(owner=self.user, service='google--', name='Personal Main Account', slug='google--personal-main-account', third_party_login=False, third_party_login_name='-----', login='night_monkey123@gmail.com', password='ilovemenotyou')
+        self.login_credential_2: LoginCredential = LoginCredential.objects.create(owner=self.user, service='steam--', name='Little Fries', slug='steam--little-fries', third_party_login=True, third_party_login_name='Personal Main Account', login='-----', password='-----')
+        self.login_credential_3: LoginCredential = LoginCredential.objects.create(owner=self.user, service='steam--', name='Little Fries', slug='steam--little-fries', third_party_login=True, third_party_login_name='-----', login='night_monkey123', password='ilovemenotyou')
+        self.login_credential_4: LoginCredential = LoginCredential.objects.create(owner=self.user, service='steam--', name='Little Fries', slug='steam--potato', third_party_login=False, third_party_login_name='-----', login='', password='night_monkey123')
+        self.login_credential_5: LoginCredential = LoginCredential.objects.create(owner=self.user, service='steam--', name='Little Fries', slug='steam--little-fries', third_party_login=False, third_party_login_name='-----', login='night_monkey123')
         try:
             with atomic():
-                self.login_credential_6: LoginCredential = LoginCredential.objects.create(owner=self.user, service='google--', name='Salve' * 9, slug='google--personal-main-account', thirdy_party_login=False, thirdy_party_login_name='-----', login='x' * 201, password='ilovemenotyou')
+                self.login_credential_6: LoginCredential = LoginCredential.objects.create(owner=self.user, service='google--', name='Salve' * 9, slug='google--personal-main-account', third_party_login=False, third_party_login_name='-----', login='x' * 201, password='ilovemenotyou')
         except DataError:
-            self.login_credential_6: LoginCredential = LoginCredential.objects.create(owner=self.user, service='steam--', name='Little Fries', slug='steam--little-fries', thirdy_party_login=False, thirdy_party_login_name='-----', login='night_monkey123')
-        self.login_credential_7: LoginCredential = LoginCredential.objects.create(owner=self.user, service='pampas-gonden-radio--', name='Little Fries', slug='pampas-gonden-radio--little-fries', thirdy_party_login=True, thirdy_party_login_name='Personal Main Account', login='-----', password='-----')
+            self.login_credential_6: LoginCredential = LoginCredential.objects.create(owner=self.user, service='steam--', name='Little Fries', slug='steam--little-fries', third_party_login=False, third_party_login_name='-----', login='night_monkey123')
+        self.login_credential_7: LoginCredential = LoginCredential.objects.create(owner=self.user, service='pampas-gonden-radio--', name='Little Fries', slug='pampas-gonden-radio--little-fries', third_party_login=True, third_party_login_name='Personal Main Account', login='-----', password='-----')
     ```
 
 ### `#!py def test_credential_instance_validity`
@@ -579,8 +579,8 @@ Kwargs: `#!py None`
         self.assertEqual(cred1.service, 'google--')
         self.assertEqual(cred1.name, 'Personal Main Account')
         self.assertEqual(cred1.slug, 'google--personal-main-account')
-        self.assertFalse(cred1.thirdy_party_login)
-        self.assertEqual(cred1.thirdy_party_login_name, '-----')
+        self.assertFalse(cred1.third_party_login)
+        self.assertEqual(cred1.third_party_login_name, '-----')
         self.assertEqual(cred1.login, 'night_monkey123@gmail.com')
         self.assertEqual(cred1.password, 'ilovemenotyou')
     ```
@@ -703,7 +703,7 @@ Kwargs: `#!py None`
     ```py
     def test_credential_update_validity(self) -> None:
         """Tests credential update integrity and validation"""
-        LoginCredential.objects.filter(pk=self.login_credential_3.pk).update(thirdy_party_login=False)
+        LoginCredential.objects.filter(pk=self.login_credential_3.pk).update(third_party_login=False)
         LoginCredential.objects.filter(pk=self.login_credential_4.pk).update(slug='steam--little-fries', login='some_login_text_or_email_or_some_other_stuff_like_this')
         LoginCredential.objects.filter(pk=self.login_credential_5.pk).update(password='https://www.youtube.com/watch?v=dQw4w9WgXcQ')
         LoginCredential.objects.filter(pk=self.login_credential_6.pk).update(password='https://www.youtube.com/watch?v=dQw4w9WgXcQ')
@@ -753,21 +753,21 @@ Kwargs: `#!py None`
     ```py
     def test_credential_db_exception_raises(self) -> None:
         """Tests credential correct integrity and validation with raised exceptions"""
-        params: list[dict[str, User | str | bool]] = [{'owner': self.user}, {'service': 'aws--'}, {'name': 'Name'}, {'thirdy_party_login': False}, {'thirdy_party_login_name': '-----'}, {'login': 'LoginName'}, {'password': 'PasswordName'}, {'slug': 'aws--name'}]
+        params: list[dict[str, User | str | bool]] = [{'owner': self.user}, {'service': 'aws--'}, {'name': 'Name'}, {'third_party_login': False}, {'third_party_login_name': '-----'}, {'login': 'LoginName'}, {'password': 'PasswordName'}, {'slug': 'aws--name'}]
         for (case, scenario) in create_scenarios(params):
             with self.subTest(scenario=case):
                 with self.assertRaises(ValidationError):
                     with atomic():
                         instance: LoginCredential = LoginCredential(**scenario)
                         instance.full_clean()
-        raise_kwargs: dict[str, dict[str, User | str | bool]] = {'cred1': {'owner': self.user, 'service': 'aws--', 'name': 'x' * 41, 'thirdy_party_login': False, 'thirdy_party_login_name': 'x' * 40, 'login': 'x' * 200, 'password': 'x' * 200, 'note': 'x' * 128, 'slug': 'aws--' + 'x' * 123}, 'cred2': {'owner': self.user, 'service': 'aws--', 'name': 'x' * 40, 'thirdy_party_login': False, 'thirdy_party_login_name': 'x' * 41, 'login': 'x' * 201, 'password': 'x' * 200, 'note': 'x' * 128, 'slug': 'aws--' + 'x' * 123}, 'cred3': {'owner': self.user, 'service': 'aws--', 'name': 'x' * 40, 'thirdy_party_login': False, 'thirdy_party_login_name': 'x' * 40, 'login': 'x' * 200, 'password': 'x' * 201, 'note': 'x' * 128, 'slug': 'aws--' + 'x' * 123}, 'cred4': {'owner': self.user, 'service': 'aws--', 'name': 'x' * 40, 'thirdy_party_login': False, 'thirdy_party_login_name': 'x' * 40, 'login': 'x' * 200, 'password': 'x' * 200, 'note': 'x' * 129, 'slug': 'aws--' + 'x' * 123}, 'cred5': {'owner': self.user, 'service': 'aws--', 'name': 'x' * 40, 'thirdy_party_login': False, 'thirdy_party_login_name': 'x' * 40, 'login': 'x' * 200, 'password': 'x' * 200, 'note': 'x' * 128, 'slug': 'aws--' + 'x' * 124}}
+        raise_kwargs: dict[str, dict[str, User | str | bool]] = {'cred1': {'owner': self.user, 'service': 'aws--', 'name': 'x' * 41, 'third_party_login': False, 'third_party_login_name': 'x' * 40, 'login': 'x' * 200, 'password': 'x' * 200, 'note': 'x' * 128, 'slug': 'aws--' + 'x' * 123}, 'cred2': {'owner': self.user, 'service': 'aws--', 'name': 'x' * 40, 'third_party_login': False, 'third_party_login_name': 'x' * 41, 'login': 'x' * 201, 'password': 'x' * 200, 'note': 'x' * 128, 'slug': 'aws--' + 'x' * 123}, 'cred3': {'owner': self.user, 'service': 'aws--', 'name': 'x' * 40, 'third_party_login': False, 'third_party_login_name': 'x' * 40, 'login': 'x' * 200, 'password': 'x' * 201, 'note': 'x' * 128, 'slug': 'aws--' + 'x' * 123}, 'cred4': {'owner': self.user, 'service': 'aws--', 'name': 'x' * 40, 'third_party_login': False, 'third_party_login_name': 'x' * 40, 'login': 'x' * 200, 'password': 'x' * 200, 'note': 'x' * 129, 'slug': 'aws--' + 'x' * 123}, 'cred5': {'owner': self.user, 'service': 'aws--', 'name': 'x' * 40, 'third_party_login': False, 'third_party_login_name': 'x' * 40, 'login': 'x' * 200, 'password': 'x' * 200, 'note': 'x' * 128, 'slug': 'aws--' + 'x' * 124}}
         for scenario in raise_kwargs.keys():
             with self.subTest(scenario=scenario):
                 with self.assertRaises(ValidationError):
                     with atomic():
                         instance: LoginCredential = LoginCredential(**raise_kwargs[scenario])
                         instance.full_clean()
-        no_raise_kwargs: dict[str, dict[str, User | str | bool]] = {'cred1': {'owner': self.user, 'service': 'aws--', 'name': 'x' * 40, 'thirdy_party_login': False, 'thirdy_party_login_name': 'x' * 40, 'login': 'x' * 200, 'password': 'x' * 200, 'note': 'x' * 128, 'slug': 'aws--' + 'x' * 123}}
+        no_raise_kwargs: dict[str, dict[str, User | str | bool]] = {'cred1': {'owner': self.user, 'service': 'aws--', 'name': 'x' * 40, 'third_party_login': False, 'third_party_login_name': 'x' * 40, 'login': 'x' * 200, 'password': 'x' * 200, 'note': 'x' * 128, 'slug': 'aws--' + 'x' * 123}}
         for scenario in no_raise_kwargs.keys():
             with self.subTest(scenario=scenario):
                 instance: LoginCredential = LoginCredential(**no_raise_kwargs[scenario])

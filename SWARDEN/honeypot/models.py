@@ -13,14 +13,12 @@ class Attempt(Model):
     IP: Final[CharField] = CharField(max_length=64, validators=[MaxLengthValidator(64)])
     username: Final[CharField] = CharField(
         max_length=256,
-        verbose_name='Nome de Usuário',
         validators=[MaxLengthValidator(256)],
         blank=True,
         null=True,
     )
     password: Final[CharField] = CharField(
         max_length=256,
-        verbose_name='Senha',
         validators=[MaxLengthValidator(256)],
         blank=True,
         null=True,
@@ -28,13 +26,7 @@ class Attempt(Model):
     URL: Final[CharField] = CharField(
         max_length=256, validators=[MaxLengthValidator(256)]
     )
-    timestamp: Final[DateTimeField] = DateTimeField(
-        auto_now_add=True, verbose_name='Data e Hora'
-    )
-
-    class Meta:
-        verbose_name: Final[str] = 'Registro'
-        verbose_name_plural: Final[str] = 'Registros'
+    timestamp: Final[DateTimeField] = DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
         date: datetime = self.timestamp

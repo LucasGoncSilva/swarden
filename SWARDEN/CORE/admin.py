@@ -141,8 +141,8 @@ def graph5() -> str:
                 labels: ['Creds de Login Próprio', 'Creds de Login de 3º'],
                 datasets: [{{
                     data: [
-                        {LoginCredential.objects.filter(thirdy_party_login=True).count()},
-                        {LoginCredential.objects.filter(thirdy_party_login=False).count()},
+                        {LoginCredential.objects.filter(third_party_login=True).count()},
+                        {LoginCredential.objects.filter(third_party_login=False).count()},
                     ],
                     backgroundColor: ['#{MAIN_COLOR}', '#{SEC_COLOR}'],
                     borderColor: ['#{MAIN_COLOR}', '#{SEC_COLOR}'],
@@ -233,5 +233,5 @@ class sWardenAdminSite(AdminSite):
         return super().index(request, extra_context=extra_context)
 
 
-swarden_admin = sWardenAdminSite(name='customadmin')
+swarden_admin = sWardenAdminSite(name='swardenadmin')
 swarden_admin.register(Group, GroupAdmin)

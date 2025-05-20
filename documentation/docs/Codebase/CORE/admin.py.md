@@ -271,7 +271,7 @@ Kwargs: `#!py None`
 
     ```py
     def graph5() -> str:
-        return f"<script>\n        new Chart(document.getElementById('graph5'), {{\n            type: 'doughnut',\n            data: {{\n                labels: ['Creds de Login Próprio', 'Creds de Login de 3º'],\n                datasets: [{{\n                    data: [\n                        {LoginCredential.objects.filter(thirdy_party_login=True).count()},\n                        {LoginCredential.objects.filter(thirdy_party_login=False).count()},\n                    ],\n                    backgroundColor: ['#{MAIN_COLOR}', '#{SEC_COLOR}'],\n                    borderColor: ['#{MAIN_COLOR}', '#{SEC_COLOR}'],\n                    borderWidth: 3\n                }}]\n            }},\n            options: {{\n                cutout: '60%'\n            }}\n        }});\n    </script>"
+        return f"<script>\n        new Chart(document.getElementById('graph5'), {{\n            type: 'doughnut',\n            data: {{\n                labels: ['Creds de Login Próprio', 'Creds de Login de 3º'],\n                datasets: [{{\n                    data: [\n                        {LoginCredential.objects.filter(third_party_login=True).count()},\n                        {LoginCredential.objects.filter(third_party_login=False).count()},\n                    ],\n                    backgroundColor: ['#{MAIN_COLOR}', '#{SEC_COLOR}'],\n                    borderColor: ['#{MAIN_COLOR}', '#{SEC_COLOR}'],\n                    borderWidth: 3\n                }}]\n            }},\n            options: {{\n                cutout: '60%'\n            }}\n        }});\n    </script>"
     ```
 
 ### `#!py def graph6`

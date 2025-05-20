@@ -320,7 +320,7 @@ Type: `#!py ...`
 
 Return Type: `#!py Unknown`
 
-Decorators: `#!py login_required(login_url='/conta/entrar')`
+Decorators: `#!py login_required(login_url='/account/login')`
 
 Args: `#!py r: HttpRequest`
 
@@ -329,7 +329,7 @@ Kwargs: `#!py None`
 ??? example "SNIPPET"
 
     ```py
-    @login_required(login_url='/conta/entrar')
+    @login_required(login_url='/account/login')
     def export_secrets_no_argument(r: HttpRequest):
         return HttpResponseRedirect(reverse('home:index'))
     ```
@@ -340,7 +340,7 @@ Type: `#!py ...`
 
 Return Type: `#!py HttpResponseRedirect`
 
-Decorators: `#!py login_required(login_url='/conta/entrar')`
+Decorators: `#!py login_required(login_url='/account/login')`
 
 Args: `#!py r: HttpRequest, secret_type: Literal['Credenciais', 'Cartões', 'Anotações']`
 
@@ -349,7 +349,7 @@ Kwargs: `#!py None`
 ??? example "SNIPPET"
 
     ```py
-    @login_required(login_url='/conta/entrar')
+    @login_required(login_url='/account/login')
     def export_secrets(r: HttpRequest, secret_type: Literal['Credenciais', 'Cartões', 'Anotações']) -> HttpResponseRedirect:
         CREDENTIALS: Final[str] = 'Credenciais'
         CARDS: Final[str] = 'Cartões'
@@ -368,7 +368,7 @@ Kwargs: `#!py None`
         if secret_type == CREDENTIALS:
             csvwriter.writerow(['Serviço', 'Apelido', 'Login 3rd', 'Apelido Login 3rd', 'Login', 'Senha'])
             for i in query:
-                csvwriter.writerow([i.get_service_display(), i.name, i.thirdy_party_login, i.thirdy_party_login_name, i.login, i.password])
+                csvwriter.writerow([i.get_service_display(), i.name, i.third_party_login, i.third_party_login_name, i.login, i.password])
         elif secret_type == CARDS:
             csvwriter.writerow(['Apelido', 'Tipo', 'Número', 'Expiração', 'CVV', 'Banco', 'Bandeira', 'Titular'])
             for i in query:

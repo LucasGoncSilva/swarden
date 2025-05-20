@@ -11,7 +11,7 @@ class HoneypotViewsTestCase(TestCase):
     def setUp(self) -> None:
         User.objects.create_user(
             username='user',
-            password='password',
+            passphrase='passphrase',
             email='user@email.com',
         )
 
@@ -47,7 +47,7 @@ class HoneypotViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.get(reverse('honeypot:empty_redirect'))
 
@@ -99,7 +99,7 @@ class HoneypotViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.post(reverse('honeypot:empty_redirect'))
 
@@ -154,7 +154,7 @@ class HoneypotViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.get(
             reverse('honeypot:re_redirect', args=['<script>alert(1)</script>'])
@@ -212,7 +212,7 @@ class HoneypotViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.post(
             reverse('honeypot:re_redirect', args=['<script>alert(1)</script>'])
@@ -272,7 +272,7 @@ class HoneypotViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.post(
             reverse('honeypot:honeypot'),
@@ -334,7 +334,7 @@ class HoneypotViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.post(
             reverse('honeypot:honeypot'),

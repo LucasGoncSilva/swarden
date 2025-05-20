@@ -9,56 +9,96 @@ from secret import views as v
 
 app_name: Final[str] = 'secret'
 
-urlpatterns: list[URLPattern] = [
-    path('', v.index, name='index'),
-    # Credentials views
-    path('credenciais/', v.credential_list_view, name='credential_list_view'),
+credentials_urls: list[URLPattern] = [
     path(
-        'credenciais/nova',
+        'credentials/',
+        v.credential_list_view,
+        name='credential_list_view',
+    ),
+    path(
+        'credentials/new',
         v.CredentialCreateView.as_view(),
         name='credential_create_view',
     ),
     path(
-        'credenciais/<slug:slug>',
+        'credentials/<slug:slug>',
         v.credential_detail_view,
         name='credential_detail_view',
     ),
     path(
-        'credenciais/<slug:slug>/editar',
+        'credentials/<slug:slug>/edit',
         v.CredentialUpdateView.as_view(),
         name='credential_update_view',
     ),
     path(
-        'credenciais/<slug:slug>/deletar',
+        'credentials/<slug:slug>/delete',
         v.CredentialDeleteView.as_view(),
         name='credential_delete_view',
     ),
-    # Cards views
-    path('cartoes/', v.card_list_view, name='card_list_view'),
-    path('cartoes/novo', v.CardCreateView.as_view(), name='card_create_view'),
-    path('cartoes/<slug:slug>', v.card_detail_view, name='card_detail_view'),
+]
+
+payment_cards_urls: list[URLPattern] = [
     path(
-        'cartoes/<slug:slug>/editar',
+        'payment-cards/',
+        v.card_list_view,
+        name='card_list_view',
+    ),
+    path(
+        'payment-cards/new',
+        v.CardCreateView.as_view(),
+        name='card_create_view',
+    ),
+    path(
+        'payment-cards/<slug:slug>',
+        v.card_detail_view,
+        name='card_detail_view',
+    ),
+    path(
+        'payment-cards/<slug:slug>/edit',
         v.CardUpdateView.as_view(),
         name='card_update_view',
     ),
     path(
-        'cartoes/<slug:slug>/deletar',
+        'payment-cards/<slug:slug>/delete',
         v.CardDeleteView.as_view(),
         name='card_delete_view',
     ),
-    # Security Notes views
-    path('anotacoes/', v.note_list_view, name='note_list_view'),
-    path('anotacoes/nova', v.NoteCreateView.as_view(), name='note_create_view'),
-    path('anotacoes/<slug:slug>', v.note_detail_view, name='note_detail_view'),
+]
+
+notes_urls: list[URLPattern] = [
     path(
-        'anotacoes/<slug:slug>/editar',
+        'notes/',
+        v.note_list_view,
+        name='note_list_view',
+    ),
+    path(
+        'notes/new',
+        v.NoteCreateView.as_view(),
+        name='note_create_view',
+    ),
+    path(
+        'notes/<slug:slug>',
+        v.note_detail_view,
+        name='note_detail_view',
+    ),
+    path(
+        'notes/<slug:slug>/edit',
         v.NoteUpdateView.as_view(),
         name='note_update_view',
     ),
     path(
-        'anotacoes/<slug:slug>/deletar',
+        'notes/<slug:slug>/delete',
         v.NoteDeleteView.as_view(),
         name='note_delete_view',
     ),
+]
+
+urlpatterns: list[URLPattern] = [
+    path('', v.index, name='index'),
+    # Credentials views
+    *credentials_urls,
+    # Cards views
+    *payment_cards_urls,
+    # Security Notes views
+    *notes_urls,
 ]

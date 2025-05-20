@@ -13,7 +13,7 @@ class SecretIndexViewTestCase(TestCase):
     def setUp(self) -> None:
         User.objects.create_user(
             username='user',
-            password='password',
+            passphrase='passphrase',
             email='user@email.com',
         )
 
@@ -48,7 +48,7 @@ class SecretIndexViewTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.get(reverse('secret:index'))
 
@@ -69,7 +69,7 @@ class BaseLoginCredentialTestCase(TestCase):
     def setUp(self) -> None:
         self.user: User = User.objects.create_user(
             username='user',
-            password='password',
+            passphrase='passphrase',
             email='user@email.com',
         )
 
@@ -78,8 +78,8 @@ class BaseLoginCredentialTestCase(TestCase):
             service='google--',
             name='Personal Main Account',
             slug='google--personal-main-account',
-            thirdy_party_login=False,
-            thirdy_party_login_name='-----',
+            third_party_login=False,
+            third_party_login_name='-----',
             login='night_monkey123@gmail.com',
             password='ilovemenotyou',
         )
@@ -89,8 +89,8 @@ class BaseLoginCredentialTestCase(TestCase):
             service='steam--',
             name='Little Fries',
             slug='steam--little-fries',
-            thirdy_party_login=True,
-            thirdy_party_login_name='Personal Main Account',
+            third_party_login=True,
+            third_party_login_name='Personal Main Account',
             login='-----',
             password='-----',
         )
@@ -133,7 +133,7 @@ class LoginCredentialCreateViewsTestCase(BaseLoginCredentialTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.get(reverse('secret:credential_create_view'))
 
@@ -188,7 +188,7 @@ class LoginCredentialCreateViewsTestCase(BaseLoginCredentialTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.post(
             reverse('secret:credential_create_view'),
@@ -216,8 +216,8 @@ class LoginCredentialCreateViewsTestCase(BaseLoginCredentialTestCase):
             'service': 'google--',
             'name': 'Personal Main Account',
             'slug': 'google--personal-main-account',
-            'thirdy_party_login': False,
-            'thirdy_party_login_name': '-----',
+            'third_party_login': False,
+            'third_party_login_name': '-----',
             'login': 'night_monkey123@gmail.com',
             'password': 'ilovemenotyou',
         }
@@ -259,8 +259,8 @@ class LoginCredentialCreateViewsTestCase(BaseLoginCredentialTestCase):
             'service': 'google--',
             'name': 'Personal Main Account',
             'slug': 'google--personal-main-account',
-            'thirdy_party_login': False,
-            'thirdy_party_login_name': '-----',
+            'third_party_login': False,
+            'third_party_login_name': '-----',
             'login': 'night_monkey123@gmail.com',
             'password': 'ilovemenotyou',
         }
@@ -268,7 +268,7 @@ class LoginCredentialCreateViewsTestCase(BaseLoginCredentialTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.post(
             reverse('secret:credential_create_view'),
@@ -295,8 +295,8 @@ class LoginCredentialCreateViewsTestCase(BaseLoginCredentialTestCase):
             'service': 'google--',
             'name': 'Another Personal Main Account',
             'slug': 'google--another-personal-main-account',
-            'thirdy_party_login': False,
-            'thirdy_party_login_name': '-----',
+            'third_party_login': False,
+            'third_party_login_name': '-----',
             'login': 'night_monkey123@gmail.com',
             'password': 'ilovemenotyou',
         }
@@ -304,7 +304,7 @@ class LoginCredentialCreateViewsTestCase(BaseLoginCredentialTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.post(
             reverse('secret:credential_create_view'),
@@ -361,7 +361,7 @@ class LoginCredentialListViewTestCase(BaseLoginCredentialTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.get(reverse('secret:credential_list_view'))
 
@@ -422,7 +422,7 @@ class LoginCredentialDetailViewTestCase(BaseLoginCredentialTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.get(
             reverse(
@@ -502,7 +502,7 @@ class LoginCredentialUpdateViewTestCase(BaseLoginCredentialTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.get(
             reverse(
@@ -590,7 +590,7 @@ class LoginCredentialDeleteViewTestCase(BaseLoginCredentialTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.get(
             reverse(
@@ -638,7 +638,7 @@ class BaseCardTestCase(TestCase):
     def setUp(self) -> None:
         self.user: User = User.objects.create_user(
             username='user',
-            password='password',
+            passphrase='passphrase',
             email='user@email.com',
         )
 
@@ -691,7 +691,7 @@ class CardCreateViewsTestCase(BaseCardTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.get(reverse('secret:card_create_view'))
 
@@ -742,7 +742,7 @@ class CardCreateViewsTestCase(BaseCardTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.post(
             reverse('secret:card_create_view'),
@@ -826,7 +826,7 @@ class CardCreateViewsTestCase(BaseCardTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.post(
             reverse('secret:card_create_view'),
@@ -865,7 +865,7 @@ class CardCreateViewsTestCase(BaseCardTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.post(
             reverse('secret:card_create_view'),
@@ -919,7 +919,7 @@ class CardListViewTestCase(BaseCardTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.get(reverse('secret:card_list_view'))
 
@@ -981,7 +981,7 @@ class CardDetailViewTestCase(BaseCardTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.get(
             reverse(
@@ -1058,7 +1058,7 @@ class CardUpdateViewTestCase(BaseCardTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.get(
             reverse(
@@ -1139,7 +1139,7 @@ class CardDeleteViewTestCase(BaseCardTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.get(
             reverse(
@@ -1183,7 +1183,7 @@ class BaseSecurityNoteTestCase(TestCase):
     def setUp(self) -> None:
         self.user: User = User.objects.create_user(
             username='user',
-            password='password',
+            passphrase='passphrase',
             email='user@email.com',
         )
 
@@ -1230,7 +1230,7 @@ class SecurityNoteCreateViewTestCase(BaseSecurityNoteTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.get(reverse('secret:note_create_view'))
 
@@ -1281,7 +1281,7 @@ class SecurityNoteCreateViewTestCase(BaseSecurityNoteTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.post(
             reverse('secret:note_create_view'),
@@ -1351,7 +1351,7 @@ class SecurityNoteCreateViewTestCase(BaseSecurityNoteTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.post(
             reverse('secret:note_create_view'),
@@ -1383,7 +1383,7 @@ class SecurityNoteCreateViewTestCase(BaseSecurityNoteTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.post(
             reverse('secret:note_create_view'),
@@ -1433,7 +1433,7 @@ class SecurityNoteListViewTestCase(BaseSecurityNoteTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.get(reverse('secret:note_list_view'))
 
@@ -1487,7 +1487,7 @@ class SecurityNoteDetailViewTestCase(BaseSecurityNoteTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.get(
             reverse('secret:note_detail_view', kwargs={'slug': 'how-to-draw-an-apple'})
@@ -1554,7 +1554,7 @@ class SecurityNoteUpdateViewTestCase(BaseSecurityNoteTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.get(
             reverse('secret:note_update_view', kwargs={'slug': 'how-to-draw-an-apple'})
@@ -1625,7 +1625,7 @@ class SecurityNoteDeleteViewTestCase(BaseSecurityNoteTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', password='password'))
+        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
         res: HttpResponse = self.client.get(
             reverse('secret:note_delete_view', kwargs={'slug': 'how-to-draw-an-apple'})

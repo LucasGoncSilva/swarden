@@ -533,7 +533,7 @@ Type: `#!py ...`
 
 Return Type: `#!py HttpResponse | HttpResponseRedirect`
 
-Decorators: `#!py login_required(login_url='/conta/entrar')`
+Decorators: `#!py login_required(login_url='/account/login')`
 
 Args: `#!py r: HttpRequest`
 
@@ -542,7 +542,7 @@ Kwargs: `#!py None`
 ??? example "SNIPPET"
 
     ```py
-    @login_required(login_url='/conta/entrar')
+    @login_required(login_url='/account/login')
     def logout_view(r: HttpRequest) -> HttpResponse | HttpResponseRedirect:
         if r.method == 'POST':
             logout(r)

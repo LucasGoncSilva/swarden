@@ -46,7 +46,7 @@ class CardAdmin(BasesWardenModelAdmin):
 
 
 class LoginCredentialAdmin(BasesWardenModelAdmin):
-    list_filter = ('owner__is_active', 'thirdy_party_login', 'service')
+    list_filter = ('owner__is_active', 'third_party_login', 'service')
     search_fields = (
         'slug',
         'serviceowner__username',
@@ -57,8 +57,8 @@ class LoginCredentialAdmin(BasesWardenModelAdmin):
     list_display = ('pk', 'slug', 'created', 'updated')
     _exclude = (
         'owner',
-        'thirdy_party_login',
-        'thirdy_party_login_name',
+        'third_party_login',
+        'third_party_login_name',
         'login',
         'password',
         'note',

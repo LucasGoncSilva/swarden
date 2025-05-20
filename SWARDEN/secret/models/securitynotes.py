@@ -25,28 +25,29 @@ class SecurityNote(Model):
         default=uuid4, unique=True, primary_key=True, editable=False
     )
     owner: Final[ForeignKey] = ForeignKey(
-        User, on_delete=CASCADE, related_name='notes', verbose_name='Dono'
+        User,
+        on_delete=CASCADE,
+        related_name='notes',
     )
     title: Final[CharField] = CharField(
-        max_length=40, verbose_name='Título', validators=[MaxLengthValidator(40)]
+        max_length=40, validators=[MaxLengthValidator(40)]
     )
     content: TextField = TextField(
-        max_length=300, verbose_name='Conteúdo', validators=[MaxLengthValidator(300)]
+        max_length=1000, validators=[MaxLengthValidator(1000)]
     )
     note_type: Final[TextField] = TextField(
         max_length=3,
         choices=notes_types,
-        verbose_name='Classificação',
         validators=[MaxLengthValidator(3), MinLengthValidator(3)],
     )
     slug: Final[SlugField] = SlugField(
         max_length=50, validators=[MaxLengthValidator(50)]
     )
     created: Final[DateTimeField] = DateTimeField(
-        auto_now_add=True, verbose_name='Criado em'
+        auto_now_add=True,
     )
     updated: Final[DateTimeField] = DateTimeField(
-        auto_now=True, verbose_name='Atualizado em'
+        auto_now=True,
     )
 
     def __str__(self) -> str:
@@ -130,5 +131,3 @@ class SecurityNote(Model):
 
     class Meta:
         ordering: Final[list[str]] = ['-created']
-        verbose_name: Final[str] = 'Nota de Segurança'
-        verbose_name_plural: Final[str] = 'Notas de Segurança'
