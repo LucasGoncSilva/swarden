@@ -125,16 +125,15 @@ body {
         right: 0;
         height: 80%;
         @include glassmorphism-background;
-        border: 1px solid #ffffff1a;
+        border: $border;
         border-radius: 1rem;
         overflow: hidden;
-        box-shadow: 0 25px 50px -12px #00000040;
     }
 
     &-header {
         height: 3rem;
         @include glassmorphism-background;
-        border-bottom: 1px solid #ffffff0d;
+        border-bottom: $border;
         display: flex;
         align-items: center;
         padding: 0 1rem;
@@ -209,7 +208,7 @@ body {
 
 .mockup-item {
     @include glassmorphism-background;
-    border: 1px solid #ffffff1a;
+    border: $border;
     border-radius: 0.5rem;
     padding: 1rem;
 
@@ -225,7 +224,7 @@ body {
     position: absolute;
     border-radius: 1rem;
     @include glassmorphism-background;
-    border: 1px solid #ffffff1a;
+    border: $border;
 
     &.first {
         bottom: -1rem;
@@ -266,10 +265,7 @@ body {
             font-size: 2.25rem;
             font-weight: bold;
             margin-bottom: 1rem;
-            background: linear-gradient(to bottom right, white, #ffffffb3);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
+            @include text-gradient-primary;
         }
 
         .section-description {
@@ -286,7 +282,7 @@ body {
 
 .feature-card {
     @include glassmorphism-background;
-    border: 1px solid #ffffff1a;
+    border: $border;
     border-radius: 0.75rem;
     padding: 1.5rem;
     transition:
@@ -295,7 +291,7 @@ body {
 
     &:hover {
         transform: translateY(-5px);
-        border-color: #34d39933;
+        border-color: $primary-darken;
     }
 
     .feature-icon-container {

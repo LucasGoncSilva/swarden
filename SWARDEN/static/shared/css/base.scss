@@ -122,10 +122,7 @@ svg {
 }
 
 .text-gradient {
-    background: linear-gradient(to bottom right, white, #ffffffb3);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    @include text-gradient-white;
 }
 
 .text-gradient-primary {
@@ -142,7 +139,7 @@ svg {
 
     &:hover {
         transform: translateY(-5px);
-        border-color: rgba(52, 211, 153, 0.2);
+        border-color: $primary-darken;
     }
 }
 
@@ -184,17 +181,17 @@ svg {
         color: $foreground;
 
         &:hover {
-            background-color: #ffffff0d !important;
+            background-color: $white-transparent !important;
         }
     }
 
     &-outline {
         background-color: transparent !important;
-        border: 1px solid #ffffff1a !important;
+        border: $border !important;
         color: $foreground !important;
 
         &:hover {
-            background-color: #ffffff0d !important;
+            background-color: $white-transparent !important;
         }
     }
 
@@ -219,7 +216,7 @@ svg {
         accent-color: $primary;
         padding: 0.75rem 1rem;
         border-radius: $radius;
-        background-color: $secondary;
+        background-color: $card;
         border: $border;
         color: $foreground;
         font-size: 1rem;
@@ -232,11 +229,11 @@ svg {
         &:focus {
             outline: none;
             border-color: $primary;
-            box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.2);
+            box-shadow: 0 0 0 2px $primary-darken;
         }
 
         &::placeholder {
-            color: rgba(161, 167, 182, 0.6);
+            color: $muted-foreground;
         }
     }
 
@@ -279,7 +276,7 @@ select {
     &:focus {
         outline: none;
         border-color: $primary;
-        box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.2);
+        box-shadow: 0 0 0 2px $primary-darken;
     }
 
     option {
@@ -346,7 +343,7 @@ code {
 
 .footer {
     padding: 4rem 0;
-    border-top: 1px solid #ffffff0d;
+    border-top: 1px solid $white-transparent;
 
     .footer-grid {
         display: grid;
@@ -398,7 +395,7 @@ code {
         gap: 1rem;
         margin-top: 3rem;
         padding-top: 1.5rem;
-        border-top: 1px solid #ffffff0d;
+        border-top: 1px solid $white-transparent;
 
         .copyright {
             color: $muted-foreground;

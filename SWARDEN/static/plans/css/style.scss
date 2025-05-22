@@ -56,7 +56,7 @@
     &.popular {
         border-color: $primary-darken;
         transform: translateY(-5px);
-        box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 0 30px -10px $primary-darken;
 
         &::after {
             z-index: -1;
@@ -151,7 +151,7 @@
 }
 
 .discount-badge {
-    background-color: rgba(52, 211, 153, 0.1);
+    background-color: $primary-background-transparent;
     border: 1px solid $primary-darken;
     color: $primary;
     border-radius: 9999px;

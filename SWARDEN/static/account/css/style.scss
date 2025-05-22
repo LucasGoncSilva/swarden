@@ -92,10 +92,7 @@ main {
         font-weight: bold;
         line-height: 1.2;
         margin-bottom: 1.5rem;
-        background: linear-gradient(to bottom right, white, rgba(255, 255, 255, 0.7));
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
+        @include text-gradient-white;
     }
 
     p {
@@ -133,7 +130,6 @@ main {
     border: $border;
     border-radius: 1rem;
     padding: 2.5rem;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 
     h2 {
         font-size: 1.75rem;
@@ -195,7 +191,7 @@ main {
             content: '';
             flex: 1;
             height: 1px;
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: $white-transparent;
         }
 
         span {

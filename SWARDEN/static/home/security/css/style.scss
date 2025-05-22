@@ -78,7 +78,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.2);
+      box-shadow: 0 0 0 4px $primary-darken;
 
       .station-icon {
         color: $primary;
