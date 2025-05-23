@@ -38,7 +38,6 @@ INSTALLED_APPS: list[str] = [
     'csp',
     # Local
     'account',
-    'honeypot',
     'home',
     'secret',
     'err',

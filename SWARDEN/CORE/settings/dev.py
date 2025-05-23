@@ -17,7 +17,10 @@ DATABASES: dict[str, dict[str, str | Path]] = {
     }
 }
 
-INSTALLED_APPS += ['django_extensions']
+# Django Debug Toolbar
+INSTALLED_APPS += ['django_extensions', 'debug_toolbar']
+MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
+INTERNAL_IPS = ['127.0.0.1']
 
 DEBUG = bool(getenv('DEBUG', DEBUG))
 SECRET_KEY: str = getenv('SECRET_KEY', SECRET_KEY)

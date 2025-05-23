@@ -1,6 +1,8 @@
 from os import getenv
 from typing import Final
 
+from debug_toolbar.toolbar import debug_toolbar_urls
+from django.contrib import admin
 from django.contrib.auth.views import (
     PasswordResetCompleteView,
     PasswordResetConfirmView,
@@ -9,14 +11,9 @@ from django.contrib.auth.views import (
 )
 from django.urls import URLPattern, URLResolver, include, path
 
-from CORE.admin import swarden_admin
-
 
 urlpatterns: list[URLResolver | URLPattern] = [
-    # Adm pages
-    path('admin/', include('honeypot.urls')),
     # System functionality's pages
-    path('account/', include('account.urls')),
     path(
         'reset',
         PasswordResetView.as_view(template_name='account/password_reset.html'),
@@ -46,13 +43,16 @@ urlpatterns: list[URLResolver | URLPattern] = [
     path('error/', include('err.urls')),
     # User's pages
     path('', include('home.urls')),
+    path('account/', include('account.urls')),
     path('secrets/', include('secret.urls')),
     path('general/', include('general.urls')),
     path('plans/', include('plans.urls')),
 ]
 
 if getenv('DJANGO_SETTINGS_MODULE', 'CORE.settings.dev') == 'CORE.settings.dev':
-    urlpatterns += [path(f'{getenv("ADMIN", "__manager__")}/', swarden_admin.urls)]
+    urlpatterns += [
+        path(f'{getenv("ADMIN", "__manager__")}/', admin.site.urls)
+    ] + debug_toolbar_urls()
 
 handler403: Final[str] = 'err.views.handle403'
 handler404: Final[str] = 'err.views.handle404'

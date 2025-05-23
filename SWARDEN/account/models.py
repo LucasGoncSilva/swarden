@@ -1,4 +1,5 @@
 from datetime import datetime
+from os import getenv
 from typing import Any, Final, Self
 from uuid import uuid4
 
@@ -13,7 +14,6 @@ from django.db.models import (
     BooleanField,
     CharField,
     DateTimeField,
-    EmailField,
     ForeignKey,
     Model,
     UUIDField,
@@ -22,33 +22,39 @@ from django.db.models import (
 
 class sWardenUserManager(BaseUserManager):
     def create_user(
-        self: Self, email: str, passphrase=None, **extra_fields: Any
+        self: Self, username: str, password: str | None = None, **extra_fields: Any
     ) -> Self:
-        if not email:
-            raise ValueError('Email is required.')
+        if not username:
+            raise ValueError('Username is required.')
 
-        normalized_email: str = self.normalize_email(email)
-        user = self.model(email=normalized_email, **extra_fields)
-        user.set_password(passphrase)
+        user = self.model(username=username, **extra_fields)
+        user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self: Self, email, passphrase=None, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-        return self.create_user(email, passphrase, **extra_fields)
+    def create_superuser(
+        self: Self, username: str, password: str | None = None, **extra_fields
+    ) -> Self:
+        if getenv('DJANGO_SETTINGS_MODULE', 'CORE.settings.dev') == 'CORE.settings.dev':
+            extra_fields.setdefault('is_staff', True)
+            extra_fields.setdefault('is_superuser', True)
+            extra_fields.setdefault('is_active', True)
+            return self.create_user(username, password, **extra_fields)
+
+        raise PermissionError('This environ cannot proceed with this operation.')
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    username: Final[CharField] = CharField(max_length=150, unique=True)
-    email: Final[EmailField] = EmailField(unique=True)
-    is_active: bool | BooleanField = BooleanField(default=False)
+    id: Final[UUIDField] = UUIDField(
+        default=uuid4, unique=True, primary_key=True, editable=False
+    )
+    username: Final[CharField] = CharField(max_length=20, unique=True)
     is_staff: Final[BooleanField] = BooleanField(default=False)
+    is_active: BooleanField | bool = BooleanField(default=False)
 
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email']
+    USERNAME_FIELD: Final[str] = 'username'
 
-    objects = sWardenUserManager()
+    objects: sWardenUserManager = sWardenUserManager()  # type:ignore
 
     def __str__(self: Self) -> str:
         return self.username

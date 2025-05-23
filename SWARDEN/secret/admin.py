@@ -1,10 +1,9 @@
 from typing import Any
 
-from CORE.admin import swarden_admin
-from django.contrib.admin import ModelAdmin
+from django.contrib.admin import ModelAdmin, site
 from django.http import HttpRequest
 
-from secret.models import Card, LoginCredential, SecurityNote
+from secret.models import PaymentCard, LoginCredential, SecurityNote
 
 
 class BasesWardenModelAdmin(ModelAdmin):
@@ -14,22 +13,21 @@ class BasesWardenModelAdmin(ModelAdmin):
     def has_change_permission(self, r: HttpRequest, obj=None) -> bool:  # type: ignore
         return False if not r.user.is_superuser else True  # type: ignore
 
-    def get_form(self, request: HttpRequest, obj: Any = None, **kwargs: Any) -> Any:  # type: ignore
-        if not request.user.is_superuser:  # type: ignore
+    def get_form(self, r: HttpRequest, obj: Any = None, **kwargs: Any) -> Any:  # type: ignore
+        if not r.user.is_superuser:  # type: ignore
             self.exclude = self._exclude  # type: ignore
 
-        return super().get_form(request, obj, **kwargs)
+        return super().get_form(r, obj, **kwargs)
 
 
 class CardAdmin(BasesWardenModelAdmin):
     list_filter = ('owner__is_active', 'card_type', 'bank', 'brand')
     search_fields = (
+        'slug',
         'card_type',
         'bank',
         'brand',
         'owner__username',
-        'owner__first_name',
-        'owner__last_name',
     )
     prepopulated_fields = {'slug': ('bank', 'name')}
     list_display = ('pk', 'slug', 'created', 'updated')
@@ -49,9 +47,8 @@ class LoginCredentialAdmin(BasesWardenModelAdmin):
     list_filter = ('owner__is_active', 'third_party_login', 'service')
     search_fields = (
         'slug',
-        'serviceowner__username',
-        'owner__first_name',
-        'owner__last_name',
+        'service',
+        'owner__username',
     )
     prepopulated_fields = {'slug': ('service', 'name')}
     list_display = ('pk', 'slug', 'created', 'updated')
@@ -70,14 +67,12 @@ class SecurityNoteAdmin(BasesWardenModelAdmin):
     search_fields = (
         'slug',
         'owner__username',
-        'owner__first_name',
-        'owner__last_name',
     )
     prepopulated_fields = {'slug': ('title',)}
     list_display = ('pk', 'note_type', 'slug', 'created', 'updated')
     _exclude = ('owner', 'content')
 
 
-swarden_admin.register(Card, CardAdmin)
-swarden_admin.register(LoginCredential, LoginCredentialAdmin)
-swarden_admin.register(SecurityNote, SecurityNoteAdmin)
+site.register(PaymentCard, CardAdmin)
+site.register(LoginCredential, LoginCredentialAdmin)
+site.register(SecurityNote, SecurityNoteAdmin)

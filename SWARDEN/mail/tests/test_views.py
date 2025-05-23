@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from django.test import TestCase
 from django.urls import reverse
-from secret.models import Card, LoginCredential, SecurityNote
+from secret.models import PaymentCard, LoginCredential, SecurityNote
 from secret.month.models import Month
 from utils import (
     create_scenarios,
@@ -224,7 +224,7 @@ class ExportSecretsViewTestCase(BaseMailTestCase):
         # Confirm user login
         self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
 
-        Card.objects.create(
+        PaymentCard.objects.create(
             owner=self.user,
             name='Personal Main Card',
             card_type='deb',

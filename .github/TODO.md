@@ -4,6 +4,7 @@
 
 - [ ] Use of Rust for better processing
 - [ ] Prefetch links for faster content load
+- [ ] Implement `django.middleware.gzip.GZipMiddleware`
 
 ## To Do
 

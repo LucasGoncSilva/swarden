@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.test import TestCase
 from django.urls import reverse
 
-from secret.models import Card, LoginCredential, SecurityNote
+from secret.models import PaymentCard, LoginCredential, SecurityNote
 from secret.month.models import Month
 from secret.views import EMPTY_POST_MSG, FEEDBACK_MSG
 
@@ -642,7 +642,7 @@ class BaseCardTestCase(TestCase):
             email='user@email.com',
         )
 
-        Card.objects.create(
+        PaymentCard.objects.create(
             owner=self.user,
             name='Personal Main Card',
             card_type='deb',
@@ -995,7 +995,7 @@ class CardDetailViewTestCase(BaseCardTestCase):
         self.assertIn('object', res.context.keys())  # type: ignore
         self.assertEqual(
             res.context['object'],
-            Card.objects.get(
+            PaymentCard.objects.get(
                 owner=User.objects.first(), slug='nubank--personal-main-card'
             ),
         )
@@ -1076,7 +1076,7 @@ class CardUpdateViewTestCase(BaseCardTestCase):
         self.assertIn('object', res.context.keys())  # type: ignore
         self.assertEqual(
             res.context['object'],
-            Card.objects.get(
+            PaymentCard.objects.get(
                 owner=User.objects.first(), slug='nubank--personal-main-card'
             ),
         )
@@ -1157,7 +1157,7 @@ class CardDeleteViewTestCase(BaseCardTestCase):
         self.assertIn('object', res.context.keys())  # type: ignore
         self.assertEqual(
             res.context['object'],
-            Card.objects.get(
+            PaymentCard.objects.get(
                 owner=User.objects.first(), slug='nubank--personal-main-card'
             ),
         )

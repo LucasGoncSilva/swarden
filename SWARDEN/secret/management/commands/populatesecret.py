@@ -1,20 +1,22 @@
-from typing import Any
+from random import choices
+from typing import Any, Self
 
 from account.models import User
 from django.core.management import BaseCommand
-from secret.models import Card, LoginCredential, SecurityNote
+from django.utils.text import slugify
+from secret.models import PaymentCard, LoginCredential, SecurityNote
 from secret.month.models import Month
 from tqdm import tqdm
 
 
 class Command(BaseCommand):
-    def handle(self, *args: Any, **options: Any) -> None:
+    def handle(self: Self, *args: Any, **options: Any) -> None:
         self.populate_cards()
         self.populate_notes()
         self.populate_credentials()
 
-    def populate_cards(self) -> None:
-        if Card.objects.filter(slug='nao-listado--rdias').exists():
+    def populate_cards(self: Self) -> None:
+        if PaymentCard.objects.filter(slug='other--rdias').exists():
             self.stdout.write('secret.Card is already populated')
             return
 
@@ -23,9 +25,12 @@ class Command(BaseCommand):
         with open('./secret/management/commands/populatecard.txt') as sample:
             f: list[list[str]] = [i.strip().split('::') for i in sample.readlines()]
 
-        for i in tqdm(f, desc='Cards', bar_format='{l_bar}{bar:100}{r_bar}{bar:-10b}'):
+        owners_ids: list[User] = choices([i.id for i in User.objects.all()], k=len(f))
+
+        for i, data in tqdm(
+            enumerate(f), desc='Cards', bar_format='{l_bar}{bar:100}{r_bar}{bar:-10b}'
+        ):
             (
-                owner_id,
                 name,
                 card_type,
                 number,
@@ -35,14 +40,14 @@ class Command(BaseCommand):
                 brand,
                 owners_name,
                 note,
-            ) = i
+            ) = data
 
-            owner: User = User.objects.get(pk=owner_id)
+            owner: User = User.objects.get(pk=owners_ids[i])
 
             y, m = expiration.split('-')
             expiration = Month(int(y), int(m))
 
-            Card.objects.create(
+            PaymentCard.objects.create(
                 owner=owner,
                 name=name,
                 card_type=card_type,
@@ -53,10 +58,10 @@ class Command(BaseCommand):
                 brand=brand,
                 owners_name=owners_name,
                 note=note,
-                slug=f'{bank}{name.replace(" ", "-").lower()}',
+                slug=f'{bank}{slugify(name)}',
             )
 
-    def populate_notes(self) -> None:
+    def populate_notes(self: Self) -> None:
         if SecurityNote.objects.filter(slug='dolorem-mo').exists():
             self.stdout.write('secret.SecurityNote is already populated')
             return
@@ -66,20 +71,24 @@ class Command(BaseCommand):
         with open('./secret/management/commands/populatenote.txt') as sample:
             f: list[list[str]] = [i.strip().split('::') for i in sample.readlines()]
 
-        for i in tqdm(f, desc='Notes', bar_format='{l_bar}{bar:100}{r_bar}{bar:-10b}'):
-            owner_id, title, note_type, content = i
+        owners_ids: list[User] = choices([i.id for i in User.objects.all()], k=len(f))
 
-            owner = User.objects.get(pk=owner_id)
+        for i, data in tqdm(
+            enumerate(f), desc='Notes', bar_format='{l_bar}{bar:100}{r_bar}{bar:-10b}'
+        ):
+            title, note_type, content = data
+
+            owner = User.objects.get(pk=owners_ids[i])
 
             SecurityNote.objects.create(
                 owner=owner,
                 title=title,
                 note_type=note_type,
                 content=content,
-                slug=title.replace(' ', '-').lower(),
+                slug=slugify(title),
             )
 
-    def populate_credentials(self) -> None:
+    def populate_credentials(self: Self) -> None:
         if LoginCredential.objects.filter(slug='discord--giovanna-cardoso').exists():
             self.stdout.write('secret.LoginCredential is already populated')
             return
@@ -89,9 +98,12 @@ class Command(BaseCommand):
         with open('./secret/management/commands/populatecredential.txt') as sample:
             f: list[list[str]] = [i.strip().split('::') for i in sample.readlines()]
 
-        for i in tqdm(f, desc='Notes', bar_format='{l_bar}{bar:100}{r_bar}{bar:-10b}'):
+        owners_ids: list[User] = choices([i.id for i in User.objects.all()], k=len(f))
+
+        for i, data in tqdm(
+            enumerate(f), desc='Notes', bar_format='{l_bar}{bar:100}{r_bar}{bar:-10b}'
+        ):
             (
-                owner_id,
                 service,
                 name,
                 third_party_login,
@@ -99,9 +111,9 @@ class Command(BaseCommand):
                 login,
                 password,
                 note,
-            ) = i
+            ) = data
 
-            owner = User.objects.get(pk=owner_id)
+            owner = User.objects.get(pk=owners_ids[i])
 
             LoginCredential.objects.create(
                 owner=owner,
@@ -112,5 +124,5 @@ class Command(BaseCommand):
                 login=login,
                 password=password,
                 note=note,
-                slug=f'{service}{name.replace(" ", "-").lower()}',
+                slug=f'{service}{slugify(name)}',
             )

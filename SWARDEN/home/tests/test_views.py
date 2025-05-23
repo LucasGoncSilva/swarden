@@ -3,7 +3,7 @@ from django.contrib.auth import get_user
 from django.http import HttpResponse
 from django.test import TestCase
 from django.urls import reverse
-from secret.models import Card, LoginCredential, SecurityNote
+from secret.models import PaymentCard, LoginCredential, SecurityNote
 from secret.month.models import Month
 
 
@@ -15,7 +15,7 @@ class HomeViewsTestCase(TestCase):
             email='user@email.com',
         )
 
-        Card.objects.create(
+        PaymentCard.objects.create(
             owner=user,
             name='Personal Main Card',
             card_type='deb',

@@ -1,10 +1,10 @@
-from .card import Card
+from .card import PaymentCard
 from .logincredential import LoginCredential
 from .securitynotes import SecurityNote
 
 
 __all__ = [
-    'Card',
+    'PaymentCard',
     'LoginCredential',
     'SecurityNote',
 ]

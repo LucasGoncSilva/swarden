@@ -21,7 +21,7 @@ from secret.choices import cards_banks, cards_brands, cards_types
 from secret.month.models import MonthField
 
 
-class Card(Model):
+class PaymentCard(Model):
     id: Final[UUIDField] = UUIDField(
         default=uuid4, unique=True, primary_key=True, editable=False
     )
@@ -86,7 +86,7 @@ class Card(Model):
 
     @classmethod
     def from_db(cls, db, field_names, values):
-        card: Card = super().from_db(db, field_names, values)
+        card: PaymentCard = super().from_db(db, field_names, values)
 
         card.name = xor(str(card.name), card.owner.password[21:], encrypt=False)
         card.number = xor(str(card.number), card.owner.password[21:], encrypt=False)

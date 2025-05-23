@@ -1,11 +1,11 @@
-from typing import Final, cast
+from typing import Final
 
 from captcha.fields import CaptchaField
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.messages import error, success
-from django.forms import CharField, EmailField, Form, PasswordInput, TextInput
+from django.forms import CharField, Form, PasswordInput, TextInput
 from django.http import (
     Http404,
     HttpRequest,
@@ -16,10 +16,6 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
-from utils import (
-    send_email_activate_account_completed,
-    send_email_activation_account_token,
-)
 
 from account.models import ActivationAccountToken, User
 
@@ -28,7 +24,7 @@ class RegisterForm(Form):
     username: Final[CharField] = CharField(
         label='Username',
         min_length=2,
-        max_length=32,
+        max_length=20,
         required=True,
         widget=TextInput(
             attrs={
@@ -38,18 +34,7 @@ class RegisterForm(Form):
                 'autocomplete': 'off',
             }
         ),
-        help_text='Max of 32 chars. Letters, numbers and "@", ".", "+", "-", "_" only.',
-    )
-    email: Final[EmailField] = EmailField(
-        label='Email',
-        required=True,
-        widget=TextInput(
-            attrs={
-                'id': 'email',
-                'placeholder': 'Enter your email',
-                'autocomplete': 'off',
-            }
-        ),
+        help_text='Max of 20 chars. Letters, numbers and "@", ".", "+", "-", "_" only.',
     )
     passphrase: Final[CharField] = CharField(
         label='Passphrase',
@@ -111,10 +96,10 @@ def register_view(r: HttpRequest) -> HttpResponse | HttpResponseRedirect:
         return HttpResponseRedirect(reverse('home:index'))
 
     elif r.method != 'POST':
-        form: Form = RegisterForm()
+        form: RegisterForm = RegisterForm()
         return render(r, 'account/register.html', {'form': form})
 
-    form: Form = RegisterForm(r.POST)
+    form: RegisterForm = RegisterForm(r.POST)
 
     if not form.is_valid():
         return render(r, 'account/register.html', {'form': form})
@@ -123,34 +108,21 @@ def register_view(r: HttpRequest) -> HttpResponse | HttpResponseRedirect:
     passphrase2: str | None = form.cleaned_data.get('passphrase2')
 
     if not passphrase or not passphrase2 or passphrase != passphrase2:
-        error(r, 'Passphrases does not match')
+        error(r, 'Passphrases does not match.')
         return render(r, 'account/register.html', {'form': form})
 
     username: str | None = form.cleaned_data.get('username')
-    email: str | None = form.cleaned_data.get('email')
 
-    if (
-        User.objects.filter(username=username).exists()
-        or User.objects.filter(email=email).exists()
-        or username is None
-        or email is None
-    ):
+    if User.objects.filter(username=username).exists() or username is None:
         error(r, 'Username unavailable')
         return render(r, 'account/register.html', {'form': form})
+    print(username, passphrase)
 
-    first_name: str = cast(str, form.cleaned_data.get('first_name'))
-    last_name: str = cast(str, form.cleaned_data.get('last_name'))
-
-    user: User = User.objects.create_user(  # type: ignore
+    User.objects.create_user(  # type: ignore
         username=username,
-        first_name=first_name,
-        last_name=last_name,
-        email=email,
-        passphrase=passphrase,
+        password=passphrase,
         is_active=False,
     )
-
-    send_email_activation_account_token(r.get_host(), user, passphrase)
 
     success(r, 'Conta criada. Acesse seu e-mail para ativar sua conta.')
     return HttpResponseRedirect(reverse('account:login'))
@@ -187,8 +159,6 @@ def activate_account(r: HttpRequest, uidb64: str, token: str) -> HttpResponseRed
 
     login(r, user)
 
-    send_email_activate_account_completed(str(user.email))
-
     return HttpResponseRedirect(reverse('home:index'))
 
 
@@ -199,15 +169,17 @@ def login_view(r: HttpRequest) -> HttpResponse | HttpResponseRedirect:
     elif r.method != 'POST':
         return render(r, 'account/login.html', {'form': LogInForm()})
 
-    form: Final[Form] = LogInForm(r.POST)
+    form: Final[LogInForm] = LogInForm(r.POST)
 
     if not form.is_valid():
         return render(r, 'account/login.html', {'form': form})
 
-    username: Final[str] = str(form.cleaned_data.get('username')).strip()
-    passphrase: Final[str] = str(form.cleaned_data.get('passphrase')).strip()
+    username: Final[str] = str(form.cleaned_data.get('username'))
+    passphrase: Final[str] = str(form.cleaned_data.get('passphrase'))
+    print(username, passphrase)
 
     user: AbstractBaseUser | None = authenticate(username=username, password=passphrase)
+    print(user)
 
     if user is None:
         error(r, 'Invalid username and/or passphrase')

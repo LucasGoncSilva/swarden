@@ -1,24 +1,32 @@
-from CORE.admin import swarden_admin
-from django.contrib.admin import ModelAdmin
-from django.contrib.auth import admin as auth_admin
+from django.contrib.admin import ModelAdmin, site
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 from account.forms import UserChangeForm, UserCreationForm
 from account.models import ActivationAccountToken, User
 
 
-class UserAdmin(auth_admin.UserAdmin):
+class UserAdmin(BaseUserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
 
-    list_display = ('email', 'username', 'is_staff', 'is_superuser')
-    list_filter = ('is_staff', 'is_superuser')
+    list_display = ('username', 'is_active', 'is_staff')
+    search_fields = ('username',)
 
     fieldsets = (
-        (None, {'fields': ('email', 'username', 'password')}),
+        (None, {'fields': ('username', 'password')}),
         (
-            'Permissões',
-            {'fields': ('is_staff', 'is_superuser', 'groups', 'user_permissions')},
+            'Permissions',
+            {
+                'fields': (
+                    'is_active',
+                    'is_staff',
+                    'is_superuser',
+                    'groups',
+                    'user_permissions',
+                )
+            },
         ),
+        ('Important dates', {'fields': ('last_login',)}),
     )
 
     add_fieldsets = (
@@ -26,18 +34,17 @@ class UserAdmin(auth_admin.UserAdmin):
             None,
             {
                 'classes': ('wide',),
-                'fields': ('email', 'username', 'password1', 'password2'),
+                'fields': ('username', 'password1', 'password2'),
             },
         ),
     )
 
-    search_fields = ('email', 'username')
-    ordering = ('email',)
+    ordering = ('username',)
 
 
 class ActivationAccountTokenAdmin(ModelAdmin):
     list_filter = ('user__is_active',)
 
 
-swarden_admin.register(ActivationAccountToken, ActivationAccountTokenAdmin)
-swarden_admin.register(User, UserAdmin)
+site.register(User, UserAdmin)
+site.register(ActivationAccountToken, ActivationAccountTokenAdmin)

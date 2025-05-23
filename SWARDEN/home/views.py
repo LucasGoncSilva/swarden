@@ -2,13 +2,13 @@
 
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
-from secret.models import Card, LoginCredential, SecurityNote
+from secret.models import PaymentCard, LoginCredential, SecurityNote
 
 
 def index(r: HttpRequest) -> HttpResponse:
     if r.user.is_authenticated:
         credentials: LoginCredential = r.user.credentials.all()  # type: ignore
-        cards: Card = r.user.cards.all()  # type: ignore
+        cards: PaymentCard = r.user.cards.all()  # type: ignore
         notes: SecurityNote = r.user.notes.all()  # type: ignore
 
         return render(

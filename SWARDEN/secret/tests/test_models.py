@@ -6,7 +6,7 @@ from django.test import TestCase
 from django.urls import reverse
 from utils import create_scenarios, xor
 
-from secret.models import Card, LoginCredential, SecurityNote
+from secret.models import PaymentCard, LoginCredential, SecurityNote
 from secret.month.models import Month
 
 
@@ -365,7 +365,7 @@ class CardTestCase(TestCase):
         )
 
         # Object 1
-        self.card_1: Card = Card.objects.create(
+        self.card_1: PaymentCard = PaymentCard.objects.create(
             owner=self.user,
             name='Personal Main Card One',
             card_type='deb',
@@ -381,7 +381,7 @@ class CardTestCase(TestCase):
         # Object 2
         try:
             with atomic():
-                self.card_2: Card = Card.objects.create(
+                self.card_2: PaymentCard = PaymentCard.objects.create(
                     owner=self.user,
                     name='Personal Main Card',
                     card_type='creda',  # Inexintent type and more chars than the limit
@@ -394,7 +394,7 @@ class CardTestCase(TestCase):
                     owners_name='TEST USER',
                 )
         except DataError:
-            self.card_2: Card = Card.objects.create(
+            self.card_2: PaymentCard = PaymentCard.objects.create(
                 owner=self.user,
                 name='Personal Main Card Two',
                 card_type='baka',  # Inexintent type
@@ -408,7 +408,7 @@ class CardTestCase(TestCase):
             )
 
         # Object 3
-        self.card_3: Card = Card.objects.create(
+        self.card_3: PaymentCard = PaymentCard.objects.create(
             owner=self.user,
             name='Personal Main Card Three',
             card_type='deb',
@@ -422,7 +422,7 @@ class CardTestCase(TestCase):
         )
 
         # Object 4
-        self.card_4: Card = Card.objects.create(
+        self.card_4: PaymentCard = PaymentCard.objects.create(
             owner=self.user,
             name='Personal Main Card Four',
             card_type='deb',
@@ -436,7 +436,7 @@ class CardTestCase(TestCase):
         )
 
         # Object 5
-        self.card_5: Card = Card.objects.create(
+        self.card_5: PaymentCard = PaymentCard.objects.create(
             owner=self.user,
             name='Personal Main Card Five',
             card_type='deb',
@@ -450,7 +450,7 @@ class CardTestCase(TestCase):
         )
 
         # Object 6
-        self.card_6: Card = Card.objects.create(
+        self.card_6: PaymentCard = PaymentCard.objects.create(
             owner=self.user,
             name='Personal Main Card Six',
             card_type='deb',
@@ -466,14 +466,14 @@ class CardTestCase(TestCase):
     def test_card_instance_validity(self) -> None:
         """Tests card instance of correct class"""
 
-        for card in Card.objects.all():
+        for card in PaymentCard.objects.all():
             with self.subTest(card=card):
-                self.assertIsInstance(card, Card)
+                self.assertIsInstance(card, PaymentCard)
 
     def test_card_special_str_method_return(self) -> None:
         """Tests card return value of __str__ method"""
 
-        card1: Card = Card.objects.get(pk=self.card_1.pk)
+        card1: PaymentCard = PaymentCard.objects.get(pk=self.card_1.pk)
 
         self.assertEqual(
             card1.__str__(),
@@ -483,14 +483,14 @@ class CardTestCase(TestCase):
     def test_card_absolute_url_method_return(self) -> None:
         """Tests card return value of get_absolute_url method"""
 
-        cred1: Card = Card.objects.get(pk=self.card_1.pk)
+        cred1: PaymentCard = PaymentCard.objects.get(pk=self.card_1.pk)
 
         self.assertEqual(cred1.get_absolute_url(), reverse('secret:card_list_view'))
 
     def test_card_key_value_assertion(self) -> None:
         """Tests card correct attribuition of value"""
 
-        card1: Card = Card.objects.get(pk=self.card_1.pk)
+        card1: PaymentCard = PaymentCard.objects.get(pk=self.card_1.pk)
 
         self.assertEqual(card1.name, 'Personal Main Card One')
         self.assertEqual(card1.card_type, 'deb')
@@ -505,21 +505,21 @@ class CardTestCase(TestCase):
     def test_card_user_foreign_key_validity(self) -> None:
         """Tests card foreign key validation"""
 
-        card1_owner: User = Card.objects.get(pk=self.card_1.pk).owner
+        card1_owner: User = PaymentCard.objects.get(pk=self.card_1.pk).owner
 
         self.assertEqual(card1_owner, self.user)
 
     def test_card_create_validity(self) -> None:
         """Tests card creation integrity and validation"""
 
-        card1: Card = Card.objects.get(pk=self.card_1.pk)
-        card2: Card = Card.objects.get(pk=self.card_2.pk)
-        card3: Card = Card.objects.get(pk=self.card_3.pk)
-        card4: Card = Card.objects.get(pk=self.card_4.pk)
-        card5: Card = Card.objects.get(pk=self.card_5.pk)
-        card6: Card = Card.objects.get(pk=self.card_6.pk)
+        card1: PaymentCard = PaymentCard.objects.get(pk=self.card_1.pk)
+        card2: PaymentCard = PaymentCard.objects.get(pk=self.card_2.pk)
+        card3: PaymentCard = PaymentCard.objects.get(pk=self.card_3.pk)
+        card4: PaymentCard = PaymentCard.objects.get(pk=self.card_4.pk)
+        card5: PaymentCard = PaymentCard.objects.get(pk=self.card_5.pk)
+        card6: PaymentCard = PaymentCard.objects.get(pk=self.card_6.pk)
 
-        self.assertEqual(Card.objects.all().count(), 6)
+        self.assertEqual(PaymentCard.objects.all().count(), 6)
 
         self.assertTrue(card1.is_valid())
         self.assertFalse(card2.is_valid())
@@ -531,32 +531,32 @@ class CardTestCase(TestCase):
     def test_card_update_validity(self) -> None:
         """Tests card update integrity and validation"""
 
-        Card.objects.filter(pk=self.card_2.pk).update(card_type='cred')
-        Card.objects.filter(pk=self.card_3.pk).update(
+        PaymentCard.objects.filter(pk=self.card_2.pk).update(card_type='cred')
+        PaymentCard.objects.filter(pk=self.card_3.pk).update(
             number=xor('1122334455667788', self.user.password[21:]),
             cvv=xor('1986', self.user.password[21:]),
         )
-        Card.objects.filter(pk=self.card_4.pk).update(
+        PaymentCard.objects.filter(pk=self.card_4.pk).update(
             bank='pagseguro--',
             slug='pagseguro--personal-main-card-four',
         )
-        Card.objects.filter(pk=self.card_5.pk).update(
+        PaymentCard.objects.filter(pk=self.card_5.pk).update(
             slug='nubank--personal-main-card-five'
         )
-        Card.objects.filter(pk=self.card_6.pk).update(brand='mastercard--')
+        PaymentCard.objects.filter(pk=self.card_6.pk).update(brand='mastercard--')
 
-        for i, card in enumerate(Card.objects.all(), start=1):
+        for i, card in enumerate(PaymentCard.objects.all(), start=1):
             with self.subTest(card=i):
                 self.assertTrue(card.is_valid())
 
     def test_card_delete_validity(self) -> None:
         """Tests card correct deletion"""
 
-        for card in Card.objects.all():
+        for card in PaymentCard.objects.all():
             if not card.is_valid():
                 card.delete()
 
-        self.assertEqual(Card.objects.all().count(), 1)
+        self.assertEqual(PaymentCard.objects.all().count(), 1)
 
     def test_card_db_exception_raises(self) -> None:
         """Tests card correct integrity and validation with raised exceptions"""
@@ -578,7 +578,7 @@ class CardTestCase(TestCase):
             with self.subTest(scenario=case):
                 with self.assertRaises(ValidationError):
                     with atomic():
-                        instance: Card = Card(**scenario)
+                        instance: PaymentCard = PaymentCard(**scenario)
                         instance.full_clean()
 
         raise_kwargs: dict[str, dict[str, str | Month | User]] = {
@@ -705,7 +705,7 @@ class CardTestCase(TestCase):
             with self.subTest(scenario=scenario):
                 with self.assertRaises(ValidationError):
                     with atomic():
-                        instance: Card = Card(**raise_kwargs[scenario])
+                        instance: PaymentCard = PaymentCard(**raise_kwargs[scenario])
                         instance.full_clean()
 
         # Not expecting raises
@@ -727,7 +727,7 @@ class CardTestCase(TestCase):
 
         for scenario in no_raise_kwargs.keys():
             with self.subTest(scenario=scenario):
-                instance: Card = Card(**no_raise_kwargs[scenario])
+                instance: PaymentCard = PaymentCard(**no_raise_kwargs[scenario])
                 instance.full_clean()
 
 

@@ -25,10 +25,12 @@ dependencies = [
 [dependency-groups]
 dev = [
     "coverage>=7.8.0",
+    "django-debug-toolbar>=5.2.0",
     "django-extensions>=4.1",
     "locust>=2.36.1",
     "mosheh>=1.3.4",
     "ruff>=0.11.7",
+    "taskipy>=1.14.1",
     "tblib>=3.1.0",
     "tqdm>=4.67.1",
 ]
@@ -39,6 +41,25 @@ Documentation = "https://lucasgoncsilva.github.io/swarden/"
 Repository = "https://github.com/lucasGoncSilva/swarden/"
 Issues = "https://github.com/LucasGoncSilva/swarden/issues"
 Changelog = "https://github.com/LucasGoncSilva/swarden/blob/main/.github/CHANGELOG.md"
+
+
+[tool.taskipy.tasks]
+init = "task start_postgres; task populatedb; task runserver"
+
+runserver = "uv run manage.py runserver"
+lint = "uv run ruff check; uv run ruff format"
+createsuperuser = "uv run manage.py createsuperuser"
+migrate = "uv run manage.py makemigrations; uv run manage.py migrate; uv run manage.py showmigrations"
+populatedb = "task migrate; uv run manage.py populateuser; uv run manage.py populatesecret"
+resetdb = "uv run manage.py reset_db; task clear_cache; task reset_migrations"
+test = "uv run manage.py test"
+testwithcoverage = "uv run manage.py testwithcoverage"
+shell = "uv run manage.py shell"
+
+# Internal Commands
+clear_cache = "uv run manage.py clear_cache; uv run manage.py clean_pyc"
+reset_migrations = "find . -path \"*/migrations/*.py\" -not -name \"__init__.py\" -delete && find . -path \"*/migrations/*.pyc\" -delete; echo \"Migrations deleted.\""
+start_postgres = "docker run --name psql_swarden -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=postgres -d postgres; sleep 10"
 
 
 [tool.ruff]

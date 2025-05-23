@@ -14,10 +14,10 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, DeleteView, UpdateView
 
-from secret.models import Card, LoginCredential, SecurityNote
+from secret.models import PaymentCard, LoginCredential, SecurityNote
 
 
-EMPTY_POST_MSG: Final[str] = 'Preencha corretamente todos os campos solicitados'
+EMPTY_POST_MSG: Final[str] = 'Preencha corretamente todos os campos solicitados.'
 FEEDBACK_MSG: Final[str] = 'Slug já existente. Tente outro apelido ou título.'
 
 login_dec: Callable = login_required(login_url='/account/login')
@@ -140,14 +140,14 @@ def card_list_view(r: HttpRequest) -> HttpResponse:
 
 @login_dec
 def card_detail_view(r: HttpRequest, slug: str) -> HttpResponse:
-    card: Card = get_object_or_404(Card, owner=r.user, slug=slug)
+    card: PaymentCard = get_object_or_404(PaymentCard, owner=r.user, slug=slug)
 
     return render(r, 'secret/Card/detail_view.html', {'object': card})
 
 
 @login_dec_dispatch
 class CardCreateView(CreateView):
-    model: type = Card
+    model: type = PaymentCard
     template_name: str = 'secret/create_view.html'
     fields = '__all__'
 
@@ -164,7 +164,7 @@ class CardCreateView(CreateView):
             error(r, EMPTY_POST_MSG)
             return HttpResponseRedirect(reverse('secret:card_create_view'))
 
-        if Card.objects.filter(owner=r.user, slug=r.POST.get('slug')).exists():
+        if PaymentCard.objects.filter(owner=r.user, slug=r.POST.get('slug')).exists():
             error(r, FEEDBACK_MSG)
             return super().get(r)
 
@@ -173,7 +173,7 @@ class CardCreateView(CreateView):
 
 @login_dec_dispatch
 class CardUpdateView(UpdateView):
-    model: type = Card
+    model: type = PaymentCard
     template_name: str = 'secret/create_view.html'
     fields = '__all__'
 
@@ -187,7 +187,7 @@ class CardUpdateView(UpdateView):
         post_pk: str | None = r.POST.get('pk')
         filter: dict = dict(owner=r.user, slug=r.POST.get('slug'))
 
-        if Card.objects.filter(**filter).exclude(pk=post_pk).exists():
+        if PaymentCard.objects.filter(**filter).exclude(pk=post_pk).exists():
             error(r, FEEDBACK_MSG)
             return super().get(r)
 
@@ -196,7 +196,7 @@ class CardUpdateView(UpdateView):
 
 @login_dec_dispatch
 class CardDeleteView(DeleteView):
-    model: type = Card
+    model: type = PaymentCard
     template_name: str = 'secret/delete_view.html'
     success_url = '/secrets/payment-cards'
 
