@@ -301,7 +301,7 @@ class BaseExampleTestCase(TestCase):
         User.objects.create_user(
             username='user',
             password='password',
-            email='user@email.com',
+            is_active=True,
         )
 
         self.CONSTANT: ... = ...

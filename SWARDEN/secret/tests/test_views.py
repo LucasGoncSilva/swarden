@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.test import TestCase
 from django.urls import reverse
 
-from secret.models import PaymentCard, LoginCredential, SecurityNote
+from secret.models import LoginCredential, PaymentCard, SecurityNote
 from secret.month.models import Month
 from secret.views import EMPTY_POST_MSG, FEEDBACK_MSG
 
@@ -13,12 +13,12 @@ class SecretIndexViewTestCase(TestCase):
     def setUp(self) -> None:
         User.objects.create_user(
             username='user',
-            passphrase='passphrase',
-            email='user@email.com',
+            password='passphrase',
+            is_active=True,
         )
 
     def test_GET_anonymous_user(self) -> None:
-        """GET /segredo/ | anonymous user"""
+        """GET /secrets/ | anonymous user"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
@@ -42,19 +42,19 @@ class SecretIndexViewTestCase(TestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_GET_authenticated_user(self) -> None:
-        """GET /segredo/ | authenticated user"""
+        """GET /secrets/ | authenticated user"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
+        self.assertTrue(self.client.login(username='user', password='passphrase'))
 
         res: HttpResponse = self.client.get(reverse('secret:index'))
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, 'secret/index.html')
+        self.assertTemplateUsed(res, 'home/index.html')
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
@@ -69,8 +69,8 @@ class BaseLoginCredentialTestCase(TestCase):
     def setUp(self) -> None:
         self.user: User = User.objects.create_user(
             username='user',
-            passphrase='passphrase',
-            email='user@email.com',
+            password='passphrase',
+            is_active=True,
         )
 
         LoginCredential.objects.create(
@@ -98,7 +98,7 @@ class BaseLoginCredentialTestCase(TestCase):
 
 class LoginCredentialCreateViewsTestCase(BaseLoginCredentialTestCase):
     def test_GET_anonymous_user(self) -> None:
-        """GET /segredo/credenciais/nova | anonymous user"""
+        """GET /secrets/credentials/new | anonymous user"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
@@ -127,13 +127,13 @@ class LoginCredentialCreateViewsTestCase(BaseLoginCredentialTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_GET_authenticated_user(self) -> None:
-        """GET /segredo/credenciais/nova | authenticated user"""
+        """GET /secrets/credentials/new | authenticated user"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
+        self.assertTrue(self.client.login(username='user', password='passphrase'))
 
         res: HttpResponse = self.client.get(reverse('secret:credential_create_view'))
 
@@ -141,15 +141,15 @@ class LoginCredentialCreateViewsTestCase(BaseLoginCredentialTestCase):
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'secret/create_view.html')
         self.assertIn('action', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['action'], 'Adição')
+        self.assertEqual(res.context['action'], 'Adition')
         self.assertIn('model', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['model'], 'Credencial')
+        self.assertEqual(res.context['model'], 'Login Credential')
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
     def test_POST_anonymous_user_empty_form(self) -> None:
-        """POST /segredo/credenciais/nova | anonymous user | empty form"""
+        """POST /secrets/credentials/new | anonymous user | empty form"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
@@ -182,13 +182,13 @@ class LoginCredentialCreateViewsTestCase(BaseLoginCredentialTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_POST_authenticated_user_empty_form(self) -> None:
-        """POST /segredo/credenciais/nova | authenticated user | empty form"""
+        """POST /secrets/credentials/new | authenticated user | empty form"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
+        self.assertTrue(self.client.login(username='user', password='passphrase'))
 
         res: HttpResponse = self.client.post(
             reverse('secret:credential_create_view'),
@@ -201,15 +201,15 @@ class LoginCredentialCreateViewsTestCase(BaseLoginCredentialTestCase):
         self.assertTemplateUsed(res, 'secret/create_view.html')
         self.assertIn(EMPTY_POST_MSG, res.content.decode('utf-8'))
         self.assertIn('action', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['action'], 'Adição')
+        self.assertEqual(res.context['action'], 'Adition')
         self.assertIn('model', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['model'], 'Credencial')
+        self.assertEqual(res.context['model'], 'Login Credential')
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
     def test_POST_anonymous_user_empty_form_existing_secret(self) -> None:
-        """POST /segredo/credenciais/nova | anonymous user | existent secret slug"""
+        """POST /secrets/credentials/new | anonymous user | existent secret slug"""
 
         cred_data: dict = {
             'owner': self.user,
@@ -252,7 +252,7 @@ class LoginCredentialCreateViewsTestCase(BaseLoginCredentialTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_POST_authenticated_user_empty_form_existing_secret(self) -> None:
-        """POST /segredo/credenciais/nova | authenticated user | empty form"""
+        """POST /secrets/credentials/new | authenticated user | empty form"""
 
         cred_data: dict = {
             'owner': self.user,
@@ -268,7 +268,7 @@ class LoginCredentialCreateViewsTestCase(BaseLoginCredentialTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
+        self.assertTrue(self.client.login(username='user', password='passphrase'))
 
         res: HttpResponse = self.client.post(
             reverse('secret:credential_create_view'),
@@ -280,15 +280,15 @@ class LoginCredentialCreateViewsTestCase(BaseLoginCredentialTestCase):
         self.assertTemplateUsed(res, 'secret/create_view.html')
         self.assertIn(FEEDBACK_MSG, res.content.decode('utf-8'))
         self.assertIn('action', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['action'], 'Adição')
+        self.assertEqual(res.context['action'], 'Adition')
         self.assertIn('model', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['model'], 'Credencial')
+        self.assertEqual(res.context['model'], 'Login Credential')
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
     def test_POST_authenticated_user_valid_form(self) -> None:
-        """POST /segredo/credenciais/nova | authenticated user | valid form"""
+        """POST /secrets/credentials/new | authenticated user | valid form"""
 
         cred_data: dict = {
             'owner': self.user,
@@ -304,7 +304,7 @@ class LoginCredentialCreateViewsTestCase(BaseLoginCredentialTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
+        self.assertTrue(self.client.login(username='user', password='passphrase'))
 
         res: HttpResponse = self.client.post(
             reverse('secret:credential_create_view'),
@@ -316,9 +316,9 @@ class LoginCredentialCreateViewsTestCase(BaseLoginCredentialTestCase):
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'secret/create_view.html')
         self.assertIn('action', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['action'], 'Adição')
+        self.assertEqual(res.context['action'], 'Adition')
         self.assertIn('model', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['model'], 'Credencial')
+        self.assertEqual(res.context['model'], 'Login Credential')
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
@@ -326,7 +326,7 @@ class LoginCredentialCreateViewsTestCase(BaseLoginCredentialTestCase):
 
 class LoginCredentialListViewTestCase(BaseLoginCredentialTestCase):
     def test_GET_anonymous_user(self) -> None:
-        """GET /segredo/credenciais/ | anonymous user"""
+        """GET /secrets/credentials/ | anonymous user"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
@@ -355,13 +355,13 @@ class LoginCredentialListViewTestCase(BaseLoginCredentialTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_GET_authenticated_user(self) -> None:
-        """GET /segredo/credenciais/ | authenticated user"""
+        """GET /secrets/credentials/ | authenticated user"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
+        self.assertTrue(self.client.login(username='user', password='passphrase'))
 
         res: HttpResponse = self.client.get(reverse('secret:credential_list_view'))
 
@@ -371,7 +371,7 @@ class LoginCredentialListViewTestCase(BaseLoginCredentialTestCase):
         self.assertIn('object_list', res.context.keys())  # type: ignore
         self.assertEqual(len(res.context['object_list']), 2)
         self.assertIn('model_name', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['model_name'], 'Credenciais')
+        self.assertEqual(res.context['model_name'], 'Login Credentials')
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
@@ -379,7 +379,7 @@ class LoginCredentialListViewTestCase(BaseLoginCredentialTestCase):
 
 class LoginCredentialDetailViewTestCase(BaseLoginCredentialTestCase):
     def test_GET_anonymous_user(self) -> None:
-        """GET /segredo/credenciais/<slug:slug> | anonymous user"""
+        """GET /secrets/credentials/<slug:slug> | anonymous user"""
 
         res: HttpResponse = self.client.get(
             reverse(
@@ -416,13 +416,13 @@ class LoginCredentialDetailViewTestCase(BaseLoginCredentialTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_GET_authenticated_user(self) -> None:
-        """GET /segredo/credenciais/<slug:slug> | authenticated user"""
+        """GET /secrets/credentials/<slug:slug> | authenticated user"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
+        self.assertTrue(self.client.login(username='user', password='passphrase'))
 
         res: HttpResponse = self.client.get(
             reverse(
@@ -459,7 +459,7 @@ class LoginCredentialDetailViewTestCase(BaseLoginCredentialTestCase):
 
 class LoginCredentialUpdateViewTestCase(BaseLoginCredentialTestCase):
     def test_GET_anonymous_user(self) -> None:
-        """GET /segredo/credenciais/<slug:slug>/editar | anonymous user"""
+        """GET /secrets/credentials/<slug:slug>/edit | anonymous user"""
 
         res: HttpResponse = self.client.get(
             reverse(
@@ -496,13 +496,13 @@ class LoginCredentialUpdateViewTestCase(BaseLoginCredentialTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_GET_authenticated_user(self) -> None:
-        """GET /segredo/credenciais/<slug:slug>/editar | authenticated user"""
+        """GET /secrets/credentials/<slug:slug>/edit | authenticated user"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
+        self.assertTrue(self.client.login(username='user', password='passphrase'))
 
         res: HttpResponse = self.client.get(
             reverse(
@@ -515,9 +515,9 @@ class LoginCredentialUpdateViewTestCase(BaseLoginCredentialTestCase):
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'secret/create_view.html')
         self.assertIn('action', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['action'], 'Edição')
+        self.assertEqual(res.context['action'], 'Edition')
         self.assertIn('model', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['model'], 'Credencial')
+        self.assertEqual(res.context['model'], 'Login Credential')
         self.assertIn('object', res.context.keys())  # type: ignore
         self.assertEqual(
             res.context['object'],
@@ -543,7 +543,7 @@ class LoginCredentialUpdateViewTestCase(BaseLoginCredentialTestCase):
 
 class LoginCredentialDeleteViewTestCase(BaseLoginCredentialTestCase):
     def test_GET_anonymous_user(self) -> None:
-        """GET /segredo/credenciais/<slug:slug>/deletar | anonymous user"""
+        """GET /secrets/credentials/<slug:slug>/delete | anonymous user"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
@@ -584,13 +584,13 @@ class LoginCredentialDeleteViewTestCase(BaseLoginCredentialTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_GET_authenticated_user(self) -> None:
-        """GET /segredo/credenciais/<slug:slug>/deletar | authenticated user"""
+        """GET /secrets/credentials/<slug:slug>/delete | authenticated user"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
+        self.assertTrue(self.client.login(username='user', password='passphrase'))
 
         res: HttpResponse = self.client.get(
             reverse(
@@ -603,9 +603,9 @@ class LoginCredentialDeleteViewTestCase(BaseLoginCredentialTestCase):
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'secret/delete_view.html')
         self.assertIn('action', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['action'], 'Exclusão')
+        self.assertEqual(res.context['action'], 'Deletion')
         self.assertIn('model', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['model'], 'Credencial')
+        self.assertEqual(res.context['model'], 'Login Credential')
         self.assertIn('object', res.context.keys())  # type: ignore
         self.assertEqual(
             res.context['object'],
@@ -638,8 +638,8 @@ class BaseCardTestCase(TestCase):
     def setUp(self) -> None:
         self.user: User = User.objects.create_user(
             username='user',
-            passphrase='passphrase',
-            email='user@email.com',
+            password='passphrase',
+            is_active=True,
         )
 
         PaymentCard.objects.create(
@@ -658,7 +658,7 @@ class BaseCardTestCase(TestCase):
 
 class CardCreateViewsTestCase(BaseCardTestCase):
     def test_GET_create_anonymous_user(self) -> None:
-        """GET /segredo/cartoes/novo | anonymous user"""
+        """GET /secrets/payment-cards/new | anonymous user"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
@@ -685,13 +685,13 @@ class CardCreateViewsTestCase(BaseCardTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_GET_create_authenticated_user(self) -> None:
-        """GET /segredo/cartoes/novo | authenticated user"""
+        """GET /secrets/payment-cards/new | authenticated user"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
+        self.assertTrue(self.client.login(username='user', password='passphrase'))
 
         res: HttpResponse = self.client.get(reverse('secret:card_create_view'))
 
@@ -699,15 +699,15 @@ class CardCreateViewsTestCase(BaseCardTestCase):
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'secret/create_view.html')
         self.assertIn('action', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['action'], 'Adição')
+        self.assertEqual(res.context['action'], 'Adition')
         self.assertIn('model', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['model'], 'Cartão')
+        self.assertEqual(res.context['model'], 'Payment Card')
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
     def test_POST_anonymous_user_empty_form(self) -> None:
-        """POST /segredo/cartoes/novo | anonymous user | empty form"""
+        """POST /secrets/payment-cards/new | anonymous user | empty form"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
@@ -736,13 +736,13 @@ class CardCreateViewsTestCase(BaseCardTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_POST_authenticated_user_empty_form(self) -> None:
-        """POST /segredo/cartoes/novo | authenticated user | empty form"""
+        """POST /secrets/payment-cards/new | authenticated user | empty form"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
+        self.assertTrue(self.client.login(username='user', password='passphrase'))
 
         res: HttpResponse = self.client.post(
             reverse('secret:card_create_view'),
@@ -755,15 +755,15 @@ class CardCreateViewsTestCase(BaseCardTestCase):
         self.assertTemplateUsed(res, 'secret/create_view.html')
         self.assertIn(EMPTY_POST_MSG, res.content.decode('utf-8'))
         self.assertIn('action', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['action'], 'Adição')
+        self.assertEqual(res.context['action'], 'Adition')
         self.assertIn('model', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['model'], 'Cartão')
+        self.assertEqual(res.context['model'], 'Payment Card')
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
     def test_POST_anonymous_user_empty_form_existing_secret(self) -> None:
-        """GET /segredo/cartoes/novo | anonymous user | existent secret slug"""
+        """GET /secrets/payment-cards/new | anonymous user | existent secret slug"""
 
         card_data: dict = {
             'owner': self.user,
@@ -807,7 +807,7 @@ class CardCreateViewsTestCase(BaseCardTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_POST_authenticated_user_empty_form_existing_secret(self) -> None:
-        """POST /segredo/cartoes/novo | authenticated user | empty form"""
+        """POST /secrets/payment-cards/new | authenticated user | empty form"""
 
         card_data: dict = {
             'owner': self.user,
@@ -826,7 +826,7 @@ class CardCreateViewsTestCase(BaseCardTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
+        self.assertTrue(self.client.login(username='user', password='passphrase'))
 
         res: HttpResponse = self.client.post(
             reverse('secret:card_create_view'),
@@ -838,15 +838,15 @@ class CardCreateViewsTestCase(BaseCardTestCase):
         self.assertTemplateUsed(res, 'secret/create_view.html')
         self.assertIn(FEEDBACK_MSG, res.content.decode('utf-8'))
         self.assertIn('action', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['action'], 'Adição')
+        self.assertEqual(res.context['action'], 'Adition')
         self.assertIn('model', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['model'], 'Cartão')
+        self.assertEqual(res.context['model'], 'Payment Card')
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
     def test_POST_authenticated_user_valid_form(self) -> None:
-        """POST /segredo/cartoes/novo | authenticated user | valid form"""
+        """POST /secrets/payment-cards/new | authenticated user | valid form"""
 
         card_data: dict = {
             'owner': self.user,
@@ -865,7 +865,7 @@ class CardCreateViewsTestCase(BaseCardTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
+        self.assertTrue(self.client.login(username='user', password='passphrase'))
 
         res: HttpResponse = self.client.post(
             reverse('secret:card_create_view'),
@@ -877,9 +877,9 @@ class CardCreateViewsTestCase(BaseCardTestCase):
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'secret/create_view.html')
         self.assertIn('action', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['action'], 'Adição')
+        self.assertEqual(res.context['action'], 'Adition')
         self.assertIn('model', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['model'], 'Cartão')
+        self.assertEqual(res.context['model'], 'Payment Card')
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
@@ -887,7 +887,7 @@ class CardCreateViewsTestCase(BaseCardTestCase):
 
 class CardListViewTestCase(BaseCardTestCase):
     def test_GET_list_anonymous_user(self) -> None:
-        """GET /segredo/cartoes/ | anonymous user"""
+        """GET /secrets/payment-cards/ | anonymous user"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
@@ -913,13 +913,13 @@ class CardListViewTestCase(BaseCardTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_GET_list_authenticated_user(self) -> None:
-        """GET /segredo/cartoes/ | authenticated user"""
+        """GET /secrets/payment-cards/ | authenticated user"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
+        self.assertTrue(self.client.login(username='user', password='passphrase'))
 
         res: HttpResponse = self.client.get(reverse('secret:card_list_view'))
 
@@ -929,7 +929,7 @@ class CardListViewTestCase(BaseCardTestCase):
         self.assertIn('object_list', res.context.keys())  # type: ignore
         self.assertEqual(len(res.context['object_list']), 1)
         self.assertIn('model_name', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['model_name'], 'Cartões')
+        self.assertEqual(res.context['model_name'], 'Payment Cards')
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
@@ -937,7 +937,7 @@ class CardListViewTestCase(BaseCardTestCase):
 
 class CardDetailViewTestCase(BaseCardTestCase):
     def test_GET_detail_anonymous_user(self) -> None:
-        """GET /segredo/cartoes/<slug:slug> | anonymous user"""
+        """GET /secrets/payment-cards/<slug:slug> | anonymous user"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
@@ -975,13 +975,13 @@ class CardDetailViewTestCase(BaseCardTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_GET_detail_authenticated_user(self) -> None:
-        """GET /segredo/cartoes/<slug:slug> | authenticated user"""
+        """GET /secrets/payment-cards/<slug:slug> | authenticated user"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
+        self.assertTrue(self.client.login(username='user', password='passphrase'))
 
         res: HttpResponse = self.client.get(
             reverse(
@@ -1014,7 +1014,7 @@ class CardDetailViewTestCase(BaseCardTestCase):
 
 class CardUpdateViewTestCase(BaseCardTestCase):
     def test_GET_update_anonymous_user(self) -> None:
-        """GET /segredo/cartoes/<slug:slug>/editar | anonymous user"""
+        """GET /secrets/payment-cards/<slug:slug>/edit | anonymous user"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
@@ -1052,13 +1052,13 @@ class CardUpdateViewTestCase(BaseCardTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_GET_update_authenticated_user(self) -> None:
-        """GET /segredo/cartoes/<slug:slug>/editar | authenticated user"""
+        """GET /secrets/payment-cards/<slug:slug>/edit | authenticated user"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
+        self.assertTrue(self.client.login(username='user', password='passphrase'))
 
         res: HttpResponse = self.client.get(
             reverse(
@@ -1070,9 +1070,9 @@ class CardUpdateViewTestCase(BaseCardTestCase):
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'secret/create_view.html')
         self.assertIn('action', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['action'], 'Edição')
+        self.assertEqual(res.context['action'], 'Edition')
         self.assertIn('model', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['model'], 'Cartão')
+        self.assertEqual(res.context['model'], 'Payment Card')
         self.assertIn('object', res.context.keys())  # type: ignore
         self.assertEqual(
             res.context['object'],
@@ -1095,7 +1095,7 @@ class CardUpdateViewTestCase(BaseCardTestCase):
 
 class CardDeleteViewTestCase(BaseCardTestCase):
     def test_GET_delete_anonymous_user(self) -> None:
-        """GET /segredo/cartoes/<slug:slug>/deletar | anonymous user"""
+        """GET /secrets/payment-cards/<slug:slug>/delete | anonymous user"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
@@ -1133,13 +1133,13 @@ class CardDeleteViewTestCase(BaseCardTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_GET_delete_authenticated_user(self) -> None:
-        """GET /segredo/cartoes/<slug:slug>/deletar | authenticated user"""
+        """GET /secrets/payment-cards/<slug:slug>/delete | authenticated user"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
+        self.assertTrue(self.client.login(username='user', password='passphrase'))
 
         res: HttpResponse = self.client.get(
             reverse(
@@ -1151,9 +1151,9 @@ class CardDeleteViewTestCase(BaseCardTestCase):
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'secret/delete_view.html')
         self.assertIn('action', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['action'], 'Exclusão')
+        self.assertEqual(res.context['action'], 'Deletion')
         self.assertIn('model', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['model'], 'Cartão')
+        self.assertEqual(res.context['model'], 'Payment Card')
         self.assertIn('object', res.context.keys())  # type: ignore
         self.assertEqual(
             res.context['object'],
@@ -1183,8 +1183,8 @@ class BaseSecurityNoteTestCase(TestCase):
     def setUp(self) -> None:
         self.user: User = User.objects.create_user(
             username='user',
-            passphrase='passphrase',
-            email='user@email.com',
+            password='passphrase',
+            is_active=True,
         )
 
         SecurityNote.objects.create(
@@ -1197,7 +1197,7 @@ class BaseSecurityNoteTestCase(TestCase):
 
 class SecurityNoteCreateViewTestCase(BaseSecurityNoteTestCase):
     def test_GET_create_anonymous_user(self) -> None:
-        """GET /segredo/anotacoes/novo | anonymous user"""
+        """GET /secrets/notes/new | anonymous user"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
@@ -1224,13 +1224,13 @@ class SecurityNoteCreateViewTestCase(BaseSecurityNoteTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_GET_create_authenticated_user(self) -> None:
-        """GET /segredo/anotacoes/novo | authenticated user"""
+        """GET /secrets/notes/new | authenticated user"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
+        self.assertTrue(self.client.login(username='user', password='passphrase'))
 
         res: HttpResponse = self.client.get(reverse('secret:note_create_view'))
 
@@ -1238,15 +1238,15 @@ class SecurityNoteCreateViewTestCase(BaseSecurityNoteTestCase):
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'secret/create_view.html')
         self.assertIn('action', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['action'], 'Adição')
+        self.assertEqual(res.context['action'], 'Adition')
         self.assertIn('model', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['model'], 'Anotação')
+        self.assertEqual(res.context['model'], 'Security Note')
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
     def test_POST_anonymous_user_empty_form(self) -> None:
-        """POST /segredo/anotacoes/novo | anonymous user | empty form"""
+        """POST /secrets/notes/new | anonymous user | empty form"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
@@ -1275,13 +1275,13 @@ class SecurityNoteCreateViewTestCase(BaseSecurityNoteTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_POST_authenticated_user_empty_form(self) -> None:
-        """POST /segredo/anotacoes/novo | authenticated user | empty form"""
+        """POST /secrets/notes/new | authenticated user | empty form"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
+        self.assertTrue(self.client.login(username='user', password='passphrase'))
 
         res: HttpResponse = self.client.post(
             reverse('secret:note_create_view'),
@@ -1294,15 +1294,15 @@ class SecurityNoteCreateViewTestCase(BaseSecurityNoteTestCase):
         self.assertTemplateUsed(res, 'secret/create_view.html')
         self.assertIn(EMPTY_POST_MSG, res.content.decode('utf-8'))
         self.assertIn('action', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['action'], 'Adição')
+        self.assertEqual(res.context['action'], 'Adition')
         self.assertIn('model', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['model'], 'Anotação')
+        self.assertEqual(res.context['model'], 'Security Note')
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
     def test_POST_anonymous_user_empty_form_existing_secret(self) -> None:
-        """GET /segredo/anotacoes/novo | anonymous user | existent secret slug"""
+        """GET /secrets/notes/new | anonymous user | existent secret slug"""
 
         note_data: dict = {
             'owner': self.user,
@@ -1339,7 +1339,7 @@ class SecurityNoteCreateViewTestCase(BaseSecurityNoteTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_POST_authenticated_user_empty_form_existing_secret(self) -> None:
-        """POST /segredo/anotacoes/novo | authenticated user | empty form"""
+        """POST /secrets/notes/new | authenticated user | empty form"""
 
         note_data: dict = {
             'owner': self.user,
@@ -1351,7 +1351,7 @@ class SecurityNoteCreateViewTestCase(BaseSecurityNoteTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
+        self.assertTrue(self.client.login(username='user', password='passphrase'))
 
         res: HttpResponse = self.client.post(
             reverse('secret:note_create_view'),
@@ -1363,15 +1363,15 @@ class SecurityNoteCreateViewTestCase(BaseSecurityNoteTestCase):
         self.assertTemplateUsed(res, 'secret/create_view.html')
         self.assertIn(FEEDBACK_MSG, res.content.decode('utf-8'))
         self.assertIn('action', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['action'], 'Adição')
+        self.assertEqual(res.context['action'], 'Adition')
         self.assertIn('model', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['model'], 'Anotação')
+        self.assertEqual(res.context['model'], 'Security Note')
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
 
     def test_POST_authenticated_user_valid_form(self) -> None:
-        """POST /segredo/anotacoes/novo | authenticated user | valid form"""
+        """POST /secrets/notes/new | authenticated user | valid form"""
 
         note_data: dict = {
             'owner': self.user,
@@ -1383,7 +1383,7 @@ class SecurityNoteCreateViewTestCase(BaseSecurityNoteTestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
+        self.assertTrue(self.client.login(username='user', password='passphrase'))
 
         res: HttpResponse = self.client.post(
             reverse('secret:note_create_view'),
@@ -1395,9 +1395,9 @@ class SecurityNoteCreateViewTestCase(BaseSecurityNoteTestCase):
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'secret/create_view.html')
         self.assertIn('action', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['action'], 'Adição')
+        self.assertEqual(res.context['action'], 'Adition')
         self.assertIn('model', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['model'], 'Anotação')
+        self.assertEqual(res.context['model'], 'Security Note')
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
@@ -1405,7 +1405,7 @@ class SecurityNoteCreateViewTestCase(BaseSecurityNoteTestCase):
 
 class SecurityNoteListViewTestCase(BaseSecurityNoteTestCase):
     def test_GET_list_anonymous_user(self) -> None:
-        """GET /segredo/anotacoes/ | anonymous user"""
+        """GET /secrets/notes/ | anonymous user"""
 
         res: HttpResponse = self.client.get(reverse('secret:note_list_view'))
 
@@ -1427,13 +1427,13 @@ class SecurityNoteListViewTestCase(BaseSecurityNoteTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_GET_list_authenticated_user(self) -> None:
-        """GET /segredo/anotacoes/ | authenticated user"""
+        """GET /secrets/notes/ | authenticated user"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
+        self.assertTrue(self.client.login(username='user', password='passphrase'))
 
         res: HttpResponse = self.client.get(reverse('secret:note_list_view'))
 
@@ -1443,7 +1443,7 @@ class SecurityNoteListViewTestCase(BaseSecurityNoteTestCase):
         self.assertIn('object_list', res.context.keys())  # type: ignore
         self.assertEqual(len(res.context['object_list']), 1)
         self.assertIn('model_name', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['model_name'], 'Anotações')
+        self.assertEqual(res.context['model_name'], 'Security Notes')
         # Logged user check
         self.assertFalse(get_user(self.client).is_anonymous)
         self.assertTrue(get_user(self.client).is_authenticated)
@@ -1451,7 +1451,7 @@ class SecurityNoteListViewTestCase(BaseSecurityNoteTestCase):
 
 class SecurityNoteDetailViewTestCase(BaseSecurityNoteTestCase):
     def test_GET_detail_anonymous_user(self) -> None:
-        """GET /segredo/anotacoes/<slug:slug> | anonymous user"""
+        """GET /secrets/notes/<slug:slug> | anonymous user"""
 
         res: HttpResponse = self.client.get(
             reverse('secret:note_detail_view', kwargs={'slug': 'how-to-draw-an-apple'})
@@ -1481,13 +1481,13 @@ class SecurityNoteDetailViewTestCase(BaseSecurityNoteTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_GET_detail_authenticated_user(self) -> None:
-        """GET /segredo/anotacoes/<slug:slug> | authenticated user"""
+        """GET /secrets/notes/<slug:slug> | authenticated user"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
+        self.assertTrue(self.client.login(username='user', password='passphrase'))
 
         res: HttpResponse = self.client.get(
             reverse('secret:note_detail_view', kwargs={'slug': 'how-to-draw-an-apple'})
@@ -1518,7 +1518,7 @@ class SecurityNoteDetailViewTestCase(BaseSecurityNoteTestCase):
 
 class SecurityNoteUpdateViewTestCase(BaseSecurityNoteTestCase):
     def test_GET_update_anonymous_user(self) -> None:
-        """GET /segredo/anotacoes/<slug:slug>/editar | anonymous user"""
+        """GET /secrets/notes/<slug:slug>/edit | anonymous user"""
 
         res: HttpResponse = self.client.get(
             reverse('secret:note_update_view', kwargs={'slug': 'how-to-draw-an-apple'})
@@ -1548,13 +1548,13 @@ class SecurityNoteUpdateViewTestCase(BaseSecurityNoteTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_GET_update_authenticated_user(self) -> None:
-        """GET /segredo/anotacoes/<slug:slug>/editar | authenticated user"""
+        """GET /secrets/notes/<slug:slug>/edit | authenticated user"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
+        self.assertTrue(self.client.login(username='user', password='passphrase'))
 
         res: HttpResponse = self.client.get(
             reverse('secret:note_update_view', kwargs={'slug': 'how-to-draw-an-apple'})
@@ -1564,9 +1564,9 @@ class SecurityNoteUpdateViewTestCase(BaseSecurityNoteTestCase):
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'secret/create_view.html')
         self.assertIn('action', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['action'], 'Edição')
+        self.assertEqual(res.context['action'], 'Edition')
         self.assertIn('model', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['model'], 'Anotação')
+        self.assertEqual(res.context['model'], 'Security Note')
         self.assertIn('object', res.context.keys())  # type: ignore
         self.assertEqual(
             res.context['object'],
@@ -1589,7 +1589,7 @@ class SecurityNoteUpdateViewTestCase(BaseSecurityNoteTestCase):
 
 class SecurityNoteDeleteViewTestCase(BaseSecurityNoteTestCase):
     def test_GET_delete_anonymous_user(self) -> None:
-        """GET /segredo/anotacoes/<slug:slug>/deletar | anonymous user"""
+        """GET /secrets/notes/<slug:slug>/delete | anonymous user"""
 
         res: HttpResponse = self.client.get(
             reverse('secret:note_delete_view', kwargs={'slug': 'how-to-draw-an-apple'})
@@ -1619,13 +1619,13 @@ class SecurityNoteDeleteViewTestCase(BaseSecurityNoteTestCase):
         self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_GET_delete_authenticated_user(self) -> None:
-        """GET /segredo/anotacoes/<slug:slug>/deletar | authenticated user"""
+        """GET /secrets/notes/<slug:slug>/delete | authenticated user"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
         # Confirm user login
-        self.assertTrue(self.client.login(username='user', passphrase='passphrase'))
+        self.assertTrue(self.client.login(username='user', password='passphrase'))
 
         res: HttpResponse = self.client.get(
             reverse('secret:note_delete_view', kwargs={'slug': 'how-to-draw-an-apple'})
@@ -1635,9 +1635,9 @@ class SecurityNoteDeleteViewTestCase(BaseSecurityNoteTestCase):
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'secret/delete_view.html')
         self.assertIn('action', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['action'], 'Exclusão')
+        self.assertEqual(res.context['action'], 'Deletion')
         self.assertIn('model', res.context.keys())  # type: ignore
-        self.assertEqual(res.context['model'], 'Anotação')
+        self.assertEqual(res.context['model'], 'Security Note')
         self.assertIn('object', res.context.keys())  # type: ignore
         self.assertEqual(
             res.context['object'],

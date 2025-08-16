@@ -9,8 +9,10 @@ class UserAdmin(BaseUserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
 
-    list_display = ('username', 'is_active', 'is_staff')
+    list_display = ('username', 'is_active', 'is_staff', 'created')
     search_fields = ('username',)
+
+    readonly_fields = ('created',)
 
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
@@ -26,7 +28,7 @@ class UserAdmin(BaseUserAdmin):
                 )
             },
         ),
-        ('Important dates', {'fields': ('last_login',)}),
+        ('Important dates', {'fields': ('last_login', 'created')}),
     )
 
     add_fieldsets = (

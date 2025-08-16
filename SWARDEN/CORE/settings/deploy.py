@@ -2,12 +2,16 @@
 
 from os import getenv
 
-import dj_database_url
-from CORE.settings.base import *
 from csp.constants import NONE, SELF
+from dj_database_url import DBConfig, config
+
+from CORE.settings.base import *
+from CORE.settings.gconfig import set_all
 
 
-DATABASES = {'default': dj_database_url.config(default=str(getenv('DATABASE_URL')))}
+DATABASES: dict[str, DBConfig] = {
+    'default': config(default=str(getenv('DATABASE_URL')))
+}
 
 DEBUG: bool = bool(getenv('DEBUG', False))
 SECRET_KEY: str | None = getenv('SECRET_KEY')
@@ -48,3 +52,5 @@ CONTENT_SECURITY_POLICY = {
         'upgrade-insecure-requests': True,
     },
 }
+
+set_all()

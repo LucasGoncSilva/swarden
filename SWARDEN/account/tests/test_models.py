@@ -15,8 +15,7 @@ class ActivationAccountTokenTestCase(TestCase):
 
         self.user: User = User.objects.create_user(
             username='user',
-            passphrase='passphrase',
-            email='user@email.com',
+            password='passphrase',
         )
 
         self.token1: ActivationAccountToken = ActivationAccountToken.objects.create(

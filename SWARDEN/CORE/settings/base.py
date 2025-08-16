@@ -146,7 +146,7 @@ LOGOUT_REDIRECT_URL: Final[str] = 'account/login'
 
 
 # Argon2 Hash Algo
-PASSWORD_HASHERS = [
+PASSWORD_HASHERS: list[str] = [
     'django.contrib.auth.hashers.Argon2PasswordHasher',
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
     'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',

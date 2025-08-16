@@ -1,0 +1,16 @@
+{
+  "documentation": {
+    "projectName": "sWarden",
+    "repoName": "swarden",
+    "repoUrl": "https://github.com/lucasgoncsilva/swarden",
+    "editUri": "blob/main/documentation/docs",
+    "siteUrl": "https://github.com/lucasgoncsilva/swarden",
+    "logoPath": "../.github//assetslogo.svg",
+    "readmePath": "../.github/README.md",
+    "codebaseNavPath": "Codebase"
+  },
+  "io": {
+    "rootDir": "../SWARDEN/",
+    "outputDir": "."
+  }
+}

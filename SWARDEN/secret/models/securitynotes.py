@@ -2,6 +2,7 @@ from typing import Final
 from uuid import uuid4
 
 from account.models import User
+from crypt import EncryptedTextField
 from django.core.validators import MaxLengthValidator, MinLengthValidator
 from django.db.models import (
     CASCADE,
@@ -15,7 +16,6 @@ from django.db.models import (
 )
 from django.template.defaultfilters import slugify
 from django.urls import reverse
-from utils import xor
 
 from secret.choices import notes_types
 
@@ -32,8 +32,8 @@ class SecurityNote(Model):
     title: Final[CharField] = CharField(
         max_length=40, validators=[MaxLengthValidator(40)]
     )
-    content: TextField = TextField(
-        max_length=1000, validators=[MaxLengthValidator(1000)]
+    content: EncryptedTextField = EncryptedTextField(
+        validators=[MaxLengthValidator(1000)]
     )
     note_type: Final[TextField] = TextField(
         max_length=3,
@@ -56,25 +56,10 @@ class SecurityNote(Model):
     def get_absolute_url(self) -> str:
         return reverse('secret:note_list_view')
 
-    def save(
-        self, force_insert=False, force_update=False, using=None, update_fields=None
-    ) -> None:
-        self.content = xor(str(self.content), self.owner.password[21:])
-
-        return super().save(
-            force_insert=False, force_update=False, using=None, update_fields=None
-        )
-
-    @classmethod
-    def from_db(cls, db, field_names, values):
-        note: SecurityNote = super().from_db(db, field_names, values)
-        note.content = xor(str(note.content), note.owner.password[21:], encrypt=False)
-        return note
-
     def expected_max_length(self, var: str) -> int:
         max_length: Final[dict[str, int]] = {
             'title': 40,
-            'content': 300,
+            'content': 1000,
             'note_type': 3,
             'slug': 50,
         }

@@ -51,6 +51,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     username: Final[CharField] = CharField(max_length=20, unique=True)
     is_staff: Final[BooleanField] = BooleanField(default=False)
     is_active: BooleanField | bool = BooleanField(default=False)
+    created: Final[DateTimeField] = DateTimeField(auto_now_add=True)
 
     USERNAME_FIELD: Final[str] = 'username'
 

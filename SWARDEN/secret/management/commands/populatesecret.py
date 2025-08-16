@@ -4,7 +4,7 @@ from typing import Any, Self
 from account.models import User
 from django.core.management import BaseCommand
 from django.utils.text import slugify
-from secret.models import PaymentCard, LoginCredential, SecurityNote
+from secret.models import LoginCredential, PaymentCard, SecurityNote
 from secret.month.models import Month
 from tqdm import tqdm
 
@@ -17,10 +17,10 @@ class Command(BaseCommand):
 
     def populate_cards(self: Self) -> None:
         if PaymentCard.objects.filter(slug='other--rdias').exists():
-            self.stdout.write('secret.Card is already populated')
+            self.stdout.write('secret.PaymentCard is already populated')
             return
 
-        self.stdout.write('\nPopulating secret.Card')
+        self.stdout.write('\nPopulating secret.PaymentCard')
 
         with open('./secret/management/commands/populatecard.txt') as sample:
             f: list[list[str]] = [i.strip().split('::') for i in sample.readlines()]
@@ -28,7 +28,10 @@ class Command(BaseCommand):
         owners_ids: list[User] = choices([i.id for i in User.objects.all()], k=len(f))
 
         for i, data in tqdm(
-            enumerate(f), desc='Cards', bar_format='{l_bar}{bar:100}{r_bar}{bar:-10b}'
+            enumerate(f),
+            desc='Payment Cards',
+            bar_format='{l_bar}{bar:100}{r_bar}{bar:-10b}',
+            total=500,
         ):
             (
                 name,
@@ -45,7 +48,7 @@ class Command(BaseCommand):
             owner: User = User.objects.get(pk=owners_ids[i])
 
             y, m = expiration.split('-')
-            expiration = Month(int(y), int(m))
+            expiration: Month = Month(int(y), int(m))
 
             PaymentCard.objects.create(
                 owner=owner,
@@ -74,7 +77,10 @@ class Command(BaseCommand):
         owners_ids: list[User] = choices([i.id for i in User.objects.all()], k=len(f))
 
         for i, data in tqdm(
-            enumerate(f), desc='Notes', bar_format='{l_bar}{bar:100}{r_bar}{bar:-10b}'
+            enumerate(f),
+            desc='Security Notes',
+            bar_format='{l_bar}{bar:100}{r_bar}{bar:-10b}',
+            total=500,
         ):
             title, note_type, content = data
 
@@ -101,7 +107,10 @@ class Command(BaseCommand):
         owners_ids: list[User] = choices([i.id for i in User.objects.all()], k=len(f))
 
         for i, data in tqdm(
-            enumerate(f), desc='Notes', bar_format='{l_bar}{bar:100}{r_bar}{bar:-10b}'
+            enumerate(f),
+            desc='Login Credentials',
+            bar_format='{l_bar}{bar:100}{r_bar}{bar:-10b}',
+            total=500,
         ):
             (
                 service,

@@ -2,6 +2,7 @@ from typing import Final
 from uuid import uuid4
 
 from account.models import User
+from crypt import EncryptedCharField, EncryptedTextField
 from django.core.validators import MaxLengthValidator, MinLengthValidator
 from django.db.models import (
     CASCADE,
@@ -10,12 +11,10 @@ from django.db.models import (
     ForeignKey,
     Model,
     SlugField,
-    TextField,
     UUIDField,
 )
 from django.template.defaultfilters import slugify
 from django.urls import reverse
-from utils import xor
 
 from secret.choices import cards_banks, cards_brands, cards_types
 from secret.month.models import MonthField
@@ -26,8 +25,7 @@ class PaymentCard(Model):
         default=uuid4, unique=True, primary_key=True, editable=False
     )
     owner: Final[ForeignKey] = ForeignKey(User, on_delete=CASCADE, related_name='cards')
-    name: CharField = CharField(
-        max_length=40,
+    name: EncryptedCharField = EncryptedCharField(
         validators=[MaxLengthValidator(40)],
     )
     card_type: CharField = CharField(
@@ -35,23 +33,19 @@ class PaymentCard(Model):
         choices=cards_types,
         validators=[MaxLengthValidator(4)],
     )
-    number: CharField = CharField(
-        max_length=19,
+    number: EncryptedCharField = EncryptedCharField(
         validators=[MinLengthValidator(12), MaxLengthValidator(19)],
     )
     expiration = MonthField()
-    cvv: CharField = CharField(
-        max_length=4,
+    cvv: EncryptedCharField = EncryptedCharField(
         validators=[MinLengthValidator(3), MaxLengthValidator(4)],
     )
     bank: CharField = CharField(max_length=64, choices=cards_banks)
     brand: CharField = CharField(max_length=64, choices=cards_brands)
-    owners_name: CharField = CharField(
-        max_length=64,
+    owners_name: EncryptedCharField = EncryptedCharField(
         validators=[MaxLengthValidator(64)],
     )
-    note: TextField = TextField(
-        max_length=128,
+    note: EncryptedTextField = EncryptedTextField(
         blank=True,
         null=True,
         validators=[MaxLengthValidator(128)],
@@ -70,33 +64,6 @@ class PaymentCard(Model):
 
     def get_absolute_url(self) -> str:
         return reverse('secret:card_list_view')
-
-    def save(
-        self, force_insert=False, force_update=False, using=None, update_fields=None
-    ) -> None:
-        self.name = xor(str(self.name), self.owner.password[21:])
-        self.number = xor(str(self.number), self.owner.password[21:])
-        self.cvv = xor(str(self.cvv), self.owner.password[21:])
-        self.owners_name = xor(str(self.owners_name), self.owner.password[21:])
-        self.note = xor(str(self.note), self.owner.password[21:])
-
-        return super().save(
-            force_insert=False, force_update=False, using=None, update_fields=None
-        )
-
-    @classmethod
-    def from_db(cls, db, field_names, values):
-        card: PaymentCard = super().from_db(db, field_names, values)
-
-        card.name = xor(str(card.name), card.owner.password[21:], encrypt=False)
-        card.number = xor(str(card.number), card.owner.password[21:], encrypt=False)
-        card.cvv = xor(str(card.cvv), card.owner.password[21:], encrypt=False)
-        card.owners_name = xor(
-            str(card.owners_name), card.owner.password[21:], encrypt=False
-        )
-        card.note = xor(str(card.note), card.owner.password[21:], encrypt=False)
-
-        return card
 
     def expected_max_length(self, var: str) -> int:
         max_length: Final[dict[str, int]] = {

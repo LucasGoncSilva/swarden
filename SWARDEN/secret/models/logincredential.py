@@ -2,6 +2,7 @@ from typing import Final
 from uuid import uuid4
 
 from account.models import User
+from crypt import EncryptedCharField, EncryptedTextField
 from django.core.validators import MaxLengthValidator
 from django.db.models import (
     CASCADE,
@@ -11,12 +12,10 @@ from django.db.models import (
     ForeignKey,
     Model,
     SlugField,
-    TextField,
     UUIDField,
 )
 from django.template.defaultfilters import slugify
 from django.urls import reverse
-from utils import xor
 
 from secret.choices import credentials_services
 
@@ -38,15 +37,16 @@ class LoginCredential(Model):
         validators=[MaxLengthValidator(40)],
     )
     third_party_login: BooleanField = BooleanField()
-    third_party_login_name: CharField = CharField(
-        max_length=40,
+    third_party_login_name: EncryptedCharField = EncryptedCharField(
         validators=[MaxLengthValidator(40)],
     )
-    login: CharField = CharField(max_length=200, validators=[MaxLengthValidator(200)])
-    password: CharField = CharField(
-        max_length=200, validators=[MaxLengthValidator(200)]
+    login: EncryptedCharField = EncryptedCharField(
+        validators=[MaxLengthValidator(200)],
     )
-    note: TextField = TextField(
+    password: EncryptedCharField = EncryptedCharField(
+        validators=[MaxLengthValidator(200)]
+    )
+    note: EncryptedTextField = EncryptedTextField(
         max_length=128,
         blank=True,
         null=True,
@@ -66,33 +66,6 @@ class LoginCredential(Model):
 
     def get_absolute_url(self) -> str:
         return reverse('secret:credential_list_view')
-
-    def save(
-        self, force_insert=False, force_update=False, using=None, update_fields=None
-    ) -> None:
-        self.third_party_login_name = xor(
-            str(self.third_party_login_name), self.owner.password[21:]
-        )
-        self.login = xor(str(self.login), self.owner.password[21:])
-        self.password = xor(str(self.password), self.owner.password[21:])
-        self.note = xor(str(self.note), self.owner.password[21:])
-
-        return super().save(
-            force_insert=False, force_update=False, using=None, update_fields=None
-        )
-
-    @classmethod
-    def from_db(cls, db, field_names, values):
-        cred: LoginCredential = super().from_db(db, field_names, values)
-
-        cred.third_party_login_name = xor(
-            str(cred.third_party_login_name), cred.owner.password[21:], encrypt=False
-        )
-        cred.login = xor(str(cred.login), cred.owner.password[21:], encrypt=False)
-        cred.password = xor(str(cred.password), cred.owner.password[21:], encrypt=False)
-        cred.note = xor(str(cred.note), cred.owner.password[21:], encrypt=False)
-
-        return cred
 
     def expected_max_length(self, var: str) -> int:
         max_length: Final[dict[str, int]] = {

@@ -6,15 +6,15 @@ from django.contrib.messages import error
 from django.http import (
     HttpRequest,
     HttpResponse,
-    HttpResponsePermanentRedirect,
     HttpResponseRedirect,
 )
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, DeleteView, UpdateView
+from home.views import index as home_index
 
-from secret.models import PaymentCard, LoginCredential, SecurityNote
+from secret.models import LoginCredential, PaymentCard, SecurityNote
 
 
 EMPTY_POST_MSG: Final[str] = 'Preencha corretamente todos os campos solicitados.'
@@ -30,18 +30,18 @@ def _list_view(
     dispatch: dict[Literal['credential', 'card', 'note'], dict[str, list | str]] = {
         'credential': {
             'object_list': r.user.credentials.all(),  # type: ignore
-            'model_name': 'Credentials',
+            'model_name': 'Login Credentials',
         },
         'card': {'object_list': r.user.cards.all(), 'model_name': 'Payment Cards'},  # type: ignore
-        'note': {'object_list': r.user.notes.all(), 'model_name': 'Notes'},  # type: ignore
+        'note': {'object_list': r.user.notes.all(), 'model_name': 'Security Notes'},  # type: ignore
     }
 
     return dispatch.get(secret)
 
 
 @login_dec
-def index(r: HttpRequest) -> HttpResponseRedirect | HttpResponsePermanentRedirect:
-    return redirect(reverse('home:index'))
+def index(r: HttpRequest) -> HttpResponse:
+    return home_index(r)
 
 
 # Credentials views
@@ -72,7 +72,7 @@ class CredentialCreateView(CreateView):
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
         context['action'] = 'Adition'
-        context['model'] = 'Credential'
+        context['model'] = 'Login Credential'
         return context
 
     def post(
@@ -100,12 +100,11 @@ class CredentialUpdateView(UpdateView):
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
         context['action'] = 'Edition'
-        context['model'] = 'Credential'
+        context['model'] = 'Login Credential'
         return context
 
     def post(self, r: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         post_pk: str | None = r.POST.get('pk')
-        print(post_pk)
         filter: dict = dict(owner=r.user, slug=r.POST.get('slug'))
 
         if LoginCredential.objects.filter(**filter).exclude(pk=post_pk).exists():
@@ -124,7 +123,7 @@ class CredentialDeleteView(DeleteView):
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
         context['action'] = 'Deletion'
-        context['model'] = 'Credential'
+        context['model'] = 'Login Credential'
         return context
 
 
@@ -233,7 +232,7 @@ class NoteCreateView(CreateView):
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
         context['action'] = 'Adition'
-        context['model'] = 'Note'
+        context['model'] = 'Security Note'
         return context
 
     def post(
@@ -259,7 +258,7 @@ class NoteUpdateView(UpdateView):
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
         context['action'] = 'Edition'
-        context['model'] = 'Note'
+        context['model'] = 'Security Note'
         return context
 
     def post(self, r: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
@@ -282,5 +281,5 @@ class NoteDeleteView(DeleteView):
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
         context['action'] = 'Deletion'
-        context['model'] = 'Note'
+        context['model'] = 'Security Note'
         return context

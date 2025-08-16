@@ -3,7 +3,7 @@ from django.contrib.auth import get_user
 from django.http import HttpResponse
 from django.test import TestCase
 from django.urls import reverse
-from secret.models import PaymentCard, LoginCredential, SecurityNote
+from secret.models import LoginCredential, PaymentCard, SecurityNote
 from secret.month.models import Month
 
 
@@ -11,8 +11,8 @@ class HomeViewsTestCase(TestCase):
     def setUp(self) -> None:
         user: User = User.objects.create_user(
             username='user',
-            passphrase='passphrase',
-            email='user@email.com',
+            password='passphrase',
+            is_active=True,
         )
 
         PaymentCard.objects.create(
@@ -57,7 +57,7 @@ class HomeViewsTestCase(TestCase):
             content='Just draw an apple tree and erase the tree.',
         )
 
-    def test_GET_anonymous_user(self):
+    def test_GET_anonymous_user(self) -> None:
         """GET / | anonymous user"""
 
         # Anonymous user check
@@ -73,14 +73,14 @@ class HomeViewsTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-    def test_GET_authenticated_user(self):
+    def test_GET_authenticated_user(self) -> None:
         """GET / | authenticated user"""
 
         # Anonymous user check
         self.assertTrue(get_user(self.client).is_anonymous)
         self.assertFalse(get_user(self.client).is_authenticated)
 
-        self.client.login(username='user', passphrase='passphrase')
+        self.client.login(username='user', password='passphrase')
 
         res: HttpResponse = self.client.get(reverse('home:index'))
 
