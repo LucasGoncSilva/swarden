@@ -6,7 +6,7 @@ hide:
 <br>
 
 <h1 align="center">
-  <img src="./img/logo.svg" height="300" width="300" alt="Logo sWarden" />
+  <img src="./assets/logo.svg" height="300" width="300" alt="Logo sWarden" />
   <br>
   sWarden
 </h1>
@@ -23,10 +23,8 @@ It adds to Django's security measures an initial logic of what a honeypot would 
 ## Stack
 
 ![HTML](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
-![CSS](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 ![Sass](https://img.shields.io/badge/Sass-CC6699?style=for-the-badge&logo=sass&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-323330?style=for-the-badge&logo=javascript&logoColor=F7DF1E)
-![Bootstrap](https://img.shields.io/badge/Bootstrap-712cf9?style=for-the-badge&logo=bootstrap&logoColor=712cf9&color=fff)
 
 ![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=green)
 
@@ -44,6 +42,17 @@ It adds to Django's security measures an initial logic of what a honeypot would 
 ![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-fff?style=for-the-badge&logo=github-pages&logoColor=222222)
 ![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-2088ff?style=for-the-badge&logo=github-actions&logoColor=fff)
 
+## Features
+
+- [x] **Responsive interfaces**, designed both for desktop and mobile devices
+- [x] **Stores Secrets** with no complication
+- [x] **Encripted database** for private storage
+- [x] **Secrets searching** based on name or service
+- [x] **100% anonymous** register and login
+- [x] **Internationalization** (en/pt-br)
+- [x] **100% open source** codebase
+- [x] **100% Brazilian** development
+
 ## To-Do List
 
 To check the to-do list and keep track of future implementations please check [To-Do List over here](https://lucasgoncsilva.github.io/swarden/TODO).
@@ -54,11 +63,52 @@ The architecture can be detailed in general terms on two levels: web and databas
 
 ### Web
 
-![sWarden Arch](./img/arch.svg)
+```mermaid
+flowchart LR
+
+
+User((User))
+
+subgraph CLOUD
+    subgraph RENDER
+        LB(Load Balancer):::Arch
+        Dispatcher[Req. Dispatcher]:::Arch
+        Template{{Template}}:::Arch
+        View{View}:::Arch
+        Model{{Model}}:::Arch
+    end
+
+    subgraph SUPABASE
+        Database[(Database)]
+    end
+end
+
+
+Template ~~~ Model
+
+User --> LB --> Dispatcher --> View --> Model
+
+Model -->|Insert / Update| Database
+Model -->|Select| Database
+
+Database --> Model --> View --> Template --> Dispatcher --> LB --> User
+
+
+style CLOUD fill:#1111,color:#0f0,stroke:#ccc;
+style RENDER fill:#1111,color:#0f0,stroke:#ccc;
+style SUPABASE fill:#1111,color:#0f0,stroke:#ccc;
+style User fill:#fff,color:#080,stroke:#080;
+style Database fill:#dfd,color:#080,stroke:#080;
+
+classDef Arch fill:#080,color:#efe,stroke:#efe;
+
+linkStyle 1,2,3,4,5,6 stroke:#0fa,color:#efe
+linkStyle 7,8,9,10,11,12 stroke:#aaa,color:#efe
+```
 
 ### DB
 
-![Database Arch](./img/db.svg)
+![Database Arch](./assets/db.svg)
 
 ## Contrib
 
@@ -67,7 +117,7 @@ Before copying anything, we recommend you to read our guidelines: [Code of Condu
 Once done with it, fork this repo to create a copy at your repos and clone your version:
 
 ```sh
-git clone <YOUR_GITHUB_SWARDEN_URL>
+git clone git@github.com:<YOUR_REPO>/swarden.git
 cd swarden
 ```
 

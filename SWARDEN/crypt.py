@@ -21,7 +21,7 @@ class sWardenCryptography:
     DEFAULT_TC: int
     DEFAULT_MC: int
     DEFAULT_P: int
-    _DEFAULT_VALUES: str | None = getenv('DEFAULT_TC_MC_P', '3,65536,1')
+    _DEFAULT_VALUES: str = getenv('DEFAULT_TC_MC_P', '3,65536,1')
 
     try:
         DEFAULT_TC, DEFAULT_MC, DEFAULT_P = map(int, _DEFAULT_VALUES.split(','))
@@ -83,21 +83,21 @@ class sWardenCryptography:
 
     @classmethod
     def _decrypt_v1(cls, payload: PayloadV1, key1: str, key2: str) -> str:
-        for key in ('time_cost', 'memory_cost', 'parallelism', 'nonce', 'ciphertext'):
-            if key not in payload:
-                raise ValueError(f"Campo obrigatório ausente no payload: '{key}'")
+        for info in ('time_cost', 'memory_cost', 'parallelism', 'nonce', 'ciphertext'):
+            if info not in payload:
+                raise ValueError(f"Campo obrigatório ausente no payload: '{info}'")
 
-        tc = int(payload['time_cost'])
-        mc = int(payload['memory_cost'])
-        p = int(payload['parallelism'])
-        nonce = b64decode(str(payload['nonce']))
-        ciphertext = b64decode(str(payload['ciphertext']))
+        tc: int = int(payload['time_cost'])
+        mc: int = int(payload['memory_cost'])
+        p: int = int(payload['parallelism'])
+        nonce: bytes = b64decode(str(payload['nonce']))
+        ciphertext: bytes = b64decode(str(payload['ciphertext']))
 
-        key = cls._derive_key(key1, key2, tc, mc, p)
-        aesgcm = AESGCM(key)
+        key: bytes = cls._derive_key(key1, key2, tc, mc, p)
+        aesgcm: AESGCM = AESGCM(key)
         try:
-            plaintext = aesgcm.decrypt(nonce, ciphertext, None)
-            decompressed_data = decompress(plaintext)
+            plaintext: bytes = aesgcm.decrypt(nonce, ciphertext, None)
+            decompressed_data: bytes = decompress(plaintext)
             return decompressed_data.decode()
         except Exception as e:
             raise ValueError(f'Falha ao descriptografar: {e}')

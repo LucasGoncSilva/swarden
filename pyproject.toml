@@ -28,11 +28,13 @@ dev = [
     "django-debug-toolbar>=5.2.0",
     "django-extensions>=4.1",
     "locust>=2.36.1",
-    "mosheh>=1.3.4",
+    "mosheh>=2.0.0",
+    "mypy>=1.17.1",
     "ruff>=0.11.7",
     "taskipy>=1.14.1",
     "tblib>=3.1.0",
     "tqdm>=4.67.1",
+    "types-tqdm>=4.67.0.20250809",
 ]
 
 
@@ -46,8 +48,8 @@ Changelog = "https://github.com/LucasGoncSilva/swarden/blob/main/.github/CHANGEL
 [tool.taskipy.tasks]
 init = "task start_postgres; task populatedb; task runserver"
 
-runserver = "uv run manage.py runserver"
-lint = "uv run ruff check; uv run ruff format"
+runserver = "task lint; uv run manage.py runserver"
+lint = "uv run ruff check; uv run ruff format; uv run mypy ."
 createsuperuser = "uv run manage.py createsuperuser"
 migrate = "uv run manage.py makemigrations; uv run manage.py migrate; uv run manage.py showmigrations"
 populatedb = "task migrate; uv run manage.py populateuser; uv run manage.py populatesecret"
@@ -81,3 +83,7 @@ lines-after-imports = 2
 
 [tool.ruff.lint.pycodestyle]
 max-doc-length = 88
+
+[tool.mypy]
+disable_error_code = ["import-untyped", "no-redef"]
+exclude = ["./migrations/*"]

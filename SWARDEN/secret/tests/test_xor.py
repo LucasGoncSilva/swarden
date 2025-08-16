@@ -10,9 +10,9 @@ class XORTestCase(TestCase):
     def setUp(self) -> None:
         self.passphrase = User.objects.create_user(
             username='user',
-            passphrase='testing_passphrase',
-            email='user@example.com',
-        ).passphrase
+            password='testing_passphrase',
+            is_active=True,
+        ).password
 
         self.q: queue.Queue = queue.Queue()
         self.num = 100_000

@@ -1,4 +1,4 @@
-from typing import Final
+from typing import Final, Self
 from uuid import uuid4
 
 from account.models import User
@@ -66,7 +66,7 @@ class SecurityNote(Model):
         )
 
     @classmethod
-    def from_db(cls, db, field_names, values):
+    def from_db(cls, db, field_names, values) -> Self:
         note: SecurityNote = super().from_db(db, field_names, values)
         note.content = xor(str(note.content), note.owner.password[21:], encrypt=False)
         return note
@@ -74,7 +74,7 @@ class SecurityNote(Model):
     def expected_max_length(self, var: str) -> int:
         max_length: Final[dict[str, int]] = {
             'title': 40,
-            'content': 300,
+            'content': 1000,
             'note_type': 3,
             'slug': 50,
         }

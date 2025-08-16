@@ -1,11 +1,20 @@
 from typing import Final, Self
 
+from captcha.fields import CaptchaField
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
-from django.forms import CharField, ModelForm, PasswordInput, ValidationError
+from django.forms import (
+    CharField,
+    Form,
+    ModelForm,
+    PasswordInput,
+    TextInput,
+    ValidationError,
+)
 
 from account.models import User
 
 
+# Admin
 class UserChangeForm(ModelForm):
     password = ReadOnlyPasswordHashField(label=('Password'))
 
@@ -50,3 +59,75 @@ class UserCreationForm(ModelForm):
         if commit:
             user.save()
         return user
+
+
+# Views
+class RegisterForm(Form):
+    username: Final[CharField] = CharField(
+        label='Username',
+        min_length=2,
+        max_length=20,
+        required=True,
+        widget=TextInput(
+            attrs={
+                'id': 'username',
+                'placeholder': 'Enter your username',
+                'autofocus': 'autofocus',
+                'autocomplete': 'off',
+            }
+        ),
+        help_text='Max of 20 chars. Letters, numbers and "@", ".", "+", "-", "_" only.',
+    )
+    passphrase: Final[CharField] = CharField(
+        label='Passphrase',
+        required=True,
+        widget=PasswordInput(
+            attrs={
+                'id': 'passphrase',
+                'placeholder': 'Enter your passphrase',
+                'autocomplete': 'off',
+            }
+        ),
+        help_text='Use a "passphase", sentence '
+        'instead of random characters or just password.',
+    )
+    passphrase2: Final[CharField] = CharField(
+        label='',
+        required=True,
+        widget=PasswordInput(
+            attrs={
+                'id': 'passphrase-confirm',
+                'placeholder': 'Confirm your passphrase',
+                'autocomplete': 'off',
+            }
+        ),
+    )
+    captcha: Final[CaptchaField] = CaptchaField()
+
+
+class LogInForm(Form):
+    username: Final[CharField] = CharField(
+        label='Username',
+        min_length=2,
+        max_length=32,
+        required=True,
+        widget=TextInput(
+            attrs={
+                'id': 'username',
+                'placeholder': 'Enter your username',
+                'autofocus': 'autofocus',
+                'autocomplete': 'off',
+            }
+        ),
+    )
+    passphrase: Final[CharField] = CharField(
+        label='Passphrase',
+        required=True,
+        widget=PasswordInput(
+            attrs={
+                'id': 'passphrase',
+                'placeholder': 'Enter your passphrase',
+                'autocomplete': 'off',
+            }
+        ),
+    )

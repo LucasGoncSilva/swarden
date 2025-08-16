@@ -95,9 +95,9 @@ notes_urls: list[URLPattern] = [
 
 urlpatterns: list[URLPattern] = [
     path('', v.index, name='index'),
-    # Credentials views
+    # Login Credentials views
     *credentials_urls,
-    # Cards views
+    # Payment Cards views
     *payment_cards_urls,
     # Security Notes views
     *notes_urls,

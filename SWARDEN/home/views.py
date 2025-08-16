@@ -2,7 +2,7 @@
 
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
-from secret.models import PaymentCard, LoginCredential, SecurityNote
+from secret.models import LoginCredential, PaymentCard, SecurityNote
 
 
 def index(r: HttpRequest) -> HttpResponse:

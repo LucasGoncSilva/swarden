@@ -1,4 +1,4 @@
-from typing import Final
+from typing import Final, Self
 from uuid import uuid4
 
 from account.models import User
@@ -85,7 +85,7 @@ class PaymentCard(Model):
         )
 
     @classmethod
-    def from_db(cls, db, field_names, values):
+    def from_db(cls, db, field_names, values) -> Self:
         card: PaymentCard = super().from_db(db, field_names, values)
 
         card.name = xor(str(card.name), card.owner.password[21:], encrypt=False)

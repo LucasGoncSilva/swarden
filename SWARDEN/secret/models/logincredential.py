@@ -1,4 +1,4 @@
-from typing import Final
+from typing import Final, Self
 from uuid import uuid4
 
 from account.models import User
@@ -82,7 +82,7 @@ class LoginCredential(Model):
         )
 
     @classmethod
-    def from_db(cls, db, field_names, values):
+    def from_db(cls, db, field_names, values) -> Self:
         cred: LoginCredential = super().from_db(db, field_names, values)
 
         cred.third_party_login_name = xor(

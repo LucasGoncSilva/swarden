@@ -6,7 +6,7 @@ from django.test import TestCase
 from django.urls import reverse
 from utils import create_scenarios, xor
 
-from secret.models import PaymentCard, LoginCredential, SecurityNote
+from secret.models import LoginCredential, PaymentCard, SecurityNote
 from secret.month.models import Month
 
 
@@ -14,8 +14,7 @@ class CredentialTestCase(TestCase):
     def setUp(self) -> None:
         self.user: User = User.objects.create_user(
             username='user',
-            passphrase='passphrase',
-            email='user@email.com',
+            password='passphrase',
         )
 
         # Object 1
@@ -360,8 +359,7 @@ class CardTestCase(TestCase):
     def setUp(self) -> None:
         self.user: User = User.objects.create_user(
             username='user',
-            passphrase='passphrase',
-            email='user@email.com',
+            password='passphrase',
         )
 
         # Object 1
@@ -735,8 +733,7 @@ class SecurityNoteTestCase(TestCase):
     def setUp(self) -> None:
         self.user: User = User.objects.create_user(
             username='user',
-            passphrase='passphrase',
-            email='user@email.com',
+            password='passphrase',
         )
 
         # Object 1
@@ -763,7 +760,7 @@ class SecurityNoteTestCase(TestCase):
             title='How to draw an apple tree',
             slug='how-to-draw-an-apple-tree',
             note_type='hlt',
-            content='x' * 333,  # Length out of range
+            content='x' * 1001,  # Length out of range
         )
 
         # Object 4
@@ -908,7 +905,7 @@ class SecurityNoteTestCase(TestCase):
             'note15': {
                 'owner': self.user,
                 'title': 'A Title',
-                'content': 'x' * 301,
+                'content': 'x' * 1001,
                 'slug': 'a-title',
                 'note_type': 'std',
             },

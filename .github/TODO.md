@@ -5,33 +5,34 @@
 - [ ] Use of Rust for better processing
 - [ ] Prefetch links for faster content load
 - [ ] Implement `django.middleware.gzip.GZipMiddleware`
+- [ ] User history of last actions, similar to Django's one
+- [ ] Generate pseudo-random passwords as suggestion
+- [ ] System migration to valid E2EE arch
 
 ## To Do
 
-- [ ] Activate account based on showed token
-- [ ] Convert user's ID to UUIDv4
-- [ ] Account recovery using secret phrase
 - [ ] Rewrite `save()` and `from_db` to base class with self logic
 - [ ] Implement filter on listing page
-- [ ] Export JSON with password zip
-- [ ] Implement E2EE
+- [ ] Export secrets with secure file
 - [ ] Structure Timed Access for sharing
 - [ ] Create Team Sharing
-- [ ] Create footer pages
-- [ ] User history of last actions, similar to Django's one
 - [ ] Design locale and languages (pt-br, en)
 - [ ] Apply chars count feedback in text inputs
 - [ ] Redesign loadtests to a decent testing level
-- [ ] Generate pseudo-random passwords as suggestion
+- [ ] Account recovery using 12-words recovery list
 
 ## Doing
 
-- [ ] Redesign interfaces for a new era
+- [ ] ...
 
 ## Done
 
 - [x] Hide secret's data from staff and admin users
 - [x] Implement `django-csp` for better security
+- [x] Convert user's ID to UUIDv4
+- [x] Create footer pages
+- [x] Activate account checking both credentials and `account.models.ActivateAccountToken`
+- [x] Redesign interfaces for a new era
 
 <!--
 
@@ -84,3 +85,4 @@ You can:
 ---
 
 Let me know if you'd like a matching **graphic** or **interactive SVG line** to represent this visually!
+ -->

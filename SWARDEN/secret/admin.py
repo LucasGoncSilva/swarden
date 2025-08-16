@@ -3,7 +3,7 @@ from typing import Any
 from django.contrib.admin import ModelAdmin, site
 from django.http import HttpRequest
 
-from secret.models import PaymentCard, LoginCredential, SecurityNote
+from secret.models import LoginCredential, PaymentCard, SecurityNote
 
 
 class BasesWardenModelAdmin(ModelAdmin):
