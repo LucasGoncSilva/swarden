@@ -138,34 +138,34 @@ main {
         text-align: center;
     }
 
-    .remember-forgot {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-        font-size: 0.875rem;
+    #recovery-list {
+        display: grid;
+        grid-template-columns: 33% 33% 33%;
+        margin: 1rem auto;
+        row-gap: 1rem;
 
-        .remember {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-
-            input[type='checkbox'] {
-                width: 1rem;
-                height: 1rem;
-                border-radius: 0.25rem;
-                accent-color: $primary;
-            }
+        p {
+            text-align: center;
+            border: $border;
+            border-radius: $radius;
+            padding: 0.5rem;
         }
+    }
 
-        .forgot {
-            color: $muted-foreground;
-            transition: color 0.2s ease;
+    #reveal-wordlist-container {
+        text-align: center;
+        width: 100%;
 
-            &:hover {
-                color: $primary;
-            }
+        #reveal-wordlist {
+            width: 50%;
+            margin: 0 auto 1rem;
         }
+    }
+
+    #recovery-container {
+        display: grid;
+        grid-template-columns: auto auto;
+        column-gap: 1rem;
     }
 
     .login-btn {
@@ -206,6 +206,22 @@ main {
 
         a {
             color: $primary;
+            font-weight: 500;
+            transition: color 0.2s ease;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+
+    .recovery-link {
+        text-align: center;
+        font-size: 0.875rem;
+        color: $muted-foreground;
+
+        a {
+            color: $foreground;
             font-weight: 500;
             transition: color 0.2s ease;
 

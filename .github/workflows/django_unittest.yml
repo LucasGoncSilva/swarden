@@ -4,6 +4,7 @@ on: [push, fork, pull_request]
 
 env:
   CAPTCHA_TEST_MODE: True
+  DJANGO_SETTINGS_MODULE: 'CORE.settings.dev'
 
 jobs:
   build:
@@ -15,16 +16,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
-
-      - name: Install Dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install uv
-          uv sync
 
       - name: Install Docker
         run: |
@@ -42,6 +38,17 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install uv
+          uv sync
+
       - name: Set and Migrate DB
         run: |
           sudo systemctl start docker
@@ -49,6 +56,10 @@ jobs:
           python -c "import time; time.sleep(10)"
           uv run SWARDEN/manage.py makemigrations
           uv run SWARDEN/manage.py migrate
+
+      - name: Compile Rust module
+        run: |
+          uv run task rust
 
       - name: Collect Staticfiles
         run: |

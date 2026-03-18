@@ -40,4 +40,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   });
+
+  document.querySelectorAll(".history-back").forEach((e) => {
+    e.addEventListener("click", () => {
+      history.back();
+    });
+  });
 });

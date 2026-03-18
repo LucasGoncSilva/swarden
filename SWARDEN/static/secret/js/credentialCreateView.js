@@ -1,4 +1,14 @@
 window.addEventListener("DOMContentLoaded", function () {
+  function slugifyText(text) {
+    return text
+      .toString() // Cast to string (optional)
+      .normalize("NFKD") // The normalize() using NFKD method returns the Unicode Normalization Form of a given string.
+      .toLowerCase() // Convert the string to lowercase letters
+      .trim() // Remove whitespace from both sides of a string (optional)
+      .replace(/\s+/g, "-") // Replace spaces with -
+      .replace(/[^\w\-]+/g, ""); // Remove all non-word chars
+  }
+
   const thirdPartyLogin = document.getElementById("id_third_party_login_name");
   const thirdPartyLoginDiv = thirdPartyLogin.parentElement;
   const login = document.getElementById("id_login");
@@ -36,18 +46,10 @@ window.addEventListener("DOMContentLoaded", function () {
     passwordDiv.classList.toggle("hidden-zero");
   }
 
-  function slugifyText(text) {
-    return text
-      .toString() // Cast to string (optional)
-      .normalize("NFKD") // The normalize() using NFKD method returns the Unicode Normalization Form of a given string.
-      .toLowerCase() // Convert the string to lowercase letters
-      .trim() // Remove whitespace from both sides of a string (optional)
-      .replace(/\s+/g, "-") // Replace spaces with -
-      .replace(/[^\w\-]+/g, ""); // Remove all non-word chars
-  }
-
   function populateSlug() {
-    slug_field.value = service.value + slugifyText(name.value);
+    slug_field.value = slugifyText(
+      `${service.selectedOptions[0].text} ${name.value}`,
+    );
   }
 
   thirdPartyCheck.onclick = function () {

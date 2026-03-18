@@ -9,14 +9,13 @@
 <link rel="stylesheet" href="{% static 'home/index/css/style.css' %}" />
 {% endblock %}
 
+
 {% block body %}
-
 <main class="dashboard">
-
     <!-- Messages -->
     {% if messages %}
     {% for message in messages %}
-    <div class="alert {{ message.tags }}" style="text-align: center;" role="alert">{{ message }}</div>
+    <div class="alert {{ message.tags }}" role="alert">{{ message }}</div>
     {% endfor %}
     {% endif %}
 
@@ -24,7 +23,7 @@
         <div class="dashboard-header">
             <h1>
                 Access granted:
-                <span class="text-gradient-primary">{{ user.username|truncatechars:16 }}</span>
+                <span class="text-gradient-primary" id="username">{{ user.username }}</span>
             </h1>
 
             <p class="text-gradient">
@@ -37,11 +36,11 @@
             <section class="dashboard-section">
                 <div class="section-header">
                     <div class="section-title">
-                        <h2>Credentials</h2>
-
                         <span class="counter" id="credentials-counter">
                             {{ credentials_counter }}
                         </span>
+
+                        <h2>Credentials</h2>
                     </div>
 
                     <div class="section-actions">
@@ -64,8 +63,6 @@
                         <p class="item-detail">{{ cred.get_service_display }}</p>
                         <p class="item-meta">Last updated: {{ cred.updated}}</p>
 
-                        <br />
-
                         <div class="item-actions">
                             <a href="{% url 'secret:credential_detail_view' cred.slug %}" class="item-action-btn">
                                 Details
@@ -85,11 +82,11 @@
             <section class="dashboard-section">
                 <div class="section-header">
                     <div class="section-title">
-                        <h2>Payment Cards</h2>
-
                         <span class="counter" id="cards-counter">
                             {{ cards_counter }}
                         </span>
+
+                        <h2>Payment Cards</h2>
                     </div>
 
                     <div class="section-actions">
@@ -129,11 +126,11 @@
             <section class="dashboard-section">
                 <div class="section-header">
                     <div class="section-title">
-                        <h2>Notes</h2>
-
                         <span class="counter" id="notes-counter">
                             {{ notes_counter }}
                         </span>
+
+                        <h2>Notes</h2>
                     </div>
 
                     <div class="section-actions">

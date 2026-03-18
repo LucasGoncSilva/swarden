@@ -19,23 +19,23 @@ Key Components of a Changelog:
 
 ## {VERSION} - {DATE}
 
-### Adds
+### Add
 
 - Item
 
-### Updates
+### Update
 
 - Item
 
-### Fixes
+### Fix
 
 - Item
 
-### Deprecates
+### Deprecate
 
 - Item
 
-### Removes
+### Remove
 
 - Item
 

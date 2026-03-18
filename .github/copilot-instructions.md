@@ -1,0 +1,1 @@
+Whenever I ask a question or request a change, use the AGENTS.md file at the root of this project as the source of truth for architecture, coding standards, and folder organization. Always consider the global context of the @workspace to ensure that changes are consistent with the rest of the codebase. Do not suggest code that violates the definitions in AGENTS.md.

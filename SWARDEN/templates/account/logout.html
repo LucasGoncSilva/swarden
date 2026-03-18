@@ -11,14 +11,9 @@
 
 
 {% block body %}
-<div class="login-form-container" style="
-    text-align: center;
-    margin: 10vh auto;
-    height: fit-content;
-    width: fit-content;
-  ">
+<div class="login-form-container center-confirm">
     <div>
-        <img src="{% static 'shared/img/logo.svg' %}" alt="sWarden's logo" style="margin: auto" />
+        <img src="{% static 'shared/img/logo.svg' %}" alt="sWarden's logo" />
     </div>
 
     <form action="{% url 'account:logout' %}" method="post">
@@ -28,7 +23,7 @@
 
         <input type="submit" autofocus value="Exit" class="btn btn-outline" />
 
-        <button type="button" class="btn btn-primary" onclick="history.back()">
+        <button type="button" class="btn btn-primary history-back">
             Go back
         </button>
     </form>

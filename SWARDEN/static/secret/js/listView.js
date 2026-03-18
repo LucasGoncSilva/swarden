@@ -4,48 +4,49 @@ window.addEventListener("DOMContentLoaded", function () {
 
   filterInput.onkeyup = function () {
     const value = this.value.toLowerCase();
-    const arr = document.getElementsByClassName("secret");
+    const arr = document.getElementsByClassName("item-card");
 
     if (!value.length) {
       for (const e of arr) {
-        e.classList.remove("hide");
+        e.classList.remove("none");
       }
       return;
     }
 
     switch (type) {
-      case "Credenciais":
+      case "Login Credentials":
         for (const e of arr) {
           if (
-            !e.dataset.name.includes(value) &&
-            !e.dataset.service.includes(value)
+            !e.dataset.name.toLowerCase().includes(value) &&
+            !e.dataset.service.toLowerCase().includes(value)
           ) {
-            e.classList.add("hide");
+            e.classList.add("none");
           } else {
-            e.classList.remove("hide");
+            e.classList.remove("none");
           }
         }
         break;
 
-      case "Cartões":
+      case "Payment Cards":
         for (const e of arr) {
           if (
-            !e.dataset.name.includes(value) &&
-            !e.dataset.bank.includes(value)
+            !e.dataset.name.toLowerCase().includes(value) &&
+            !e.dataset.number.toLowerCase().includes(value) &&
+            !e.dataset.bank.toLowerCase().includes(value)
           ) {
-            e.classList.add("hide");
+            e.classList.add("none");
           } else {
-            e.classList.remove("hide");
+            e.classList.remove("none");
           }
         }
         break;
 
-      case "Anotações":
+      case "Security Notes":
         for (const e of arr) {
-          if (!e.dataset.title.includes(value)) {
-            e.classList.add("hide");
+          if (!e.dataset.title.toLowerCase().includes(value)) {
+            e.classList.add("none");
           } else {
-            e.classList.remove("hide");
+            e.classList.remove("none");
           }
         }
         break;

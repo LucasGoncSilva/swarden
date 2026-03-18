@@ -19,7 +19,7 @@ jobs:
       - name: Install Python and Pip
         uses: actions/setup-python@v3
         with:
-          python-version: "3.12"
+          python-version: "3.14"
 
       - name: Install dbdocs
         run: sudo npm install -g dbdocs
@@ -28,4 +28,4 @@ jobs:
         run: dbdocs
 
       - name: Update dbdocs project
-        run: cd .github/db; python generate_dbml.py
+        run: cd SWARDEN; uv run task exportdb; cd ../.github/db; dbdocs build schema.dbml

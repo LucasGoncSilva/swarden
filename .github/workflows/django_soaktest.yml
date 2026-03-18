@@ -18,7 +18,7 @@ jobs:
       - name: Install Python and Pip
         uses: actions/setup-python@v3
         with:
-          python-version: "3.12"
+          python-version: "3.14"
 
       - name: Install Locust
         run: |
@@ -34,7 +34,7 @@ jobs:
         continue-on-error: true
         if: always()
         run: |
-          python -c "import time; time.sleep(180)"
+          python -c "import time; time.sleep(240)"
           uv run locust --headless -f loadtests/soak_test.py -H http://localhost:8000 --processes -1 --csv report/csv/soak/soak --html report/html/soak.html
 
       - name: Upload Locust Report

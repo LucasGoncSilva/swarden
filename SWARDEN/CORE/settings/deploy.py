@@ -1,56 +1,116 @@
-# ruff: noqa: F403
+# ruff: noqa: F403 F405
 
 from os import getenv
-
-from csp.constants import NONE, SELF
-from dj_database_url import DBConfig, config
+from pathlib import Path
 
 from CORE.settings.base import *
-from CORE.settings.gconfig import set_all
 
 
-DATABASES: dict[str, DBConfig] = {
-    'default': config(default=str(getenv('DATABASE_URL')))
+# ===== Configs Definition =====
+DATABASE_NAME_CFG: Final[str | None] = getenv('DATABASE_NAME')
+DATABASE_USER_CFG: Final[str | None] = getenv('DATABASE_USER')
+DATABASE_PASSWORD_CFG: Final[str | None] = getenv('DATABASE_PASSWORD')
+DATABASE_HOST_CFG: Final[str | None] = getenv('DATABASE_HOST')
+
+SECRET_KEY_CFG: Final[str | None] = getenv('SECRET_KEY')
+CRYPTOGRAPHY_KEY_CFG: Final[str | None] = getenv('CRYPTOGRAPHY_KEY')
+SYSTEM_PEPPER_CFG: Final[str | None] = getenv('SYSTEM_PEPPER')
+ALLOWED_HOSTS_CFG: Final[str | None] = getenv('ALLOWED_HOSTS')
+
+REDIS_HOST_CFG: Final[str | None] = getenv('REDIS_HOST')
+
+
+# ===== Configs Validation =====
+if getenv('ADMIN') is None:
+    raise ValueError('"ADMIN" MUST be set as a valid URL path.')
+
+if (
+    DATABASE_NAME_CFG is None
+    or DATABASE_USER_CFG is None
+    or DATABASE_PASSWORD_CFG is None
+    or DATABASE_HOST_CFG is None
+):
+    raise ValueError('Database configs MUST be set.')
+
+if SECRET_KEY_CFG is None:
+    raise ValueError('"SECRET_KEY" MUST be set as a valid long, pseudo-random string.')
+
+if CRYPTOGRAPHY_KEY_CFG is None:
+    raise ValueError(
+        '"CRYPTOGRAPHY_KEY" MUST be set as a valid long, pseudo-random string.'
+    )
+
+if SYSTEM_PEPPER_CFG is None:
+    raise ValueError(
+        '"SYSTEM_PEPPER" MUST be set as a valid long, pseudo-random string.'
+    )
+
+if ALLOWED_HOSTS_CFG is None:
+    raise ValueError('"ALLOWED_HOSTS" MUST be set as a valid csv-like domains list.')
+
+if REDIS_HOST_CFG is None:
+    raise ValueError('"REDIS_HOST" MUST be set as a valid host.')
+
+
+# ===== Configs Usage =====
+DATABASES: dict[
+    str,
+    dict[
+        str,
+        str | bool | int | Path | dict[str, str | bool | int | dict[str, int]] | None,
+    ],
+] = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': DATABASE_NAME_CFG,
+        'USER': DATABASE_USER_CFG,
+        'PASSWORD': DATABASE_PASSWORD_CFG,
+        'HOST': DATABASE_HOST_CFG,
+        'PORT': '5432',
+        'CONN_MAX_AGE': 0,
+        'OPTIONS': {
+            'pool': {
+                'min_size': 2,
+                'max_size': 10,
+                'timeout': 30,
+                'max_idle': 300,
+            },
+            'server_side_binding': True,
+            'target_session_attrs': 'read-write',
+            'connect_timeout': 10,
+        },
+    }
 }
 
-DEBUG: bool = bool(getenv('DEBUG', False))
-SECRET_KEY: str | None = getenv('SECRET_KEY')
-ALLOWED_HOSTS: list[str] = list(
-    map(lambda url: url.strip(), str(getenv('ALLOWED_HOSTS')).split(','))
-)
+RATELIMIT_BACKENDS: list[dict[str, str | dict[str, str | int]]] = [
+    {
+        'name': 'primary_redis',
+        'backend': 'redis',
+        'config': {
+            'host': REDIS_HOST_CFG,
+            'port': 6379,
+            'db': 0,
+        },
+    },
+    {
+        'name': 'fallback_memory',
+        'backend': 'memory',
+        'config': {},
+    },
+]
+
+
+DEBUG: Final[bool] = False
+SECRET_KEY: Final[str] = SECRET_KEY
+CRYPTOGRAPHY_KEY: Final[str] = CRYPTOGRAPHY_KEY
+SYSTEM_PEPPER: Final[str] = SYSTEM_PEPPER
+ALLOWED_HOSTS: Final[list[str]] = ALLOWED_HOSTS
 
 # General Security
-SECURE_CROSS_ORIGIN_OPENER_POLICY: str = 'same-origin'
-SECURE_CROSS_ORIGIN_EMBEDDER_POLICY: str = 'require-corp'
-SECURE_CROSS_ORIGIN_RESOURCE_POLICY: str = 'same-origin'
-SESSION_COOKIE_HTTPONLY: bool = True
-CSRF_COOKIE_HTTPONLY: bool = True
-SECURE_PROXY_SSL_HEADER: tuple[str, str] = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_SSL_REDIRECT: bool = True
-SECURE_HSTS_SECONDS: int = 31536000
-SECURE_HSTS_INCLUDE_SUBDOMAINS: bool = True
-SECURE_HSTS_PRELOAD: bool = True
-CSRF_COOKIE_SECURE: bool = True
-SESSION_COOKIE_SECURE: bool = True
-SECURE_BROWSER_XSS_FILTER: bool = True
-SECURE_CONTENT_TYPE_NOSNIFF: bool = True
-X_FRAME_OPTIONS: str = 'DENY'
-SECURE_REFERRER_POLICY: str = 'strict-origin'
+SECURE_SSL_REDIRECT: Final[bool] = True
+CSRF_COOKIE_SECURE: Final[bool] = True
+SESSION_COOKIE_SECURE: Final[bool] = True
+SESSION_COOKIE_SAMESITE: Final[str] = 'Strict'
 
-# django-csp
-CONTENT_SECURITY_POLICY = {
-    'DIRECTIVES': {
-        'default-src': [NONE],
-        'script-src': [SELF],
-        'style-src': [SELF],
-        'img-src': [SELF],
-        'font-src': [SELF],
-        'connect-src': [SELF],
-        'frame-ancestor': [NONE],
-        'base-uri': [NONE],
-        'form-action': [SELF],
-        'upgrade-insecure-requests': True,
-    },
-}
-
-set_all()
+# Logging
+IS_LOG_ON: Final[bool] = True

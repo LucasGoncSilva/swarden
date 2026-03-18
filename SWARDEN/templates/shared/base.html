@@ -41,9 +41,10 @@
     <link rel="shortcut icon" href="{% static 'shared/img/logo.svg' %}" type="image/x-icon" />
 
     <!-- Imports -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link nonce="{{ csp_nonce }}" href="https://fonts.googleapis.com" />
+    <link nonce="{{ csp_nonce }}" href="https://fonts.gstatic.com" crossorigin />
+    <link nonce="{{ csp_nonce }}"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
     <link rel="stylesheet" href="{% static 'shared/css/base.css' %}" />
     <script src="{% static 'shared/js/script.js' %}"></script>
@@ -75,7 +76,8 @@
             </div>
 
             <div class="nav-buttons">
-                <button class="btn btn-outline">Check Profile</button>
+                <!-- <button class="btn btn-outline">Check Profile</button>  # TODO: Implement later -->
+
                 <a href="{% url 'account:logout' %}" class="btn btn-error">
                     Logout
                 </a>

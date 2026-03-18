@@ -1,6 +1,11 @@
+[build-system]
+requires = ["maturin>=1.11,<2.0"]
+build-backend = "maturin"
+
+
 [project]
 name = "swarden"
-version = "2.0.0"
+version = "3.0.0"
 description = "Created in Django as an MVC Framework, sWarden works as a real prototype of an online password and credential manager. This project uses security concepts in a practical and descriptive way."
 readme = { file = ".github/README.md", content-type = "text/markdown" }
 license = { file = "LICENSE" }
@@ -8,33 +13,46 @@ authors = [{ name = "LucasGonc", email = "lucasgoncsilva04@gmail.com" }]
 maintainers = [{ name = "LucasGonc", email = "lucasgoncsilva04@gmail.com" }]
 
 
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 dependencies = [
-    "argon2-cffi>=23.1.0",
-    "cryptography>=44.0.3",
-    "dj-database-url>=2.3.0",
-    "django>=5.2",
-    "django-csp>=4.0",
-    "django-simple-captcha>=0.6.2",
-    "gunicorn>=23.0.0",
-    "pillow>=11.2.1",
-    "psycopg2-binary>=2.9.10",
-    "whitenoise>=6.9.0",
+    "django>=6.0.2",
+    "django-simple-captcha>=0.6.3",
+    "django-smart-ratelimit[redis]>=1.0.3",
+    "granian>=2.7.2",
+    "mnemonic>=0.21",
+    "pillow>=12.1.1",
+    "psycopg[binary,pool]>=3.3.3",
+    "python-decouple>=3.8",
+    "whitenoise>=6.11.0",
 ]
 
 [dependency-groups]
 dev = [
-    "coverage>=7.8.0",
-    "django-debug-toolbar>=5.2.0",
+    "argon2-cffi>=25.1.0",
+    "alive-progress>=3.3.0",
+    "coverage>=7.13.4",
+    "django-dbml>=0.10.1",
+    "django-debug-toolbar>=6.2.0",
     "django-extensions>=4.1",
-    "locust>=2.36.1",
-    "mosheh>=2.0.0",
-    "mypy>=1.17.1",
-    "ruff>=0.11.7",
+    "django-stubs>=5.2.9",
+    "hypothesis[django]>=6.151.9",
+    "locust>=2.43.3",
+    "locust-plugins>=5.0.0",
+    "maturin>=1.12.4",
+    "memray>=1.19.1",
+    "ruff>=0.15.2",
     "taskipy>=1.14.1",
-    "tblib>=3.1.0",
-    "tqdm>=4.67.1",
-    "types-tqdm>=4.67.0.20250809",
+    "tblib>=3.2.2",
+    "ty>=0.0.18",
+    "types-tqdm>=4.67.3.20260205",
+    "faker>=40.8.0",
+    "python-slugify>=8.0.4",
+    "beautifulsoup4>=4.14.3",
+    "cryptography>=46.0.5",
+    "gunicorn>=25.1.0",
+    "orjson>=3.11.7",
+    "pympler>=1.1",
+    "tabulate>=0.9.0",
 ]
 
 
@@ -45,27 +63,57 @@ Issues = "https://github.com/LucasGoncSilva/swarden/issues"
 Changelog = "https://github.com/LucasGoncSilva/swarden/blob/main/.github/CHANGELOG.md"
 
 
-[tool.taskipy.tasks]
-init = "task start_postgres; task populatedb; task runserver"
+[tool.taskipy.settings]
+use_vars = true
 
-runserver = "task lint; uv run manage.py runserver"
-lint = "uv run ruff check; uv run ruff format; uv run mypy ."
+[tool.taskipy.variables]
+migrate = "run --rm web python manage.py migrate"
+up = "up --build -d --force-recreate"
+populateuser = "run --rm web python manage.py populateuser"
+populatesecret = "run --rm web python manage.py populatesecret"
+composepath = "docker compose -f ./docker/docker-compose"
+
+
+[tool.taskipy.tasks]
+first = "task rust && cd SWARDEN && task createdb && task populatedb && task runserver"
+
+runserver = "uv run manage.py runserver"
+test = "export PYTHONMALLOC=malloc; uv run manage.py test"
+testwithcoverage = "export PYTHONMALLOC=malloc; uv run manage.py testwithcoverage"
 createsuperuser = "uv run manage.py createsuperuser"
 migrate = "uv run manage.py makemigrations; uv run manage.py migrate; uv run manage.py showmigrations"
-populatedb = "task migrate; uv run manage.py populateuser; uv run manage.py populatesecret"
-resetdb = "uv run manage.py reset_db; task clear_cache; task reset_migrations"
-test = "uv run manage.py test"
-testwithcoverage = "uv run manage.py testwithcoverage"
+lint = "uv run ruff check; uv run ruff format; uv run ty check"
+populatedb = "task migrate && uv run manage.py populateuser && uv run manage.py populatesecret"
+gunicorn = "uv run gunicorn CORE.wsgi -c gunicorn.conf.py"
+granian = "uv run server.py"
+createdb = "docker run --name psql_swarden -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=postgres -d postgres; sleep 10"
+exportdb = "uv run manage.py dbml --add_project_name SWARDEN --add_project_notes \"$(cat ../.github/db/db_description.md)\" --output ../.github/db/schema.dbml --group_by_app"
+resetdb = "uv run manage.py reset_db && task clear_cache && task reset_migrations"
 shell = "uv run manage.py shell"
+rust = "uv run maturin develop --release && uv sync --reinstall"
 
 # Internal Commands
 clear_cache = "uv run manage.py clear_cache; uv run manage.py clean_pyc"
 reset_migrations = "find . -path \"*/migrations/*.py\" -not -name \"__init__.py\" -delete && find . -path \"*/migrations/*.pyc\" -delete; echo \"Migrations deleted.\""
-start_postgres = "docker run --name psql_swarden -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=postgres -d postgres; sleep 10"
+
+loadtest = "uv run locust -f ./loadtests/load_test.py --headless --csv report/csv/load/load --html report/html/load.html -H http://localhost --only-summary"
+stresstest = "uv run locust -f ./loadtests/stress_test.py --headless --csv report/csv/stress/stress --html report/html/stress.html -H http://localhost --only-summary"
+soaktest = "uv run locust -f ./loadtests/soak_test.py --headless --csv report/csv/soak/soak --html report/html/soak.html -H http://localhost --only-summary"
+spiketest = "uv run locust -f ./loadtests/spike_test.py --headless --csv report/csv/spike/spike --html report/html/spike.html -H http://localhost --only-summary"
+pre_dockerup = "{composepath}.yml {migrate}"
+dockerup = "{composepath}.yml {up} --build --force-recreate"
+dockerdown = "{composepath}.yml down -v"
+pre_dockerloadup = "{composepath}-load.yml {migrate} && {composepath}-load.yml {populateuser} && {composepath}-load.yml {populatesecret}"
+dockerloadup = "{composepath}-load.yml {up} --build --force-recreate"
+dockerloaddown = "{composepath}-load.yml down -v"
+pre_dockerdevup = "{composepath}-dev.yml {migrate} && {composepath}-dev.yml {populateuser} && {composepath}-dev.yml {populatesecret}"
+dockerdevup = "{composepath}-dev.yml {up} --build --force-recreate"
+dockerdevdown = "{composepath}-dev.yml down -v"
+dockerunittest = "{composepath}.yml {migrate} && {composepath}.yml run --rm web python manage.py test"
 
 
 [tool.ruff]
-exclude = [".env", "migrations", "SWARDEN/secret/month"]
+exclude = [".env", ".venv", "migrations", "SWARDEN/secret/month"]
 fix = true
 
 [tool.ruff.format]
@@ -75,7 +123,7 @@ docstring-code-format = true
 [tool.ruff.lint]
 select = ["I", "E", "UP", "F"]
 fixable = ["ALL"]
-exclude = [".env", "migrations", "SWARDEN/secret/month"]
+exclude = [".env", ".venv", "migrations", "SWARDEN/secret/month"]
 
 [tool.ruff.lint.isort]
 case-sensitive = true
@@ -84,6 +132,21 @@ lines-after-imports = 2
 [tool.ruff.lint.pycodestyle]
 max-doc-length = 88
 
-[tool.mypy]
-disable_error_code = ["import-untyped", "no-redef"]
-exclude = ["./migrations/*"]
+
+[tool.ty.environment]
+root = ["./loadtests", "./SWARDEN"]
+
+[tool.ty.src]
+exclude = ["**/secret/month/*", "./bench"]
+
+
+[tool.coverage.report]
+exclude_also = [
+    "class UserChangeForm",
+    "class UserCreationForm",
+    "class sWardenUserManager",
+]
+
+
+[tool.maturin]
+manifest-path = "Cargo.toml"

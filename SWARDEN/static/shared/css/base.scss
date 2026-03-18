@@ -433,8 +433,13 @@ code {
     display: none !important;
 }
 
+.blur {
+    filter: blur(5px) !important;
+}
+
 .alert {
     font-size: inherit;
+    text-align: center;
 }
 
 .alert-success {
@@ -484,5 +489,16 @@ code {
 @media only screen and (min-width: 1024px) {
     .footer-grid {
         grid-template-columns: 2fr 1fr 1fr 1fr;
+    }
+}
+
+.center-confirm {
+    text-align: center;
+    margin: 10vh auto;
+    height: fit-content;
+    width: fit-content;
+
+    img {
+        margin: auto;
     }
 }

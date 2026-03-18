@@ -1,7 +1,11 @@
+from CORE.utils import bind_log_data
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
+from django.views.decorators.debug import sensitive_post_parameters, sensitive_variables
 
 
+@sensitive_post_parameters()
+@sensitive_variables()
 def index(r: HttpRequest) -> HttpResponse:
     free_plan: list[str] = [
         'Store up to 5 Credentials',
@@ -29,6 +33,13 @@ def index(r: HttpRequest) -> HttpResponse:
         '16% cheaper',
         'No worries for renewal soon',
     ]
+
+    bind_log_data(
+        free_plan=free_plan,
+        free_plan_disabled=free_plan_disabled,
+        monthly_plan=monthly_plan,
+        annual_plan=annual_plan,
+    )
 
     return render(
         r,

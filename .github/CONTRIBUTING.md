@@ -296,6 +296,19 @@ Testing `GET` and `POST` for `django.contrib.auth.AnonymousUser` and a logged on
 <details class="example"><summary>SNIPPET</summary>
 
 ```py
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from account.models import User
+from django.test import TestCase
+from django.urls import reverse
+
+
+if TYPE_CHECKING:
+    from django.test.client import _MonkeyPatchedWSGIResponse
+
+
 class BaseExampleTestCase(TestCase):
     def setUp(self) -> None:
         User.objects.create_user(
@@ -310,59 +323,41 @@ class BaseExampleTestCase(TestCase):
 
 class Example[Create|List|Detail|Update|Delete]ViewTestCase(BaseExampleTestCase):
     def test_GET_anonymous_user(self) -> None:
-        """GET /example/view | anonymous user"""
+        """GET /example/view | anonymous user""" 
 
-        # Anonymous user check
-        self.assertTrue(get_user(self.client).is_anonymous)
-        self.assertFalse(get_user(self.client).is_authenticated)
-
-        res: HttpResponse = self.client.get(reverse(ENDPOINT))
+        res: _MonkeyPatchedWSGIResponse = self.client.get(reverse(ENDPOINT))
 
         self.assertEqual(res.status_code, xxx)
         self.assertRedirects(res, reverse(ENDPOINT))
 
-        res: HttpResponse = self.client.get(
+        res: _MonkeyPatchedWSGIResponse = self.client.get(
             reverse(ENDPOINT), follow=True
         )
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, TEMPLATE)
-        # Anonymous user check
-        self.assertTrue(get_user(self.client).is_anonymous)
-        self.assertFalse(get_user(self.client).is_authenticated)
+        self.assertTemplateUsed(res, TEMPLATE) 
 
     def test_GET_authenticated_user(self) -> None:
-        """GET /example/view | authenticated user"""
-
-        # Anonymous user check
-        self.assertTrue(get_user(self.client).is_anonymous)
-        self.assertFalse(get_user(self.client).is_authenticated)
+        """GET /example/view | authenticated user""" 
 
         self.assertTrue(self.client.login(username='user', password='password'))
 
-        res: HttpResponse = self.client.get(reverse(ENDPOINT))
+        res: _MonkeyPatchedWSGIResponse = self.client.get(reverse(ENDPOINT))
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, TEMPLATE)
-        # Logged user check
-        self.assertFalse(get_user(self.client).is_anonymous)
-        self.assertTrue(get_user(self.client).is_authenticated)
+        self.assertTemplateUsed(res, TEMPLATE) 
 
     def test_POST_anonymous_user(self) -> None:
-        """POST /example/view | anonymous user"""
+        """POST /example/view | anonymous user""" 
 
-        # Anonymous user check
-        self.assertTrue(get_user(self.client).is_anonymous)
-        self.assertFalse(get_user(self.client).is_authenticated)
-
-        res: HttpResponse = self.client.post(reverse(ENDPOINT), {DATA: HERE})
+        res: _MonkeyPatchedWSGIResponse = self.client.post(reverse(ENDPOINT), {DATA: HERE})
 
         self.assertEqual(res.status_code, xxx)
         self.assertRedirects(res, reverse(ENDPOINT))
 
-        res: HttpResponse = self.client.post(
+        res: _MonkeyPatchedWSGIResponse = self.client.post(
             reverse(ENDPOINT),
             {DATA: HERE},
             follow=True
@@ -371,30 +366,20 @@ class Example[Create|List|Detail|Update|Delete]ViewTestCase(BaseExampleTestCase)
         # Success response check
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, TEMPLATE)
-        # Logged user check
-        self.assertTrue(get_user(self.client).is_anonymous)
-        self.assertFalse(get_user(self.client).is_authenticated)
 
     def test_POST_authenticated_user(self) -> None:
-        """POST /example/view | authenticated user"""
-
-        # Anonymous user check
-        self.assertTrue(get_user(self.client).is_anonymous)
-        self.assertFalse(get_user(self.client).is_authenticated)
+        """POST /example/view | authenticated user""" 
 
         self.assertTrue(self.client.login(username='user', password='password'))
 
-        res: HttpResponse = self.client.post(
+        res: _MonkeyPatchedWSGIResponse = self.client.post(
             reverse(ENDPOINT),
             {DATA: HERE},
         )
 
         # Success response check
         self.assertEqual(res.status_code, 200)
-        self.assertTemplateUsed(res, TEMPLATE)
-        # Logged user check
-        self.assertFalse(get_user(self.client).is_anonymous)
-        self.assertTrue(get_user(self.client).is_authenticated)
+        self.assertTemplateUsed(res, TEMPLATE) 
 ```
 
 </details>
@@ -418,36 +403,43 @@ With a similar principle of the item above, this one tests seven initial conditi
 <details class="example"><summary>SNIPPET</summary>
 
 ```py
+from uuid import UUID
+
+from django.test import TestCase
+
+from <path> import MyModel
+
+
 class MyModelTestCase(TestCase):
     def setUp(self) -> None:
-        self.model1: MyModel = MyModel.objects.create(...)
+        self.model_1_pk: UUID = MyModel.objects.create(...).pk
 
-        self.model2: MyModel = MyModel.objects.create(...)
+        self.model_2_pk: UUID = MyModel.objects.create(...).pk
 
-        self.model3: MyModel = MyModel.objects.create(...)
+        self.model_3_pk: UUID = MyModel.objects.create(...).pk
 
-        self.model4: MyModel = MyModel.objects.create(...)
+        self.model_4_pk: UUID = MyModel.objects.create(...).pk
 
-        self.model5: MyModel = MyModel.objects.create(...)
+        self.model_5_pk: UUID = MyModel.objects.create(...).pk
 
     def test_model_instance_validity(self) -> None:
         """Tests model instance of correct class"""
 
-        for model in MyModel.objects.all():
+        for model in MyModel.objects.iterator():
             with self.subTest(model=model):
                 self.assertIsInstance(model, MyModel)
 
     def test_model_special_str_method_return(self) -> None:
         """Tests model return value of __str__ method"""
 
-        model: MyModel = MyModel.objects.get(pk=self.model.pk)
+        model: MyModel = MyModel.objects.get(pk=self.model_1_pk)
 
         self.assertEqual(model.__str__(), ...)
 
     def test_model_key_value_assertion(self) -> None:
         """Tests model correct attribuition of value"""
 
-        model1: MyModel = MyModel.objects.get(pk=self.model1.pk)
+        model1: MyModel = MyModel.objects.get(pk=self.model_1_pk)
 
         self.assert...(...)
         ...
@@ -455,39 +447,42 @@ class MyModelTestCase(TestCase):
     def test_model_create_validity(self) -> None:
         """Tests model creation integrity and validation"""
 
-        model1: MyModel = MyModel.objects.get(pk=self.model1.pk)
-        model2: MyModel = MyModel.objects.get(pk=self.model2.pk)
-        model3: MyModel = MyModel.objects.get(pk=self.model3.pk)
-        model4: MyModel = MyModel.objects.get(pk=self.model4.pk)
-        model5: MyModel = MyModel.objects.get(pk=self.model5.pk)
+        model1: MyModel = MyModel.objects.get(pk=self.model_1_pk)
+        model2: MyModel = MyModel.objects.get(pk=self.model_2_pk)
+        model3: MyModel = MyModel.objects.get(pk=self.model_3_pk)
+        model4: MyModel = MyModel.objects.get(pk=self.model_4_pk)
+        model5: MyModel = MyModel.objects.get(pk=self.model_5_pk)
 
-        self.assertEqual(MyModel.objects.all().count(), 5)
+        self.assertEqual(MyModel.objects.count(), 5)
 
-        self.assertTrue(model1.is_valid())
-        self.assertTrue(model2.is_valid())
-        self.assertTrue(model3.is_valid())
-        self.assertFalse(model4.is_valid())
-        self.assertFalse(model5.is_valid())
+        self.assertIsNone(model1.full_clean())
+        self.assertIsNone(model2.full_clean())
+        self.assertIsNone(model3.full_clean())
+        self.assertIsNone(model4.full_clean())
+        self.assertIsNone(model5.full_clean())
 
     def test_model_update_validity(self) -> None:
         """Tests model update integrity and validation"""
 
-        MyModel.objects.filter(pk=self.model4.pk).update(...)
+        MyModel.objects.filter(pk=self.model_4_pk).update(...)
 
-        MyModel.objects.filter(pk=self.model5.pk).update(...)
+        MyModel.objects.filter(pk=self.model_5_pk).update(...)
 
-        for model in MyModel.objects.all():
+        for model in MyModel.objects.iterator():
             with self.subTest(model=model):
-                self.assertTrue(model.is_valid())
+                self.assertIsNone(model.full_clean())
 
     def test_model_delete_validity(self) -> None:
         """Tests model correct deletion"""
 
-        for model in MyModel.objects.all():
-            if not model.is_valid():
-                model.delete()
+        for model in MyModel.objects.iterator():
+            with self.subTest(model=model):
+                try:
+                    model.full_clean()
+                except ValidationError:
+                    model.delete()
 
-        self.assertEqual(MyModel.objects.all().count(), <int>)
+        self.assertEqual(MyModel.objects.count(), <int>)
 
     def test_model_db_exception_raises(self) -> None:
         """Tests model correct integrity and validation with raised exceptions"""

@@ -1,42 +1,68 @@
 """
-locust --headless -f loadtests/soak_test.py -H http://localhost:8000 \
-    --processes -1 --csv report/csv/soak/soak --html report/html/soak.html
+uv run locust -f loadtests/soak_test.py --headless \
+    --csv report/csv/soak/soak --html report/html/soak.html -H http://localhost:8000
 """
 
-from locust import FastHttpUser, LoadTestShape, TaskSet, constant, stats, task
-from utils import handle_stages
+from typing import Final
+
+from locust import LoadTestShape, stats
+from utils import (
+    DjangoUser,
+    HumanStage,
+    LocustStage,
+    handle_stages,
+)
 
 
-stats.PERCENTILES_TO_STATISTICS = [0.5, 0.75, 0.90, 0.95, 0.99]
 stats.PERCENTILES_TO_CHART = [0.5, 0.75, 0.90, 0.95, 0.99]
+stats.PERCENTILES_TO_REPORT = [0.5, 0.75, 0.90, 0.95, 0.99]
+stats.PERCENTILES_TO_STATISTICS = [0.5, 0.75, 0.90, 0.95, 0.99]
 
 
-class UserTasks(TaskSet):
-    @task
-    def get_root(self) -> None:
-        self.client.get('/')
-
-
-class WebsiteUser(FastHttpUser):
-    wait_time = constant(0.5)
-    tasks = [UserTasks]
+class WebsiteUser(DjangoUser):
+    """
+    This user inherits from DjangoUser, so it logs in automatically
+    via on_start before starting tasks.
+    """
 
 
 class SoakTest(LoadTestShape):
-    stages: list[dict[str, str | int | float]] = [
-        {'duration': '2m', 'users': 250, 'spawn_rate': 25 / 12},
-        {'duration': '5h40', 'users': 250, 'spawn_rate': 25 / 12},
-        {'duration': '2m', 'users': 0, 'spawn_rate': 25 / 12},
-    ]
+    r"""
+    Three-staged, long duration, simple loadtest profile:
+    - Stage 0: 0 -> 250 users in 2 minutes
+    - Stage 1: 250 users for 5 hours, 40 minutes
+    - Stage 2: 250 -> 0 users in 2 minutes
 
-    def tick(self) -> tuple | None:
-        run_time = self.get_run_time()
+    Test Profile:
 
-        stages: list[dict[str, int]] = handle_stages(self.stages.copy())
+    |===============================================================================|
+    |                                                                               |
+    |      ___________________________________________________________________      |
+    |     /                                                                   \     |
+    |    /                                                                     \    |
+    |   /                                                                       \   |
+    |  /                                                                         \  |
+    | /                                                                           \ |
+    |/                                                                             \|
+    |===============================================================================|
+    """
 
-        for stage in stages:
+    STAGES: Final[list[LocustStage]] = handle_stages(
+        HumanStage(duration='2m', users=250, spawn_rate=25 / 12),
+        HumanStage(duration='5h40', users=250, spawn_rate=25 / 12),
+        HumanStage(duration='2m', users=0, spawn_rate=25 / 12),
+    )
+
+    def tick(self) -> tuple[int, float] | None:
+        """Função orquestradora do teste de carga"""
+
+        run_time: float = self.get_run_time()
+
+        for stage in self.STAGES:
             if run_time < stage['duration']:
-                tick_data = (stage['users'], stage['spawn_rate'])
-                return tick_data
+                return (
+                    stage['users'],
+                    stage['spawn_rate'],
+                )
 
         return None

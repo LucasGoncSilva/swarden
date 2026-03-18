@@ -26,6 +26,20 @@ body:
         - label: Medium
         - label: High
 
+  - type: dropdown
+    id: component
+    attributes:
+      label: Affected Component
+      description: Which part of the "Vault" architecture is failing?
+      options:
+        - Auth / Argon2id Login
+        - Secret Encryption/Decryption (At-Rest)
+        - Key Derivation / Mnemonic
+        - Middleware / Rate Limiting
+        - UI / Front-End
+    validations:
+      required: true
+
   - type: input
     id: version
     attributes:

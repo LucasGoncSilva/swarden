@@ -19,7 +19,7 @@
         <h1 class="section-title text-gradient-primary">Our Security Approach</h1>
         <p class="section-description">
             Welcome to the Security section of sWarden. This page is a transparent, technical walkthrough of how your
-            data flows securely through our system — from your browser to our backend, to the database, and back. Each
+            data flows securely through our system - from your browser to our backend, to the database, and back. Each
             step below recodesents a key step in the lifecycle of your encrypted secrets. We highlight which parts of
             the system handle your data, how cryptographic protections are applied, and what safeguards exist at each
             layer.
@@ -41,7 +41,7 @@
                 <span class="stop-number">1</span>
                 <h2 class="stop-title">Browser</h2>
                 <ul>
-                    <li>Uses Content-Security-Policy (CSP) with strict rules — no external source fetched.</li>
+                    <li>Uses Content-Security-Policy (CSP) with strict rules - no external source fetched.</li>
                     <li>All secrets (passphrases, notes, cards) are encrypted client-side before being sent to the
                         server.
                     </li>
@@ -116,27 +116,27 @@
                 <h2 class="stop-title">Middlewares</h2>
                 <ol>
                     <li>
-                        <code>SecurityMiddleware</code> – sets secure headers.
+                        <code>SecurityMiddleware</code> - sets secure headers.
                     </li>
                     <li>
-                        <code>WhiteNoiseMiddleware</code> – serves static assets securely.
+                        <code>WhiteNoiseMiddleware</code> - serves static assets securely.
                     </li>
                     <li>
-                        <code>SessionMiddleware</code> – manages your encrypted, anonymous session.
+                        <code>SessionMiddleware</code> - manages your encrypted, anonymous session.
                     </li>
                     <li>
                         <code>CommonMiddleware</code>, <code>CSRFMiddleware</code> and
-                        <code>AuthenticationMiddleware</code> – add protection and request context.
+                        <code>AuthenticationMiddleware</code> - add protection and request context.
                     </li>
                     <li>
-                        <code>CSPMiddleware (django-csp)</code> – blocks any unauthorized resources/scripts.
+                        <code>CSPMiddleware (django-csp)</code> - blocks any unauthorized resources/scripts.
 
                     </li>
                     <li>
-                        <code>XFrameOptionsMiddleware</code> – codevents clickjacking.
+                        <code>XFrameOptionsMiddleware</code> - codevents clickjacking.
                     </li>
                     <li>
-                        <code>MessageMiddleware</code> – handles secure server-side messages.
+                        <code>MessageMiddleware</code> - handles secure server-side messages.
                     </li>
                 </ol>
             </div>
@@ -159,7 +159,7 @@
                     <li>Logins use hashed credentials and session-based auth only.</li>
                     <li>Password Hashing using <code>argon2-cffi</code> with high-cost parameters
                         (memory/time/hardening).</li>
-                    <li>The server never knows what you're storing — it only processes opaque, encrypted payloads.</li>
+                    <li>The server never knows what you're storing - it only processes opaque, encrypted payloads.</li>
                     <li>CAPTCHA is used for bot protection, with no third-party scripts.</li>
                     <li>Data is validated server-side but not decrypted.</li>
                 </ul>
@@ -184,7 +184,7 @@
                         <code>psycopg2-binary</code>.
                     </li>
                     <li>TLS-encrypted connection channel between Django and DB (even if local).</li>
-                    <li>Are stored only encrypted secrets, metadata (timestamp) and anontmized accounts IDs.</li>
+                    <li>Are stored only encrypted secrets, metadata (timestamp) and anonymized accounts IDs.</li>
                     <li>Cryptography data based on secret application keys using <code>argon2-cffi</code>.</li>
                 </ul>
             </div>
@@ -204,7 +204,7 @@
                 <span class="stop-number">7</span>
                 <h2 class="stop-title">Response to Client</h2>
                 <ul>
-                    <li>Response returns encrypted data — still unreadable by the server.</li>
+                    <li>Response returns encrypted data - still unreadable by the server.</li>
                     <li>Only the browser with the correct passphrase-derived key can decrypt it.</li>
                     <li>No tracking pixels, third-party beacons, or behavior analytics are injected.</li>
                     <li>Static assets (JS/CSS/fonts) are served by WhiteNoise and never via CDNs.</li>

@@ -1,8 +1,9 @@
+from django.conf import settings
 from django.contrib.admin import ModelAdmin, site
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 from account.forms import UserChangeForm, UserCreationForm
-from account.models import ActivationAccountToken, User
+from account.models import ActivationAccountToken, RecoveryPhrase, User
 
 
 class UserAdmin(BaseUserAdmin):
@@ -45,8 +46,16 @@ class UserAdmin(BaseUserAdmin):
 
 
 class ActivationAccountTokenAdmin(ModelAdmin):
+    list_display = ('user__username', 'value', 'used')
     list_filter = ('user__is_active',)
 
 
-site.register(User, UserAdmin)
-site.register(ActivationAccountToken, ActivationAccountTokenAdmin)
+class RecoveryPhraseAdmin(ModelAdmin):
+    list_display = ('user__username', 'fingerprint', 'is_active')
+    readonly_fields = ('phrase_hash', 'fingerprint')
+
+
+if settings.IS_DEV_ENVIRONMENT:
+    site.register(User, UserAdmin)
+    site.register(ActivationAccountToken, ActivationAccountTokenAdmin)
+    site.register(RecoveryPhrase, RecoveryPhraseAdmin)

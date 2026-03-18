@@ -1,33 +1,46 @@
-from os import system
-from typing import Any, Literal
+import subprocess
+from typing import Any
 
 from django.core.management import BaseCommand
 
 
 class Command(BaseCommand):
-    def add_arguments(self, parser):
-        parser.add_argument(
-            '--app',
-            type=str,
-            help='App to be covered - "." if nothing is defined.',
-            default='.',
-        )
+    help = 'Runs tests with coverage using uv and generates an HTML report.'
 
     def handle(self, *args: Any, **options: Any) -> None:
-        omit_list: list[str] = [
-            '*/month/*,',
-            '*/migrations/*,',
-            '*/admin.py,',
-            'manage.py,',
-            '*/CORE/*,',
+        omit_patterns = [
+            '*/month/*',
+            '*/migrations/*',
+            '*/admin.py',
+            'manage.py',
+            'server.py',
+            '*/CORE/*',
         ]
 
-        app: Literal['.'] | str = options['app']
-        source: str = f"--source='{app}'"
-        omit: str = f"--omit='{','.join(omit_list)}'"
-        cmd: str = f'coverage run {source} {omit} manage.py test {app}'
+        coverage_cmd = [
+            'uv',
+            'run',
+            'coverage',
+            'run',
+            '--source=.',
+            f'--omit={",".join(omit_patterns)}',
+            'manage.py',
+            'test',
+        ]
 
-        system(cmd)
-        system('coverage html')
+        result = subprocess.run(coverage_cmd)
 
-        self.stdout.write(self.style.SUCCESS('Coverage done + HTML file generated.'))
+        self.stdout.write('Generating HTML report...')
+        subprocess.run(['uv', 'run', 'coverage', 'html'])
+
+        if result.returncode == 0:
+            self.stdout.write(
+                self.style.SUCCESS('Tests passed! Coverage HTML generated.')
+            )
+        else:
+            self.stdout.write(
+                self.style.ERROR(
+                    f'Tests failed with exit code {result.returncode}. '
+                    'Check "htmlcov/index.html" for coverage of failed run.'
+                )
+            )

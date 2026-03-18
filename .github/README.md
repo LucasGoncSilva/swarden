@@ -7,11 +7,7 @@
 ![GitHub License](https://img.shields.io/github/license/LucasGoncSilva/swarden?labelColor=101010)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/LucasGoncSilva/swarden/django_unittest.yml?style=flat&labelColor=%23101010)
 
-Created in Django as an MVC Framework, sWarden works as a real prototype of an online password and credential manager. This project uses security concepts in a practical and descriptive way.
-
-Both class-based views and function-based views were used, so that the different paradigms implemented by the Framework can be exemplified in a practical way.
-
-It adds to Django's security measures an initial logic of what a honeypot would be, more than 150 test cases including 4 load tests to certify the integrity of the system and encryption of the data stored in the database, all applicable in Docker.
+Created in Django as an MVC Framework, sWarden works as a real prototype of an online password and credential manager. This project uses security concepts in a simple and descriptive way. Both class-based views and function-based views were used, so that the different paradigms implemented by the Framework can be exemplified in a practical way. It adds to Django's security measures 190+ test cases including 4 load tests to certify the integrity of the system and encryption of the data stored in the database, all applicable in Docker.
 
 ## Stack
 
@@ -24,8 +20,6 @@ It adds to Django's security measures an initial logic of what a honeypot would 
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
 
 ![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)
-![Render](https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=000&color=fff)
-![Supabase](https://img.shields.io/badge/Supabase-181818?style=for-the-badge&logo=supabase&logoColor=3ecf8e)
 
 ![uv](https://img.shields.io/badge/uv-2b0231?style=for-the-badge&logo=uv)
 ![Ruff](https://img.shields.io/badge/Ruff-2b0231?style=for-the-badge&logo=ruff)
@@ -42,9 +36,12 @@ It adds to Django's security measures an initial logic of what a honeypot would 
 - [x] **Encripted database** for private storage
 - [x] **Secrets searching** based on name or service
 - [x] **100% anonymous** register and login
-- [x] **Internationalization** (en/pt-br)
 - [x] **100% open source** codebase
 - [x] **100% Brazilian** development
+
+## Engineering Workflow & Documentation Flow
+
+To check the engineering and documentation workflow please check [Engineering over here](https://lucasgoncsilva.github.io/swarden/ENGINEERING).
 
 ## To-Do List
 
@@ -52,56 +49,7 @@ To check the to-do list and keep track of future implementations please check [T
 
 ## Arch
 
-The architecture can be detailed in general terms on two levels: web and database. The mechanics are abstracted to a general level, avoiding in-depth details that confuse rather than aggregate, presenting a behavioral vision on a “macro” scale following the flow of data without focusing on the “micro”, such as each action of each function. Below is the flow of information on the Web, followed by the structuring and architecture of the Database (For more details on the Database go to [https://dbdocs.io/lucasgoncsilva04/SWARDEN](https://dbdocs.io/lucasgoncsilva04/SWARDEN)):
-
-### Web
-
-```mermaid
-flowchart LR
-
-
-User((User))
-
-subgraph CLOUD
-    subgraph RENDER
-        LB(Load Balancer):::Arch
-        Dispatcher[Req. Dispatcher]:::Arch
-        Template{{Template}}:::Arch
-        View{View}:::Arch
-        Model{{Model}}:::Arch
-    end
-
-    subgraph SUPABASE
-        Database[(Database)]
-    end
-end
-
-
-Template ~~~ Model
-
-User --> LB --> Dispatcher --> View --> Model
-
-Model -->|Insert / Update| Database
-Model -->|Select| Database
-
-Database --> Model --> View --> Template --> Dispatcher --> LB --> User
-
-
-style CLOUD fill:#1111,color:#0f0,stroke:#ccc;
-style RENDER fill:#1111,color:#0f0,stroke:#ccc;
-style SUPABASE fill:#1111,color:#0f0,stroke:#ccc;
-style User fill:#fff,color:#080,stroke:#080;
-style Database fill:#dfd,color:#080,stroke:#080;
-
-classDef Arch fill:#080,color:#efe,stroke:#efe;
-
-linkStyle 1,2,3,4,5,6 stroke:#0fa,color:#efe
-linkStyle 7,8,9,10,11,12 stroke:#aaa,color:#efe
-```
-
-### DB
-
-![Database Arch](./assets/db.svg)
+To check the to-do list and keep track of future implementations please check [Architecture over here](https://lucasgoncsilva.github.io/swarden/ARCHITECTURE).
 
 ## Contrib
 
@@ -114,7 +62,7 @@ git clone git@github.com:<YOUR_REPO>/swarden.git
 cd swarden
 ```
 
-Now you are ready to follow the next step, described below.
+Now you are ready to follow the next steps described below.
 
 ## Running
 
@@ -143,10 +91,16 @@ Before starting with development and commands, it is important to define the env
 | `SECRET_KEY`             |    `str`    | Optional  | `'cw%t5...ba^m3)'`    | Defines general security stuff               |
 | `ALLOWED_HOSTS`          | `list[str]` | Optional  | `['*']`               | Defines valid URLs to be used                |
 
-Once ok with env vars, sync the uv with `uv.lock` - this will create a `.venv` by itself:
+Once ok with env vars (default can be used), sync the uv with `uv.lock` - this will create a `.venv` by itself:
 
 ```sh
 uv sync
+```
+
+Following, the first time running the project you can use the custom command created for the project itself:
+
+```sh
+uv run task first
 ```
 
 > From here to below, run under `SWARDEN/` dir.
@@ -154,6 +108,10 @@ uv sync
 ### Start Docker's Database
 
 ```sh
+uv run task startdb
+
+# or...
+
 docker run --name psql_swarden -p 5432:5432 \
     -e POSTGRES_USER=postgres \
     -e POSTGRES_PASSWORD=postgres \
@@ -207,4 +165,4 @@ uv run gunicorn CORE.wsgi:application --bind 0.0.0.0:8000  # Gunicorn at local
 
 ## License
 
-This project is under [MPLv2 - Mozilla Public License Version 2.0](https://choosealicense.com/licenses/mpl-2.0/). Permissions of this weak copyleft license are conditioned on making available source code of licensed files and modifications of those files under the same license (or in certain cases, one of the GNU licenses). Copyright and license notices must be preserved. Contributors provide an express grant of patent rights. However, a larger work using the licensed work may be distributed under different terms and without source code for files added in the larger work.
+This project is under [MIT License](https://choosealicense.com/licenses/mpl-2.0/). A short and simple permissive license with conditions only requiring preservation of copyright and license notices. Licensed works, modifications, and larger works may be distributed under different terms and without source code.

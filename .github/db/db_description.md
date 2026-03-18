@@ -1,132 +1,156 @@
-# sWarden: Arquitetura do Banco de Dados
+# sWarden: Database Architecture
 
-Criado em Django como Framework MVC, sWarden funciona como um protótipo real de gerenciador de senhas e credenciais online. Este projeto integerroduz e apresenta conceitos básicos de segurança de forma prática e descritiva.
+Created in Django as an MVC Framework, sWarden works as a real prototype of an online password and credential manager. This project introduces and presents basic security concepts in a practical and descriptive way.
 
-Foram utilizadas tanto class-based views quanto function-based views, de modo que os diferentes paradigmas implementados pelo Framework sejam exemplificados de forma prática.
+Both class-based views and function-based views were used, so that the different paradigms implemented by the Framework are exemplified in a practical way.
 
-Agrega às medidas de segurança do Django uma lógica inicial do que seria um honeypot, mais de 140 casos de testes incluindo 4 testes de carga para atestar a integeregridade do sistema e criptografia nos dados armazenados em banco, tudo aplicável em Docker.
+In addition to Django's security measures, it adds more than 190+ test cases including 4 load tests to attest to the integrity of the system and encryption of data stored in the database, all applicable in Docker.
 
-O Banco de Dados possui uma importância monumental, pois é nele onde se concentram as informações mais sensíveis de TODO o projeto. Sua arquitetura impacta diretamente todos os pontos onda há contato com ele, por menor que seja.
+The Database has monumental importance, as it is where the most sensitive information of the ENTIRE project is concentrated. Its architecture directly impacts all points where there is contact with it, no matter how small.
 
-O desenho de cada tabela, as relações de chaves estrangeiras e até os tipos de dados escolhidos para cada coluna influenciam a performance de tudo, partindo do próprio Banco e indo ao Front-end passando pelo Back-end.
+The design of each table, the foreign key relationships and even the data types chosen for each column influence the performance of everything, from the Database itself to the Front-end passing through the Back-end.
 
-Nesta documentação serão apresentados a engine escolhida, a arquitetura e estrutura do Banco de Dados, cada uma de suas tabelas aqui existentes, os tipos de dados das colunas, as referências de chaves estrangeias e quaisquer outras mecânicas que possuam a devida importância para estarem documentadas.
-
----
+In this documentation, the chosen engine, the architecture and structure of the Database, each of its existing tables, the data types of the columns, the foreign key references and any other mechanics that have due importance to be documented will be presented.
 
 ## PostgreSQL
 
-"O Mais Avançado Banco de Dados do Mundo", como ele mesmo define, é um sistema de gerenciamento de banco de dados relacional e objeto-relacional de código aberto. Ele é amplamente utilizado por sua robustez, extensibilidade e conformidade com os padrões SQL.
+"The World's Most Advanced Database", as it defines itself, is an open-source relational and object-relational database management system. It is widely used for its robustness, extensibility and compliance with SQL standards.
 
-Definitivamente não é o mais veloz, bancos de dados não-relacionais como Redis ocupam esse lugar, também não é o mais compacto, SQLite é o comercialmente mais compacto, mas ele é o mais eficiente em equilibrar todos os elementos. Ser muito rápido, extremamente confiável, facilmente trabalhado, globalmente disponibilizado, avançado quanto às transações ACID, personalizável e ainda possuir uma comunidade extremamente ativa - também por ser de código aberto - o torna líder de mercado, escolha quase que padrão para a maioria dos projetos.
+It is definitely not the fastest, non-relational databases like Redis occupy that place, nor is it the most compact, SQLite is the commercially most compact, but it is the most efficient in balancing all elements. Being very fast, extremely reliable, easily worked, globally available, advanced in terms of ACID transactions, customizable and still having an extremely active community - also because it is open source - makes it a market leader, almost standard choice for most projects.
 
-Os elementos descritos acima contribuem diretamente para a escolha da engine e do Banco de Dados Postgres, atentendo às demandas deste projeto de maneira consistente ~~e gratuita~~.
+The elements described above directly contribute to the choice of the engine and the Postgres Database, meeting the demands of this project consistently ~~and free~~.
 
-## Tabelas
+## Tables
 
-O Banco de Dados do sWarden é arquitetado com duas frentes conectadas: usuários e segredos. A primeira frente não possui mistério algum; a segunda frente se responsabiliza dos segredos referentes a cada usuário; ambos descritos abaixo:
+The sWarden Database is architected with two connected fronts: users and secrets. The first front has no mystery; the second front is responsible for the secrets related to each user; both described below:
 
-### Usuários
+### Users
 
-* `User`: Controle de usuários cadastrados, ativos e inativos, comuns e administradores
-* `ActivationAccountTokenUser`: Tokens de ativação de novos usuários, recém-cadastrados, ainda não plenamente aptos
+- `User`: Control of registered users, active and inactive, common and administrators
+- `ActivationAccountToken`: Activation tokens for new users, newly registered, not yet fully capable
+- `RecoveryPhrase`: Recovery phrases for password recovery
 
-### Segredos
+### Secrets
 
-* `LoginCredential`: Credenciais de acessos para serviços como Gmail, Amazon Prime, GitHub, ...
-* `Card`: Cartões de débido, crédito, ...
-* `SecurityNote`: Notas e anotações de seguranças
+- `Bank`: Banks associated with payment cards
+- `Brand`: Brands of payment cards (e.g., Visa, Mastercard)
+- `CardType`: Types of payment cards (debit, credit)
+- `LoginCredential`: Login credentials for services like Gmail, Amazon Prime, GitHub, ...
+- `NoteType`: Types of security notes
+- `PaymentCard`: Payment cards (debit, credit, ...)
+- `SecurityNote`: Security notes and annotations
+- `Service`: Services for which login credentials are stored
 
-## Tipos de Dados
+## Data Types
 
-Apesar da arquitetura possuir 5 tabelas principais (demais tabelas com responsabilidades administrativas do próprio Framework Django) com mais de 43 colunas somadas, os tipos de dados utilizados nas tabelas se resumem à apenas 5 tipos: `bool`, `date`, `uuid`, `integer`, `timestamp` e `varchar`.
+Despite the architecture having 11 main tables (other tables with administrative responsibilities of the Django Framework itself) with more than 43 columns combined, the data types used in the tables are summarized to just a few: `boolean`, `date_time`, `uuid`, `char`, `encrypted_char`, `encrypted_text`, `slug`, `month`.
 
-`bool`: 1 byte de tamanho, determina um valor binário como positivo/negativo, on/off, 0/1
-`date`: 4 bytes de tamanho, determina uma data entre 4713 AC e 5874897 DC com precisão de 1 dia
-`integer`: 8 bytes de tamanho, determina um integereiro entre -2.147.483.648 to +2.147.483.647 (2bi)
-`timestamp`: 8 bytes de tamanho, determina data e hora entre 4713 AC e 5874897 DC com precisão de 1 microsegundo
-`uuid`: 16 bytes de tamanho, utilizado para determinar IDs não-incrementais integereiros, gerados por um algoritmo, neste caso o v4
-`varchar`: tamanho em bytes variado, define sequências de caracteres, strings, variando o tamanho em bytes com especificação + 1 (e.g. varchar(10) -> 11 bytes)
+`boolean`: 1 byte in size, determines a binary value like positive/negative, on/off, 0/1
+`date_time`: 8 bytes in size, determines date and time between 4713 BC and 5874897 AD with 1 microsecond precision
+`uuid`: 16 bytes in size, used to determine non-incremental integer IDs, generated by an algorithm, in this case v4
+`char`: variable size in bytes, defines character sequences, strings, varying the size in bytes with specification + 1 (e.g. char(10) -> 11 bytes)
+`encrypted_char`: encrypted version of char for sensitive data
+`encrypted_text`: encrypted version of text for sensitive data
+`slug`: a URL-friendly version of a string
+`month`: a custom field for year-month representation
 
-A escolha de tipos de dados é estratégica para o balanceamento entre espaço de armazenamento e velocidade de acesso, onde inteiros e UUIDs são utilizados para identificar registros de forma eficiente e segura, varchar com limitação de tamanho em campos de texto (first_name, last_name, email, etc.) para economizar espaço (delimitando-o) e melhorar a performance e, por fim, timestamps se encarregando da facilitação de operações temporais, como ordenação e filtro por data de criação ou atualização.
+The choice of data types is strategic for balancing storage space and access speed, where integers and UUIDs are used to identify records efficiently and securely, char with size limitation in text fields (name, etc.) to save space (delimiting it) and improve performance, and timestamps facilitating temporal operations, such as sorting and filtering by creation or update date.
 
-## Referências - Chaves Estrangeiras
+## References - Foreign Keys
 
-Chaves estrangeiras são referências de uma tabela a outra, garantindo a integridade referencial entre elas. Elas estabelecem um vínculo entre a coluna de uma tabela, chamada de chave estrangeira, e a coluna primária da tabela referenciada.
+Foreign keys are references from one table to another, ensuring referential integrity between them. They establish a link between the column of one table, called the foreign key, and the primary column of the referenced table.
 
-No PostgreSQL, ao definir uma chave estrangeira, asseguramos que os valores dessa coluna correspondam a valores existentes na coluna primária referenciada, impedindo dados órfãos e mantendo a consistência dos relacionamentos no Banco de Dados. Os relacionamentos entre as tabelas do Banco de Dados se faz com odeterminado a seguir:
+In PostgreSQL, when defining a foreign key, we ensure that the values of this column correspond to existing values in the referenced primary column, preventing orphan data and maintaining the consistency of relationships in the Database. The relationships between the Database tables are determined as follows:
 
-`ActivationAccountToken.user` many-to-one `User.ID`
-`LoginCredential.owner` many-to-one `User.ID`
-`Card.owner` many-to-one `User.ID`
-`SecurityNote.owner` many-to-one `User.ID`
+`ActivationAccountToken.user_id` many-to-one `User.id`
+`RecoveryPhrase.user_id` one-to-one `User.id`
+`LoginCredential.owner_id` many-to-one `User.id`
+`LoginCredential.service_id` many-to-one `Service.id`
+`PaymentCard.owner_id` many-to-one `User.id`
+`PaymentCard.card_type_id` many-to-one `CardType.id`
+`PaymentCard.bank_id` many-to-one `Bank.id`
+`PaymentCard.brand_id` many-to-one `Brand.id`
+`SecurityNote.owner_id` many-to-one `User.id`
+`SecurityNote.note_type_id` many-to-one `NoteType.id`
 
-Onde cada Token de Ativação, Credencial de Login, Cartão e Anotação de Segurança só pode estar conectado a um único Usuário, porém, cada Usuário pode se conectar e possuir um ou mais dos demais itens.
+Where each Activation Token, Recovery Phrase, Login Credential, Payment Card and Security Note can only be connected to a single User, however, each User can connect and have one or more of the other items.
 
-## Normalização e Desnormalização
+## Normalization and Denormalization
 
-Normalização é o processo de organização de dados em um banco de dados. Isso inclui a criação de tabelas e o estabelecimento de relações entre essas tabelas de acordo com as regras projetadas para proteger os dados e tornar o Banco de Dados mais flexível, eliminando a redundância e a dependência inconsistente.
+Normalization is the process of organizing data in a database. This includes creating tables and establishing relationships between these tables according to rules designed to protect data and make the Database more flexible, eliminating redundancy and inconsistent dependency.
 
-Desnormalização, por sua vez, é uma técnica aplicada a bancos de dados relacionais com o objetivo de otimizar a performance de consultas que envolvem muitas tabelas. Esse tipo de consulta normalmente requer a utilização de junções (JOINS) entre tabelas para obter todos os dados necessários, o que acaba comprometendo o desempenho do banco de dados.
+Denormalization, in turn, is a technique applied to relational databases with the aim of optimizing the performance of queries involving many tables. This type of query normally requires the use of joins (JOINS) between tables to obtain all necessary data, which ends up compromising the database performance.
 
-Para contornar esse problema em casos específicos pode ser viável desnormalizar o banco, juntando os dados em uma única tabela (ou menos tabelas do que as que eram usadas originalmente). Apesar de isso acabar gerando redundância de informações, as aplicações serão beneficiadas com o ganho de desempenho devido a não ser mais necessário unir várias tabelas.
+To circumvent this problem in specific cases, it may be viable to denormalize the database, joining the data in a single table (or fewer tables than originally used). Although this ends up generating redundancy of information, the applications will benefit from the performance gain due to no longer needing to join several tables.
 
-O sWarden não faz uso da desnormalização, porquanto a performance do Postgres enquanto estruturado já entrega os resultados desejados e esperados, portanto, não há redundância de dados.
+sWarden does not use denormalization, since the performance of Postgres while structured already delivers the desired and expected results, therefore, there is no data redundancy.
 
-## Consultas e Transações
+## Queries and Transactions
 
-O uso de índices em chaves primárias e estrangeiras acelera as operações de leitura. As consultas são projetadas para aproveitar esses índices, evitando full table scans sempre que possível.
+The use of indexes on primary and foreign keys speeds up read operations. Queries are designed to take advantage of these indexes, avoiding full table scans whenever possible.
 
-Quanto às transações, o PostgreSQL é perfeitamente capaz de garantir com excelência os quatro atributos ACID: atomicidade, consistência, isolamento e durabilidade. Isso é crítico para operações que envolvem múltiplas tabelas e para a manutenção da integridade dos dados em cenários de concorrência. Também utilizado nos testes, seção detalhada a seguir.
+As for transactions, PostgreSQL is perfectly capable of guaranteeing the four ACID attributes excellently: atomicity, consistency, isolation and durability. This is critical for operations involving multiple tables and for maintaining data integrity in concurrency scenarios. Also used in tests, detailed section below.
 
-## Testes
+## Tests
 
-Esta seção abrange os testes de Banco de Dados para os modelos `Credential`, `Card` e `SecurityNote`, garantindo a integridade, validação e armazenamento correto dos dados no Banco de Dados.
+This section covers the Database tests for the models `User`, `ActivationAccountToken`, `RecoveryPhrase`, `Bank`, `Brand`, `CardType`, `LoginCredential`, `NoteType`, `PaymentCard`, `SecurityNote`, `Service`, ensuring integrity, validation and correct data storage in the Database.
 
-O uso de atomicidade aqui se apresenta em momentos onde falhas são esperadas e o PostgreSQL deve retornar um erro. Quando esperado, esse erro está pronto para ser tratado dentro da aplicação. Nos testes, a ideia é exatamente mapear os modelos de modo que alterações nas demais partes da aplicação não venham remover uma regra ou alterar determinado comportamento que não tenha sido antes tratado ou que de alguma forma seja esperado.
+The use of atomicity here presents itself in moments where failures are expected and PostgreSQL must return an error. When expected, this error is ready to be handled within the application. In tests, the idea is exactly to map the models so that changes in other parts of the application do not remove a rule or change a certain behavior that has not been previously handled or that is somehow expected.
 
-A importância desse controle é demonstrada em momentos que os modelos dentro da aplicação possuem seus campos (colunas) editados mas não totalmente tratados nas funções "handlers".
+The importance of this control is demonstrated at times when the models within the application have their fields (columns) edited but not fully handled in the "handlers" functions.
 
-Os testes a seguir focam nas interações com o Banco de Dados e representam os três modelos, restrições e exceções relacionadas a esses modelos.
+The tests below focus on interactions with the Database and represent the models, restrictions and exceptions related to these models.
 
-1. Validade da Instância:
-    
-    Verifica se as instâncias do modelo criadas no Banco de Dados são da classe correta.
-    
-    Método de Teste: `test_[Credential/Card/SecurityNote]_instance_validity`
+1. Instance Validity:
 
-1. Atribuição de Valor Chave:
-    
-    Valida se os atributos de uma instância do modelo são atribuídos corretamente.
-    
-    Método de Teste: `test_[Credential/Card/SecurityNote]_key_value_assertion`
+   Verifies if the model instances created in the Database are of the correct class.
 
-1. Validade de Chave Estrangeira:
-    
-    Verifica a validade do relacionamento de chave estrangeira entre Credential e User.
-    
-    Método de Teste: `test_[Credential/Card/SecurityNote]_user_foreign_key_validity`
+   Test Method: `test_[model]_instance_validity`
 
-1. Integridade e Validação na Criação:
-    
-    Testa a integridade e validação da criação do modelo no Banco de Dados.
-    
-    Método de Teste: `test_[Credential/Card/SecurityNote]_create_validity`
+1. Key Value Assignment:
 
-1. Integridade e Validação na Atualização:
-    
-    Garante que as atualizações em instâncias do modelo mantenham a integridade e validação dos dados.
-    
-    Método de Teste: `test_[Credential/Card/SecurityNote]_update_validity`
+   Validates if the attributes of a model instance are assigned correctly.
 
-1. Integridade na Exclusão:
-    
-    Valida a exclusão correta de instâncias do modelo no Banco de Dados.
-    
-    Método de Teste: `test_[Credential/Card/SecurityNote]_delete_validity`
+   Test Method: `test_[model]_key_value_assertion`
 
-1. Tratamento de Exceções:
-    
-    Testa o tratamento correto de exceções e erros de validação durante a criação do modelo.
-    
-    Método de Teste: `test_[Credential/Card/SecurityNote]_db_exception_raises`
+1. **str** Method Return:
+
+   Tests the return value of the **str** method.
+
+   Test Method: `test_[model]_special_str_method_return`
+
+1. get_absolute_url Method Return (if applicable):
+
+   Tests the return value of the get_absolute_url method.
+
+   Test Method: `test_[model]_absolute_url_method_return`
+
+1. Foreign Key Validity:
+
+   Verifies the validity of the foreign key relationship.
+
+   Test Method: `test_[model]_foreign_key_validity`
+
+1. Creation Integrity and Validation:
+
+   Tests the integrity and validation of model creation in the Database.
+
+   Test Method: `test_[model]_create_validity`
+
+1. Update Integrity and Validation:
+
+   Ensures that updates to model instances maintain data integrity and validation.
+
+   Test Method: `test_[model]_update_validity`
+
+1. Deletion Integrity:
+
+   Validates the correct deletion of model instances in the Database.
+
+   Test Method: `test_[model]_delete_validity`
+
+1. Exception Handling:
+
+   Tests the correct handling of exceptions and validation errors during model creation.
+
+   Test Method: `test_[model]_db_exception_raises`

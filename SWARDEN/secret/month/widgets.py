@@ -40,9 +40,15 @@ class MonthSelectorWidget(widgets.MultiWidget):
             widget.value_from_datadict(data, files, name + "_%s" % i)
             for i, widget in enumerate(self.widgets)
         ]
+        
         try:
+            # Check if any part of the date is missing before converting
+            if datelist[0] is None or datelist[1] is None:
+                return None
+                
             D = date(day=1, month=int(datelist[0]), year=int(datelist[1]))
-        except ValueError:
-            return ""
-        else:
             return str(D)
+        except (ValueError, TypeError):
+            # Catching TypeError fixes the int(None) crash
+            # Catching ValueError fixes cases like int("not_a_number")
+            return None

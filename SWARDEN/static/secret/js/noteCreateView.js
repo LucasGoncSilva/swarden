@@ -1,9 +1,4 @@
 window.addEventListener("DOMContentLoaded", function () {
-  const title = document.getElementById("id_title");
-  const slug_field = document.getElementById("id_slug");
-
-  slug_field.readOnly = true;
-
   function slugifyText(text) {
     return text
       .toString() // Cast to string (optional)
@@ -13,6 +8,11 @@ window.addEventListener("DOMContentLoaded", function () {
       .replace(/\s+/g, "-") // Replace spaces with -
       .replace(/[^\w\-]+/g, ""); // Remove all non-word chars
   }
+
+  const title = document.getElementById("id_title");
+  const slug_field = document.getElementById("id_slug");
+
+  slug_field.readOnly = true;
 
   function populateSlug() {
     slug_field.value = slugifyText(title.value);

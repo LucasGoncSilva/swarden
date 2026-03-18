@@ -1,10 +1,4 @@
 window.addEventListener("DOMContentLoaded", function () {
-  const bank = document.getElementById("id_bank");
-  const name = document.getElementById("id_name");
-  const slug_field = document.getElementById("id_slug");
-
-  slug_field.readOnly = true;
-
   function slugifyText(text) {
     return text
       .toString() // Cast to string (optional)
@@ -15,8 +9,16 @@ window.addEventListener("DOMContentLoaded", function () {
       .replace(/[^\w\-]+/g, ""); // Remove all non-word chars
   }
 
+  const bank = document.getElementById("id_bank");
+  const name = document.getElementById("id_name");
+  const slug_field = document.getElementById("id_slug");
+
+  slug_field.readOnly = true;
+
   function populateSlug() {
-    slug_field.value = bank.value + slugifyText(name.value);
+    slug_field.value = slugifyText(
+      `${bank.selectedOptions[0].text} ${name.value}`,
+    );
   }
 
   bank.addEventListener("change", populateSlug);
